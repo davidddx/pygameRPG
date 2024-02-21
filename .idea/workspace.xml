@@ -4,15 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="Main Function">
-      <change afterPath="$PROJECT_DIR$/game/Game.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game/GameHandler.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game/Player.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game/SceneHandler.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game/utils/Button.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/globalVars/constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/main.py" afterDir="false" />
+    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="button class i made previously with a couple of tweaks">
+      <change afterPath="$PROJECT_DIR$/game/utils/Camera.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,13 +108,57 @@
       <option name="project" value="LOCAL" />
       <updated>1708441289428</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="debug">
+      <option name="closed" value="true" />
+      <created>1708482279761</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1708482279761</updated>
+    </task>
+    <task id="LOCAL-00005" summary="ide stuff">
+      <option name="closed" value="true" />
+      <created>1708482289184</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1708482289184</updated>
+    </task>
+    <task id="LOCAL-00006" summary="setting up program architecture">
+      <option name="closed" value="true" />
+      <created>1708482310947</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1708482310947</updated>
+    </task>
+    <task id="LOCAL-00007" summary="setting up program architecture">
+      <option name="closed" value="true" />
+      <created>1708482314669</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1708482314669</updated>
+    </task>
+    <task id="LOCAL-00008" summary="button class i made previously with a couple of tweaks">
+      <option name="closed" value="true" />
+      <created>1708482333067</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1708482333067</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added logger" />
     <MESSAGE value="venv" />
     <MESSAGE value="Main Function" />
-    <option name="LAST_COMMIT_MESSAGE" value="Main Function" />
+    <MESSAGE value="debug" />
+    <MESSAGE value="ide stuff" />
+    <MESSAGE value="setting up program architecture" />
+    <MESSAGE value="button class i made previously with a couple of tweaks" />
+    <option name="LAST_COMMIT_MESSAGE" value="button class i made previously with a couple of tweaks" />
   </component>
 </project>
