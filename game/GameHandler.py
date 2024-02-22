@@ -1,7 +1,7 @@
 import pygame
 import sys, os
 import globalVars.constants as constants
-import game.Game as Game
+from game.Game import Game
 
 def loop():
     pygame.init()
@@ -14,12 +14,13 @@ def loop():
     running = True
     screenFillColor = "black"
     MAX_FPS = 45
+    gameObj= Game()
     while running:
         clock.tick(MAX_FPS)
         keys = pygame.key.get_pressed()
         screen.fill(screenFillColor)
 
-        Game.run(screen=screen)
+        gameObj.run(screen=screen)
         # render
         pygame.display.flip()
 
