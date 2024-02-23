@@ -4,15 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="ide">
-      <change afterPath="$PROJECT_DIR$/game/Level.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game/utils/Map.py" afterDir="false" />
+    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="test images">
+      <change afterPath="$PROJECT_DIR$/game/utils/TileMap.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gamedata/TestMaps/TestMap1.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/globalVars/TilemapConstants.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/Game.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Game.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/GameHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/GameHandler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/Player.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Player.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/SceneHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/SceneHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/projectDebug.log" beforeDir="false" afterPath="$PROJECT_DIR$/projectDebug.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/utils/Button.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/utils/Button.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/utils/Map.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/globalVars/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/globalVars/SettingsConstants.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -171,7 +173,79 @@
       <option name="project" value="LOCAL" />
       <updated>1708482641460</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="added map class">
+      <option name="closed" value="true" />
+      <created>1708634214347</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1708634214347</updated>
+    </task>
+    <task id="LOCAL-00012" summary="added test sprite">
+      <option name="closed" value="true" />
+      <created>1708634222754</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1708634222754</updated>
+    </task>
+    <task id="LOCAL-00013" summary="testing">
+      <option name="closed" value="true" />
+      <created>1708634238495</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1708634238495</updated>
+    </task>
+    <task id="LOCAL-00014" summary="testing">
+      <option name="closed" value="true" />
+      <created>1708634245584</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1708634245584</updated>
+    </task>
+    <task id="LOCAL-00015" summary="added level class">
+      <option name="closed" value="true" />
+      <created>1708634253158</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1708634253158</updated>
+    </task>
+    <task id="LOCAL-00016" summary="added update">
+      <option name="closed" value="true" />
+      <created>1708634265107</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1708634265107</updated>
+    </task>
+    <task id="LOCAL-00017" summary="added logging">
+      <option name="closed" value="true" />
+      <created>1708634280519</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1708634280519</updated>
+    </task>
+    <task id="LOCAL-00018" summary="ide/debug">
+      <option name="closed" value="true" />
+      <created>1708634286766</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1708634286767</updated>
+    </task>
+    <task id="LOCAL-00019" summary="test images">
+      <option name="closed" value="true" />
+      <created>1708635539714</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1708635539714</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -184,6 +258,14 @@
     <MESSAGE value="button class i made previously with a couple of tweaks" />
     <MESSAGE value="added camera class" />
     <MESSAGE value="ide" />
-    <option name="LAST_COMMIT_MESSAGE" value="ide" />
+    <MESSAGE value="added map class" />
+    <MESSAGE value="added test sprite" />
+    <MESSAGE value="testing" />
+    <MESSAGE value="added level class" />
+    <MESSAGE value="added update" />
+    <MESSAGE value="added logging" />
+    <MESSAGE value="ide/debug" />
+    <MESSAGE value="test images" />
+    <option name="LAST_COMMIT_MESSAGE" value="test images" />
   </component>
 </project>

@@ -7,12 +7,6 @@ class Game:
         try:
             logger.debug(f"Class {Game=} initializing....")
             self.sceneHandler = SceneHandler();
-            cwd = os.getcwd()
-            imagedir = cwd + '/images/test/YellowBlock.png'
-            self.testImage = pygame.image.load(imagedir)
-
-            pass
-
             logger.debug(f"Class {Game=} intialized.")
         except Exception as e:
             logger.error(f"Failed {Game=} class initialization.\n Error: {e}")
