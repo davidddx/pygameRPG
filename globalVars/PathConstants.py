@@ -1,0 +1,7 @@
+GAME_DATA = "gamedata"
+GAME = "game"
+GLOBAL_VARS = "globalVars"
+DEBUG = "debug"
+IMAGES = "images"
+MAIN = "main"
+MAPS = "Maps"
