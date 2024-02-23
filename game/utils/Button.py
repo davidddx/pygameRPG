@@ -1,5 +1,5 @@
 import pygame
-import globalVars.constants as GLOBAL_VARS
+import globalVars.SettingsConstants as GLOBAL_VARS
 class ImagedButton:
     def __init__(self, image : pygame.Surface, x : int, y : int, toggle=False, starting_value=False):
         self.pressed = starting_value;

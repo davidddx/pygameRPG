@@ -1,6 +1,6 @@
 import pygame
 import sys, os
-import globalVars.constants as constants
+import globalVars.SettingsConstants as constants
 from game.Game import Game
 
 def loop():

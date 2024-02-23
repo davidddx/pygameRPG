@@ -1,6 +1,6 @@
 import pygame
 from debug.logger import logger
-import globalVars.constants as globalVars
+import globalVars.SettingsConstants as globalVars
 
 class Player:
     def __init__(self, pos : tuple[int,int,int], head_img : pygame.Surface, shirt_img : pygame.Surface, pants_img : pygame.Surface):
