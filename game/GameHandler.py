@@ -2,6 +2,7 @@ import pygame
 import sys, os
 import globalVars.SettingsConstants as constants
 from game.Game import Game
+from debug.logger import logger
 
 def loop():
     pygame.init()
@@ -16,10 +17,10 @@ def loop():
     MAX_FPS = 45
     gameObj= Game()
     while running:
+        logger.debug(f"CURRENT FPS: {clock.get_fps()}")
         clock.tick(MAX_FPS)
         keys = pygame.key.get_pressed()
         screen.fill(screenFillColor)
-
         gameObj.run(screen=screen)
         # render
         pygame.display.flip()

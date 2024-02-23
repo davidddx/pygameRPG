@@ -9,8 +9,8 @@ class Game:
             self.sceneHandler = SceneHandler();
             logger.debug(f"Class {Game=} intialized.")
         except Exception as e:
-            logger.error(f"Failed {Game=} class initialization.\n Error: {e}")
+            logger.error(f"Failed {Game=} class initialization.\n Error: {e} \n File: Game.py")
 
-    def run(self, screen : pygame.Surface):
-        self.sceneHandler.run()
+    def run(self, screen):
+        self.sceneHandler.run(screen=screen)
 
