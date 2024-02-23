@@ -4,17 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="test images">
-      <change afterPath="$PROJECT_DIR$/game/utils/TileMap.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gamedata/TestMaps/TestMap1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/globalVars/TilemapConstants.py" afterDir="false" />
+    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="added TILE_SIZE">
+      <change afterPath="$PROJECT_DIR$/globalVars/PathConstants.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/Game.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Game.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/GameHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/GameHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/Player.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Player.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/utils/Button.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/utils/Button.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/utils/Map.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/globalVars/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/globalVars/SettingsConstants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/Level.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Level.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/SceneHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/SceneHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/utils/TileMap.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/utils/TileMap.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gamedata/TestMaps/TestMap1.py" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/projectDebug.log" beforeDir="false" afterPath="$PROJECT_DIR$/projectDebug.log" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,6 +49,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\david\Documents\GitHub\pygameRPG\pygameRPG\gamedata\Maps" />
       <recent name="C:\Users\david\Documents\GitHub\pygameRPG\pygameRPG\main" />
     </key>
   </component>
@@ -245,7 +245,39 @@
       <option name="project" value="LOCAL" />
       <updated>1708635539714</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="file name change">
+      <option name="closed" value="true" />
+      <created>1708649002020</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1708649002020</updated>
+    </task>
+    <task id="LOCAL-00021" summary="ide/test/debug">
+      <option name="closed" value="true" />
+      <created>1708649013814</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1708649013814</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Setting tilemap system">
+      <option name="closed" value="true" />
+      <created>1708649031461</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1708649031461</updated>
+    </task>
+    <task id="LOCAL-00023" summary="added TILE_SIZE">
+      <option name="closed" value="true" />
+      <created>1708649830351</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1708649830351</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -266,6 +298,10 @@
     <MESSAGE value="added logging" />
     <MESSAGE value="ide/debug" />
     <MESSAGE value="test images" />
-    <option name="LAST_COMMIT_MESSAGE" value="test images" />
+    <MESSAGE value="file name change" />
+    <MESSAGE value="ide/test/debug" />
+    <MESSAGE value="Setting tilemap system" />
+    <MESSAGE value="added TILE_SIZE" />
+    <option name="LAST_COMMIT_MESSAGE" value="added TILE_SIZE" />
   </component>
 </project>
