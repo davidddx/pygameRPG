@@ -49,7 +49,7 @@ class TileMap:
         for yvalue, layer in enumerate(tile_map):
             for xvalue, column in enumerate(layer):
                 for layerNumber, letter in enumerate(column):
-                    logger.debug(f"{xvalue=}, {yvalue=}, {layerNumber=}")
+                    # logger.debug(f"{xvalue=}, {yvalue=}, {layerNumber=}")
                     if not letter in tile_set.keys():
                         logger.error(
                             f"{letter=} in {xvalue=}, {yvalue=}, {layerNumber=} \n is not defined in {tile_set=}")

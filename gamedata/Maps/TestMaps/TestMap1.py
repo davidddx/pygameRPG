@@ -1,6 +1,6 @@
 import os
 import pygame
-from game.utils.TileMap import TileSet
+from game.TileMap import TileSet
 
 # tile_map should be in the following form:
 # Layer0 = ( (uniqueTileCharA0, uniqueTileCharB0, .... ), (uniqueTileCharA1, uniqueTileCharB1, ....), ...)
@@ -20,6 +20,7 @@ Layer0 = (
     ("O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O"),
     ("R","R","R","R","R","R","R","R","R","R","R","R","R","R","R","R","R","R","R","R","R","R","R","R","R","R","R","R","R","R"),
 )
+
 Map = (Layer0)
 
 cwd = os.getcwd()
