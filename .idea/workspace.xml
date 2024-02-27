@@ -4,19 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="testmap2">
-      <change afterPath="$PROJECT_DIR$/game/Scenes/BaseScene.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game/Scenes/TitleScreen.py" afterDir="false" />
+    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="ide/debug">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/Area.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Scenes/Area.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/GameHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/GameHandler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/SceneHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/SceneHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/TileMap.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/TileMap.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap1.py" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap2.py" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gamedata/Save/SavedData.py" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Save/SavedData.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/globalVars/PathConstants.py" beforeDir="false" afterPath="$PROJECT_DIR$/globalVars/PathConstants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/globalVars/SettingsConstants.py" beforeDir="false" afterPath="$PROJECT_DIR$/globalVars/SettingsConstants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/Scenes/BaseScene.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Scenes/BaseScene.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/Scenes/TitleScreen.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Scenes/TitleScreen.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/utils/Button.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/utils/Button.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/background.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/projectDebug.log" beforeDir="false" afterPath="$PROJECT_DIR$/projectDebug.log" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -395,22 +389,106 @@
       <option name="project" value="LOCAL" />
       <updated>1708917975070</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="moved to Scenes dir, edited map loading to occur using methods of class Area">
+      <option name="closed" value="true" />
+      <created>1708993070340</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1708993070340</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Added Base class for Scenes">
+      <option name="closed" value="true" />
+      <created>1708993092023</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1708993092023</updated>
+    </task>
+    <task id="LOCAL-00040" summary="commenting &amp; uncommenting">
+      <option name="closed" value="true" />
+      <created>1708993107695</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1708993107695</updated>
+    </task>
+    <task id="LOCAL-00041" summary="added TITLE_SCREEN constant">
+      <option name="closed" value="true" />
+      <created>1708993120591</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1708993120591</updated>
+    </task>
+    <task id="LOCAL-00042" summary="debug/ide">
+      <option name="closed" value="true" />
+      <created>1708993128418</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1708993128418</updated>
+    </task>
+    <task id="LOCAL-00043" summary="added background, playbutton, dirtsprite">
+      <option name="closed" value="true" />
+      <created>1708993142659</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1708993142659</updated>
+    </task>
+    <task id="LOCAL-00044" summary="added more Saved Data constants">
+      <option name="closed" value="true" />
+      <created>1708993165169</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1708993165169</updated>
+    </task>
+    <task id="LOCAL-00045" summary="no more map loading in scene handler">
+      <option name="closed" value="true" />
+      <created>1708993184515</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1708993184515</updated>
+    </task>
+    <task id="LOCAL-00046" summary="changed window dimensions">
+      <option name="closed" value="true" />
+      <created>1708993193457</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1708993193457</updated>
+    </task>
+    <task id="LOCAL-00047" summary="added variable MAP_ID and tested some sprites">
+      <option name="closed" value="true" />
+      <created>1708993220084</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1708993220084</updated>
+    </task>
+    <task id="LOCAL-00048" summary="added map id, placing spriteGroups in a tuple, changed map data to be lists instead of tuples">
+      <option name="closed" value="true" />
+      <created>1708993517627</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1708993517627</updated>
+    </task>
+    <task id="LOCAL-00049" summary="framework for TitleScreen scene">
+      <option name="closed" value="true" />
+      <created>1708993530559</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1708993530559</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="added map class" />
-    <MESSAGE value="added test sprite" />
-    <MESSAGE value="testing" />
-    <MESSAGE value="added level class" />
-    <MESSAGE value="added update" />
-    <MESSAGE value="added logging" />
-    <MESSAGE value="test images" />
-    <MESSAGE value="file name change" />
-    <MESSAGE value="ide/test/debug" />
-    <MESSAGE value="Setting tilemap system" />
-    <MESSAGE value="added TILE_SIZE" />
-    <MESSAGE value="testing map" />
     <MESSAGE value="working rendering/map" />
     <MESSAGE value="easier to use importlib" />
     <MESSAGE value="ide/debug" />
@@ -424,6 +502,18 @@
     <MESSAGE value="added more variables" />
     <MESSAGE value="moved TileMap file" />
     <MESSAGE value="testmap2" />
-    <option name="LAST_COMMIT_MESSAGE" value="testmap2" />
+    <MESSAGE value="moved to Scenes dir, edited map loading to occur using methods of class Area" />
+    <MESSAGE value="Added Base class for Scenes" />
+    <MESSAGE value="commenting &amp; uncommenting" />
+    <MESSAGE value="added TITLE_SCREEN constant" />
+    <MESSAGE value="debug/ide" />
+    <MESSAGE value="added background, playbutton, dirtsprite" />
+    <MESSAGE value="added more Saved Data constants" />
+    <MESSAGE value="no more map loading in scene handler" />
+    <MESSAGE value="changed window dimensions" />
+    <MESSAGE value="added variable MAP_ID and tested some sprites" />
+    <MESSAGE value="added map id, placing spriteGroups in a tuple, changed map data to be lists instead of tuples" />
+    <MESSAGE value="framework for TitleScreen scene" />
+    <option name="LAST_COMMIT_MESSAGE" value="framework for TitleScreen scene" />
   </component>
 </project>
