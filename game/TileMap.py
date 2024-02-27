@@ -15,8 +15,10 @@ class Tile(pygame.sprite.Sprite):
         self.customProperties = custom_properties
 
 
+
+
 class TileMap:
-    def __init__(self, tile_set: dict[str, dict], tile_map: tuple[tuple[tuple[str]]]):
+    def __init__(self, tile_set: dict[str, dict], tile_map: list[list[list[str]]], MAP_ID: int):
         # tile_map should be in the following form:
         # Layer0 = ( (uniqueTileCharA0, uniqueTileCharB0, .... ), (uniqueTileCharA1, uniqueTileCharB1, ....), ...)
         # Layer1 = ( (uniqueTileCharA0, uniqueTileCharB0, .... ), (uniqueTileCharA1, uniqueTileCharB1, ....), ...)
@@ -24,31 +26,32 @@ class TileMap:
         # .......
         # .......
         # Map = (Layer0, Layer1, ....)
-        self.collidableSpriteGroup = pygame.sprite.Group()
-        self.nonCollidableSpriteGroup = pygame.sprite.Group()
+        self.spriteGroups = ()
+        self.mapID = 0
         try:
             logger.debug(f"Class {TileMap=} initializing....")
             logger.debug(f"{tile_map=}")
-            spriteGroups = TileMap.convertTupleToSpriteGroups(tile_set=tile_set,
+            self.spriteGroups = TileMap.convertListToSpriteGroups(tile_set=tile_set,
                                                                      tile_map=tile_map,
                                                                      tile_size=globalVars.TILE_SIZE)
-            self.collidableSpriteGroup = spriteGroups[0]
-            self.nonCollidableSpriteGroup = spriteGroups[1]
+            self.mapID = MAP_ID
             logger.debug(f"Class {TileMap=} initialized.")
         except Exception as e:
             logger.error(f"Failed {TileMap=} class initialization.\n Error: {e}")
 
+
     @staticmethod
-    def convertTupleToSpriteGroups(tile_set : dict, tile_map: tuple[tuple[tuple[str]]], tile_size) \
+    def convertListToSpriteGroups(tile_set : dict, tile_map: list[list[list[str]]], tile_size) \
             -> tuple[pygame.sprite.Group, pygame.sprite.Group]:
         spriteGroupCollision = pygame.sprite.Group()
         spriteGroupNonCollision = pygame.sprite.Group()
         tileListCollision = []
         tileListNonCollision = []
+        logger.debug(f"{len(tile_map)=}")
 
-        for yvalue, layer in enumerate(tile_map):
-            for xvalue, column in enumerate(layer):
-                for layerNumber, letter in enumerate(column):
+        for layerNumber, layer in enumerate(tile_map):
+            for yvalue, column in enumerate(layer):
+                for xvalue, letter in enumerate(column):
                     # logger.debug(f"{xvalue=}, {yvalue=}, {layerNumber=}")
                     if not letter in tile_set.keys():
                         logger.error(
@@ -65,7 +68,7 @@ class TileMap:
                         tileListNonCollision.append(tile)
         spriteGroupCollision.add(tileListCollision)
         spriteGroupNonCollision.add(tileListNonCollision)
-        return (spriteGroupCollision, spriteGroupNonCollision)
+        return (spriteGroupNonCollision, spriteGroupCollision)
 
 class TileSet:
     # tile_set should be in the following form :
