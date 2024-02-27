@@ -6,6 +6,7 @@ import os
 import importlib
 import pygame
 import gamedata.Save.SavedData as SAVED_DATA
+from game.Scenes.TitleScreen import TitleScreen
 class SceneHandler:
     def __init__(self):
         self.scenes = ()
@@ -31,6 +32,10 @@ class SceneHandler:
     def loadCurrentScene(self, _type: str, index : int):
         if _type == PATH_CONSTANTS.AREA:
             return Area(map_idx= index)
+        elif _type == PATH_CONSTANTS.TITLE_SCREEN:
+            cwd = os.getcwd()
+            titleScreenDir = cwd + '/images/titleScreenBackground.png'
+            return TitleScreen(image=pygame.image.load(titleScreenDir))
 
     def run(self, screen):
         self.currentScene.update(screen=screen)
