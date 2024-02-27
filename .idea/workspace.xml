@@ -4,16 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="renamed">
-      <change afterPath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gamedata/Save/SavedData.py" afterDir="false" />
+    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="testmap2">
+      <change afterPath="$PROJECT_DIR$/game/Scenes/BaseScene.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/game/Scenes/TitleScreen.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/Area.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Area.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/Area.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Scenes/Area.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/GameHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/GameHandler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/SceneHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/SceneHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/utils/TileMap.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/TileMap.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/TileMap.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/TileMap.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap1.py" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap2.py" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gamedata/Save/SavedData.py" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Save/SavedData.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/globalVars/PathConstants.py" beforeDir="false" afterPath="$PROJECT_DIR$/globalVars/PathConstants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/globalVars/SettingsConstants.py" beforeDir="false" afterPath="$PROJECT_DIR$/globalVars/SettingsConstants.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/projectDebug.log" beforeDir="false" afterPath="$PROJECT_DIR$/projectDebug.log" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,6 +53,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\david\Documents\GitHub\pygameRPG\pygameRPG\game\Scenes" />
       <recent name="C:\Users\david\Documents\GitHub\pygameRPG\pygameRPG\game" />
       <recent name="C:\Users\david\Documents\GitHub\pygameRPG\pygameRPG\gamedata\Maps" />
       <recent name="C:\Users\david\Documents\GitHub\pygameRPG\pygameRPG\main" />
@@ -319,19 +323,82 @@
       <option name="project" value="LOCAL" />
       <updated>1708827296334</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="edited area class to load areas">
+      <option name="closed" value="true" />
+      <created>1708917813421</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1708917813421</updated>
+    </task>
+    <task id="LOCAL-00030" summary="removed some logging">
+      <option name="closed" value="true" />
+      <created>1708917839711</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1708917839711</updated>
+    </task>
+    <task id="LOCAL-00031" summary="added some constants">
+      <option name="closed" value="true" />
+      <created>1708917849897</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1708917849897</updated>
+    </task>
+    <task id="LOCAL-00032" summary="ide/logging">
+      <option name="closed" value="true" />
+      <created>1708917857460</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1708917857460</updated>
+    </task>
+    <task id="LOCAL-00033" summary="added grass sprite">
+      <option name="closed" value="true" />
+      <created>1708917867829</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1708917867829</updated>
+    </task>
+    <task id="LOCAL-00034" summary="planning saved data system">
+      <option name="closed" value="true" />
+      <created>1708917887254</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1708917887254</updated>
+    </task>
+    <task id="LOCAL-00035" summary="added more variables">
+      <option name="closed" value="true" />
+      <created>1708917910591</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1708917910591</updated>
+    </task>
+    <task id="LOCAL-00036" summary="moved TileMap file">
+      <option name="closed" value="true" />
+      <created>1708917952560</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1708917952560</updated>
+    </task>
+    <task id="LOCAL-00037" summary="testmap2">
+      <option name="closed" value="true" />
+      <created>1708917975070</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1708917975070</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added logger" />
-    <MESSAGE value="venv" />
-    <MESSAGE value="Main Function" />
-    <MESSAGE value="debug" />
-    <MESSAGE value="ide stuff" />
-    <MESSAGE value="setting up program architecture" />
-    <MESSAGE value="button class i made previously with a couple of tweaks" />
-    <MESSAGE value="added camera class" />
-    <MESSAGE value="ide" />
     <MESSAGE value="added map class" />
     <MESSAGE value="added test sprite" />
     <MESSAGE value="testing" />
@@ -348,6 +415,15 @@
     <MESSAGE value="easier to use importlib" />
     <MESSAGE value="ide/debug" />
     <MESSAGE value="renamed" />
-    <option name="LAST_COMMIT_MESSAGE" value="renamed" />
+    <MESSAGE value="edited area class to load areas" />
+    <MESSAGE value="removed some logging" />
+    <MESSAGE value="added some constants" />
+    <MESSAGE value="ide/logging" />
+    <MESSAGE value="added grass sprite" />
+    <MESSAGE value="planning saved data system" />
+    <MESSAGE value="added more variables" />
+    <MESSAGE value="moved TileMap file" />
+    <MESSAGE value="testmap2" />
+    <option name="LAST_COMMIT_MESSAGE" value="testmap2" />
   </component>
 </project>
