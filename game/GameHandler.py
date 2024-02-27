@@ -17,12 +17,13 @@ def loop():
     MAX_FPS = 45
     gameObj= Game()
     while running:
-        # logger.debug(f"CURRENT FPS: {clock.get_fps()}")
+        logger.debug(f"CURRENT FPS: {clock.get_fps()}")
         clock.tick(MAX_FPS)
         keys = pygame.key.get_pressed()
         screen.fill(screenFillColor)
-        gameObj.run(screen=screen)
-        # render
+
+        gameObj.run(screen=screen) #render stuff
+
         pygame.display.flip()
 
         for event in pygame.event.get():
