@@ -1,7 +1,10 @@
 import pygame
 import globalVars.SettingsConstants as GLOBAL_VARS
+
+
 class ImagedButton:
-    def __init__(self, image : pygame.Surface, x : int, y : int, toggle=False, starting_value=False):
+    def __init__(self, name : str, image : pygame.Surface, x : int, y : int, toggle=False, starting_value=False):
+        self.name = name;
         self.pressed = starting_value;
         self.toggle = toggle;
         self.image = image
@@ -31,20 +34,19 @@ class ImagedButton:
             return True;
         return None
 
-    def update(self):
-        GLOBAL_VARS.SCREEN.blit(self.image, (self.x, self.y))
-        if self.checkMouseInRange(mouse_pos=pygame.mouse.get_pos(), button_x=self.x, button_y=self.y,
+    def update(self, screen : pygame.Surface):
+        screen.blit(self.image, (self.x, self.y))
+        if not self.checkMouseInRange(mouse_pos=pygame.mouse.get_pos(), button_x=self.x, button_y=self.y,
                                   button_width=self.width, button_height=self.height):
-            self.hover = True
-            # print("mouse is in range!")
-            if ImagedButton.checkClicked(mouse_press=pygame.mouse.get_pressed()):
-                if not self.toggle:
-                    self.pressed = True;
-                    return None;
-                if self.pressed == True:
-                    self.pressed = False;
-                    return None;
-                else:
-                    self.pressed = True;
-        else:
-            self.hover = False;
+            self.hover = False
+            return None
+        self.hover = True
+        if ImagedButton.checkClicked(mouse_press=pygame.mouse.get_pressed()):
+            if not self.toggle:
+                self.pressed = True;
+                return None;
+            if self.pressed:
+                self.pressed = False;
+                return None;
+            else:
+                self.pressed = True;
