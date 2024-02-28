@@ -13,17 +13,17 @@ class TitleScreen(Scene):
         self.state = SCENE_CONSTANTS.STATE_INITIALIZING
         self.background = background
         playButtonDir = os.getcwd() + "/images/test/playbutton.png"
-        playButton = ImagedButton(name=SCENE_CONSTANTS.PLAY_BUTTON_NAME,image=playButtonDir)
+        playButton = ImagedButton(name=SCENE_CONSTANTS.PLAY_BUTTON_NAME, image=pygame.image.load(playButtonDir), x=globalVars.SCREEN_WIDTH/2, y= globalVars.SCREEN_HEIGHT/2)
         self.currentButtons = [playButton]
         pass
 
     def update(self, screen: pygame.Surface):
 
         self.render(screen=screen)
-        self.state = self.checkFinished(buttons=self.visibleButtons)
+        self.state = self.checkFinished(buttons=self.currentButtons)
 
     def render(self, screen: pygame.Surface):
-        screen.blit(self.background, (globalVars.SCREEN_WIDTH/2, globalVars.SCREEN_HEIGHT/2))
+        screen.blit(self.background, (0, 0))
         for button in self.currentButtons:
             button.update(screen=screen)
         self.checkFinished(buttons=self.currentButtons)
