@@ -1,256 +1,323 @@
-2024-02-27 10:47:54,808 INFO logger has been initialized
-2024-02-27 10:47:55,186 DEBUG Class Game=<class 'game.Game.Game'> initializing....
-2024-02-27 10:47:55,186 DEBUG Class SceneHandler=<class 'game.SceneHandler.SceneHandler'> initializing....
-2024-02-27 10:47:55,186 DEBUG Class Area=<class 'game.Scenes.Area.Area'> initializing....
-2024-02-27 10:47:55,186 DEBUG Importing scenes...
-2024-02-27 10:47:55,186 DEBUG Mapsdirectory: os.listdir(mapsDirectory)=['TestMaps']
-2024-02-27 10:47:55,187 DEBUG Fetching maps from folder='TestMaps' 
+2024-02-28 14:05:30,076 INFO logger has been initialized
+2024-02-28 14:05:31,888 DEBUG Class Game=<class 'game.Game.Game'> initializing....
+2024-02-28 14:05:31,889 DEBUG Class SceneHandler=<class 'game.SceneHandler.SceneHandler'> initializing....
+2024-02-28 14:05:31,889 INFO Loading Areas........
+2024-02-28 14:05:31,889 INFO Loaded all Areas.
+2024-02-28 14:05:31,889 DEBUG Class Area=<class 'game.Scenes.Area.Area'> initializing....
+2024-02-28 14:05:31,889 INFO Loading Maps for area self.name='test'...
+2024-02-28 14:05:31,890 DEBUG Mapsdirectory: os.listdir(mapsDirectory)=['TestMaps']
+2024-02-28 14:05:31,890 DEBUG Fetching maps from folder='TestMaps' 
  Current Map: mapModulePath='gamedata.Maps.TestMaps.TestMap1'
-2024-02-27 10:47:55,192 DEBUG Creating properties for tile name='yellow'. 
-2024-02-27 10:47:55,193 DEBUG Creating properties for tile name='blue'. 
-2024-02-27 10:47:55,193 DEBUG Creating properties for tile name='black'. 
-2024-02-27 10:47:55,193 DEBUG Creating properties for tile name='orange'. 
-2024-02-27 10:47:55,193 DEBUG Creating properties for tile name='white'. 
-2024-02-27 10:47:55,193 DEBUG Creating properties for tile name='purple'. 
-2024-02-27 10:47:55,194 DEBUG Creating properties for tile name='green'. 
-2024-02-27 10:47:55,194 DEBUG Creating properties for tile name='red'. 
-2024-02-27 10:47:55,194 DEBUG Loading map module: mapModule=<module 'gamedata.Maps.TestMaps.TestMap1' from 'C:\\Users\\david\\Documents\\GitHub\\pygameRPG\\pygameRPG\\gamedata\\Maps\\TestMaps\\TestMap1.py'>
-2024-02-27 10:47:55,194 DEBUG Class TileMap=<class 'game.TileMap.TileMap'> initializing....
-2024-02-27 10:47:55,194 DEBUG tile_map=[[['N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N'], ['Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y'], ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'], ['G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G'], ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'], ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R']]]
-2024-02-27 10:47:55,194 DEBUG len(tile_map)=1
-2024-02-27 10:47:55,197 DEBUG Class TileMap=<class 'game.TileMap.TileMap'> initialized.
-2024-02-27 10:47:55,197 DEBUG Loaded map module: <module 'gamedata.Maps.TestMaps.TestMap1' from 'C:\\Users\\david\\Documents\\GitHub\\pygameRPG\\pygameRPG\\gamedata\\Maps\\TestMaps\\TestMap1.py'>
-2024-02-27 10:47:55,197 DEBUG Fetching maps from folder='TestMaps' 
+2024-02-28 14:05:31,937 DEBUG Creating properties for tile name='yellow'. 
+2024-02-28 14:05:31,939 DEBUG Creating properties for tile name='blue'. 
+2024-02-28 14:05:31,939 DEBUG Creating properties for tile name='black'. 
+2024-02-28 14:05:31,940 DEBUG Creating properties for tile name='orange'. 
+2024-02-28 14:05:31,941 DEBUG Creating properties for tile name='white'. 
+2024-02-28 14:05:31,941 DEBUG Creating properties for tile name='purple'. 
+2024-02-28 14:05:31,942 DEBUG Creating properties for tile name='green'. 
+2024-02-28 14:05:31,942 DEBUG Creating properties for tile name='red'. 
+2024-02-28 14:05:31,942 DEBUG Loading map module: mapModule=<module 'gamedata.Maps.TestMaps.TestMap1' from 'C:\\Users\\david\\Documents\\GitHub\\pygameRPG\\pygameRPG\\gamedata\\Maps\\TestMaps\\TestMap1.py'>
+2024-02-28 14:05:31,942 DEBUG Class TileMap=<class 'game.TileMap.TileMap'> initializing....
+2024-02-28 14:05:31,942 DEBUG tile_map=[[['N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N'], ['Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y'], ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'], ['G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G'], ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'], ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R']]]
+2024-02-28 14:05:31,942 DEBUG len(tile_map)=1
+2024-02-28 14:05:31,944 DEBUG Class TileMap=<class 'game.TileMap.TileMap'> initialized.
+2024-02-28 14:05:31,944 DEBUG Loaded map module: <module 'gamedata.Maps.TestMaps.TestMap1' from 'C:\\Users\\david\\Documents\\GitHub\\pygameRPG\\pygameRPG\\gamedata\\Maps\\TestMaps\\TestMap1.py'>
+2024-02-28 14:05:31,945 DEBUG Fetching maps from folder='TestMaps' 
  Current Map: mapModulePath='gamedata.Maps.TestMaps.TestMap2'
-2024-02-27 10:47:55,198 DEBUG Creating properties for tile name='Grass'. 
-2024-02-27 10:47:55,199 DEBUG Creating properties for tile name='MiddleDirtSprite'. 
-2024-02-27 10:47:55,199 DEBUG Creating properties for tile name='RightDirtSprite'. 
-2024-02-27 10:47:55,199 DEBUG Creating properties for tile name='LeftDirtSprite'. 
-2024-02-27 10:47:55,199 DEBUG Creating properties for tile name='UpDirtSprite'. 
-2024-02-27 10:47:55,199 DEBUG Creating properties for tile name='DownDirtSprite'. 
-2024-02-27 10:47:55,200 DEBUG Creating properties for tile name='UpRightDirtSprite'. 
-2024-02-27 10:47:55,200 DEBUG Creating properties for tile name='UpLeftDirtSprite'. 
-2024-02-27 10:47:55,200 DEBUG Creating properties for tile name='DownRightDirtSprite'. 
-2024-02-27 10:47:55,200 DEBUG Creating properties for tile name='DownLeftDirtSprite'. 
-2024-02-27 10:47:55,200 DEBUG Loading map module: mapModule=<module 'gamedata.Maps.TestMaps.TestMap2' from 'C:\\Users\\david\\Documents\\GitHub\\pygameRPG\\pygameRPG\\gamedata\\Maps\\TestMaps\\TestMap2.py'>
-2024-02-27 10:47:55,200 DEBUG Class TileMap=<class 'game.TileMap.TileMap'> initializing....
-2024-02-27 10:47:55,200 DEBUG tile_map=([['G', 'G', 'G', 'G', 'G', 'G', 'G'], ['G', 'G', 'G', 'G', 'G', 'G', 'G'], ['G', 'G', 'G', 'G', 'G', 'G', 'G'], ['G', 'G', 'G', 'G', 'G', 'G', 'G']], [[], ['UL', 'U', 'U', 'U', 'U', 'U', 'UR'], ['L', 'M', 'M', 'M', 'M', 'M', 'R'], ['DL', 'D', 'D', 'D', 'D', 'D', 'DR']])
-2024-02-27 10:47:55,200 DEBUG len(tile_map)=2
-2024-02-27 10:47:55,200 DEBUG Class TileMap=<class 'game.TileMap.TileMap'> initialized.
-2024-02-27 10:47:55,200 DEBUG Loaded map module: <module 'gamedata.Maps.TestMaps.TestMap2' from 'C:\\Users\\david\\Documents\\GitHub\\pygameRPG\\pygameRPG\\gamedata\\Maps\\TestMaps\\TestMap2.py'>
-2024-02-27 10:47:55,200 DEBUG Class Area=<class 'game.Scenes.Area.Area'> intialized.
-2024-02-27 10:47:55,200 DEBUG Class SceneHandler=<class 'game.SceneHandler.SceneHandler'> intialized.
-2024-02-27 10:47:55,201 DEBUG Class Game=<class 'game.Game.Game'> intialized.
-2024-02-27 10:47:55,201 DEBUG CURRENT FPS: 0.0
-2024-02-27 10:47:55,209 DEBUG CURRENT FPS: 0.0
-2024-02-27 10:47:55,225 DEBUG CURRENT FPS: 0.0
-2024-02-27 10:47:55,242 DEBUG CURRENT FPS: 0.0
-2024-02-27 10:47:55,258 DEBUG CURRENT FPS: 0.0
-2024-02-27 10:47:55,275 DEBUG CURRENT FPS: 0.0
-2024-02-27 10:47:55,291 DEBUG CURRENT FPS: 0.0
-2024-02-27 10:47:55,307 DEBUG CURRENT FPS: 0.0
-2024-02-27 10:47:55,326 DEBUG CURRENT FPS: 0.0
-2024-02-27 10:47:55,341 DEBUG CURRENT FPS: 0.0
-2024-02-27 10:47:55,358 DEBUG CURRENT FPS: 0.0
-2024-02-27 10:47:55,375 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,392 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,407 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,425 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,441 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,458 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,477 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,489 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,508 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,525 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,541 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,559 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,576 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,593 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,611 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,626 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,643 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,659 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,675 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,692 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,707 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,722 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,740 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,757 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,773 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,790 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,805 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,823 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,839 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,856 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:55,871 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:55,888 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:55,906 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:55,921 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:55,938 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:55,954 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:55,972 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:55,988 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:56,005 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:56,022 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:56,038 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,055 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,070 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,087 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,104 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,120 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,137 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,152 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,169 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,186 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,204 DEBUG CURRENT FPS: 60.60606002807617
-2024-02-27 10:47:56,219 INFO Succefully changed map to self.maps[self.mapIdx]=<game.TileMap.TileMap object at 0x00000138D4B80440>
-2024-02-27 10:47:56,219 DEBUG CURRENT FPS: 60.60606002807617
-2024-02-27 10:47:56,231 ERROR Issue changing area to previous: 
+2024-02-28 14:05:31,947 DEBUG Creating properties for tile name='Grass'. 
+2024-02-28 14:05:31,948 DEBUG Creating properties for tile name='MiddleDirtSprite'. 
+2024-02-28 14:05:31,949 DEBUG Creating properties for tile name='RightDirtSprite'. 
+2024-02-28 14:05:31,950 DEBUG Creating properties for tile name='LeftDirtSprite'. 
+2024-02-28 14:05:31,950 DEBUG Creating properties for tile name='UpDirtSprite'. 
+2024-02-28 14:05:31,951 DEBUG Creating properties for tile name='DownDirtSprite'. 
+2024-02-28 14:05:31,952 DEBUG Creating properties for tile name='UpRightDirtSprite'. 
+2024-02-28 14:05:31,952 DEBUG Creating properties for tile name='UpLeftDirtSprite'. 
+2024-02-28 14:05:31,953 DEBUG Creating properties for tile name='DownRightDirtSprite'. 
+2024-02-28 14:05:31,953 DEBUG Creating properties for tile name='DownLeftDirtSprite'. 
+2024-02-28 14:05:31,953 DEBUG Loading map module: mapModule=<module 'gamedata.Maps.TestMaps.TestMap2' from 'C:\\Users\\david\\Documents\\GitHub\\pygameRPG\\pygameRPG\\gamedata\\Maps\\TestMaps\\TestMap2.py'>
+2024-02-28 14:05:31,955 DEBUG Class TileMap=<class 'game.TileMap.TileMap'> initializing....
+2024-02-28 14:05:31,955 DEBUG tile_map=([['G', 'G', 'G', 'G', 'G', 'G', 'G'], ['G', 'G', 'G', 'G', 'G', 'G', 'G'], ['G', 'G', 'G', 'G', 'G', 'G', 'G'], ['G', 'G', 'G', 'G', 'G', 'G', 'G']], [[], ['UL', 'U', 'U', 'U', 'U', 'U', 'UR'], ['L', 'M', 'M', 'M', 'M', 'M', 'R'], ['DL', 'D', 'D', 'D', 'D', 'D', 'DR']])
+2024-02-28 14:05:31,955 DEBUG len(tile_map)=2
+2024-02-28 14:05:31,955 DEBUG Class TileMap=<class 'game.TileMap.TileMap'> initialized.
+2024-02-28 14:05:31,955 DEBUG Loaded map module: <module 'gamedata.Maps.TestMaps.TestMap2' from 'C:\\Users\\david\\Documents\\GitHub\\pygameRPG\\pygameRPG\\gamedata\\Maps\\TestMaps\\TestMap2.py'>
+2024-02-28 14:05:31,955 INFO Successfully loaded all Maps for area self.name='test'.
+2024-02-28 14:05:31,955 DEBUG Class Area=<class 'game.Scenes.Area.Area'> intialized.
+2024-02-28 14:05:31,955 DEBUG Class Area=<class 'game.Scenes.Area.Area'> initializing....
+2024-02-28 14:05:31,955 INFO Loading Maps for area self.name='test'...
+2024-02-28 14:05:31,956 DEBUG Mapsdirectory: os.listdir(mapsDirectory)=['TestMaps']
+2024-02-28 14:05:31,956 DEBUG Fetching maps from folder='TestMaps' 
+ Current Map: mapModulePath='gamedata.Maps.TestMaps.TestMap1'
+2024-02-28 14:05:31,956 DEBUG Loading map module: mapModule=<module 'gamedata.Maps.TestMaps.TestMap1' from 'C:\\Users\\david\\Documents\\GitHub\\pygameRPG\\pygameRPG\\gamedata\\Maps\\TestMaps\\TestMap1.py'>
+2024-02-28 14:05:31,956 DEBUG Class TileMap=<class 'game.TileMap.TileMap'> initializing....
+2024-02-28 14:05:31,956 DEBUG tile_map=[[['N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N'], ['Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y'], ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'], ['G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G'], ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'], ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R']]]
+2024-02-28 14:05:31,956 DEBUG len(tile_map)=1
+2024-02-28 14:05:31,957 DEBUG Class TileMap=<class 'game.TileMap.TileMap'> initialized.
+2024-02-28 14:05:31,957 DEBUG Loaded map module: <module 'gamedata.Maps.TestMaps.TestMap1' from 'C:\\Users\\david\\Documents\\GitHub\\pygameRPG\\pygameRPG\\gamedata\\Maps\\TestMaps\\TestMap1.py'>
+2024-02-28 14:05:31,957 DEBUG Fetching maps from folder='TestMaps' 
+ Current Map: mapModulePath='gamedata.Maps.TestMaps.TestMap2'
+2024-02-28 14:05:31,957 DEBUG Loading map module: mapModule=<module 'gamedata.Maps.TestMaps.TestMap2' from 'C:\\Users\\david\\Documents\\GitHub\\pygameRPG\\pygameRPG\\gamedata\\Maps\\TestMaps\\TestMap2.py'>
+2024-02-28 14:05:31,957 DEBUG Class TileMap=<class 'game.TileMap.TileMap'> initializing....
+2024-02-28 14:05:31,957 DEBUG tile_map=([['G', 'G', 'G', 'G', 'G', 'G', 'G'], ['G', 'G', 'G', 'G', 'G', 'G', 'G'], ['G', 'G', 'G', 'G', 'G', 'G', 'G'], ['G', 'G', 'G', 'G', 'G', 'G', 'G']], [[], ['UL', 'U', 'U', 'U', 'U', 'U', 'UR'], ['L', 'M', 'M', 'M', 'M', 'M', 'R'], ['DL', 'D', 'D', 'D', 'D', 'D', 'DR']])
+2024-02-28 14:05:31,957 DEBUG len(tile_map)=2
+2024-02-28 14:05:31,957 DEBUG Class TileMap=<class 'game.TileMap.TileMap'> initialized.
+2024-02-28 14:05:31,957 DEBUG Loaded map module: <module 'gamedata.Maps.TestMaps.TestMap2' from 'C:\\Users\\david\\Documents\\GitHub\\pygameRPG\\pygameRPG\\gamedata\\Maps\\TestMaps\\TestMap2.py'>
+2024-02-28 14:05:31,957 INFO Successfully loaded all Maps for area self.name='test'.
+2024-02-28 14:05:31,958 DEBUG Class Area=<class 'game.Scenes.Area.Area'> intialized.
+2024-02-28 14:05:31,969 DEBUG Class SceneHandler=<class 'game.SceneHandler.SceneHandler'> intialized.
+2024-02-28 14:05:31,969 DEBUG Class Game=<class 'game.Game.Game'> intialized.
+2024-02-28 14:05:31,969 DEBUG CURRENT FPS: 0.0
+2024-02-28 14:05:31,983 DEBUG CURRENT FPS: 0.0
+2024-02-28 14:05:32,004 DEBUG CURRENT FPS: 0.0
+2024-02-28 14:05:32,025 DEBUG CURRENT FPS: 0.0
+2024-02-28 14:05:32,048 DEBUG CURRENT FPS: 0.0
+2024-02-28 14:05:32,070 DEBUG CURRENT FPS: 0.0
+2024-02-28 14:05:32,094 DEBUG CURRENT FPS: 0.0
+2024-02-28 14:05:32,116 DEBUG CURRENT FPS: 0.0
+2024-02-28 14:05:32,139 DEBUG CURRENT FPS: 0.0
+2024-02-28 14:05:32,160 DEBUG CURRENT FPS: 0.0
+2024-02-28 14:05:32,184 DEBUG CURRENT FPS: 0.0
+2024-02-28 14:05:32,209 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:32,232 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:32,253 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:32,277 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:32,297 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:32,319 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:32,342 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:32,367 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:32,390 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:32,411 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:32,432 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,455 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,479 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,501 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,527 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,546 DEBUG Button self.name='PLAY_BUTTON'
+2024-02-28 14:05:32,547 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,556 DEBUG currentScene=<game.Scenes.TitleScreen.TitleScreen object at 0x00000211CF6A03B0>
+2024-02-28 14:05:32,560 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,586 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,606 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,628 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,650 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,675 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,696 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,718 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,741 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,766 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,788 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,810 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,832 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,855 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:32,876 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:32,900 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:32,923 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:32,945 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:32,968 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:32,990 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:33,016 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:33,039 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:33,057 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:33,081 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:33,102 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,125 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,148 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,171 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,193 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,216 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,237 INFO Succefully changed map to self.maps[self.mapIdx]=<game.TileMap.TileMap object at 0x00000211CF8564B0>
+2024-02-28 14:05:33,237 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,256 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,231 DEBUG CURRENT FPS: 60.60606002807617
-2024-02-27 10:47:56,247 ERROR Issue changing area to previous: 
+2024-02-28 14:05:33,256 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,278 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,247 DEBUG CURRENT FPS: 60.60606002807617
-2024-02-27 10:47:56,263 ERROR Issue changing area to previous: 
+2024-02-28 14:05:33,279 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,300 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,263 DEBUG CURRENT FPS: 60.60606002807617
-2024-02-27 10:47:56,279 ERROR Issue changing area to previous: 
+2024-02-28 14:05:33,300 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,324 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,281 DEBUG CURRENT FPS: 60.60606002807617
-2024-02-27 10:47:56,298 ERROR Issue changing area to previous: 
+2024-02-28 14:05:33,324 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,346 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,298 DEBUG CURRENT FPS: 60.60606002807617
-2024-02-27 10:47:56,314 ERROR Issue changing area to previous: 
+2024-02-28 14:05:33,346 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,368 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,315 DEBUG CURRENT FPS: 60.60606002807617
-2024-02-27 10:47:56,331 ERROR Issue changing area to previous: 
+2024-02-28 14:05:33,369 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,391 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,413 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,436 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,459 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,481 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,503 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,525 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,548 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,572 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,593 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,331 DEBUG CURRENT FPS: 60.60606002807617
-2024-02-27 10:47:56,346 ERROR Issue changing area to previous: 
+2024-02-28 14:05:33,593 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,615 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,346 DEBUG CURRENT FPS: 60.60606002807617
-2024-02-27 10:47:56,361 ERROR Issue changing area to previous: 
+2024-02-28 14:05:33,615 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,638 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,362 DEBUG CURRENT FPS: 61.349693298339844
-2024-02-27 10:47:56,380 DEBUG CURRENT FPS: 61.349693298339844
-2024-02-27 10:47:56,395 INFO Succefully changed map to self.maps[self.mapIdx]=<game.TileMap.TileMap object at 0x00000138D4B808C0>
-2024-02-27 10:47:56,395 DEBUG CURRENT FPS: 61.349693298339844
-2024-02-27 10:47:56,416 ERROR Issue changing area to previous: 
+2024-02-28 14:05:33,638 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,661 ERROR Issue changing area to previous: 
+ 	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
+2024-02-28 14:05:33,661 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,684 ERROR Issue changing area to previous: 
+ 	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
+2024-02-28 14:05:33,684 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,706 ERROR Issue changing area to previous: 
+ 	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
+2024-02-28 14:05:33,706 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,728 ERROR Issue changing area to previous: 
+ 	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
+2024-02-28 14:05:33,728 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,751 ERROR Issue changing area to previous: 
+ 	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
+2024-02-28 14:05:33,751 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,774 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,795 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,818 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,841 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,865 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,886 INFO Succefully changed map to self.maps[self.mapIdx]=<game.TileMap.TileMap object at 0x00000211CF856480>
+2024-02-28 14:05:33,887 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,913 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,416 DEBUG CURRENT FPS: 61.349693298339844
-2024-02-27 10:47:56,431 ERROR Issue changing area to previous: 
+2024-02-28 14:05:33,913 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,935 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,432 DEBUG CURRENT FPS: 61.349693298339844
-2024-02-27 10:47:56,449 ERROR Issue changing area to previous: 
+2024-02-28 14:05:33,935 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,957 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,449 DEBUG CURRENT FPS: 61.349693298339844
-2024-02-27 10:47:56,466 ERROR Issue changing area to previous: 
+2024-02-28 14:05:33,957 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:33,978 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,467 DEBUG CURRENT FPS: 61.349693298339844
-2024-02-27 10:47:56,483 ERROR Issue changing area to previous: 
+2024-02-28 14:05:33,979 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,001 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,483 DEBUG CURRENT FPS: 61.349693298339844
-2024-02-27 10:47:56,501 INFO Succefully changed map to self.maps[self.mapIdx]=<game.TileMap.TileMap object at 0x00000138D4B80440>
-2024-02-27 10:47:56,501 DEBUG CURRENT FPS: 61.349693298339844
-2024-02-27 10:47:56,511 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,003 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,025 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,048 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,069 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,091 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,114 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,137 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,159 INFO Succefully changed map to self.maps[self.mapIdx]=<game.TileMap.TileMap object at 0x00000211CF8564B0>
+2024-02-28 14:05:34,160 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,179 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,511 DEBUG CURRENT FPS: 61.349693298339844
-2024-02-27 10:47:56,528 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,180 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,200 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,528 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:56,544 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,200 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,223 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,545 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:56,560 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,223 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,246 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,561 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:56,578 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,246 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,269 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,578 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:56,594 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,270 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,290 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,595 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:56,611 ERROR Issue changing area to previous: 
- 	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,612 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:56,627 INFO Succefully changed map to self.maps[self.mapIdx]=<game.TileMap.TileMap object at 0x00000138D4B808C0>
-2024-02-27 10:47:56,628 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:56,646 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,291 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,312 INFO Succefully changed map to self.maps[self.mapIdx]=<game.TileMap.TileMap object at 0x00000211CF856480>
+2024-02-28 14:05:34,313 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,340 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,647 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:56,662 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,340 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,364 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,663 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:56,678 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,366 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,384 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,679 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:56,698 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,385 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,406 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,699 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:56,713 ERROR Issue changing area to previous: 
- 	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,714 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:56,729 INFO Succefully changed map to self.maps[self.mapIdx]=<game.TileMap.TileMap object at 0x00000138D4B80440>
-2024-02-27 10:47:56,731 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:56,741 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,407 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,428 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,450 INFO Succefully changed map to self.maps[self.mapIdx]=<game.TileMap.TileMap object at 0x00000211CF8564B0>
+2024-02-28 14:05:34,450 DEBUG CURRENT FPS: 44.843048095703125
+2024-02-28 14:05:34,469 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,742 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:56,757 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,469 DEBUG CURRENT FPS: 44.843048095703125
+2024-02-28 14:05:34,493 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,757 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:56,774 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,494 DEBUG CURRENT FPS: 44.843048095703125
+2024-02-28 14:05:34,516 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,774 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:56,792 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,517 DEBUG CURRENT FPS: 44.843048095703125
+2024-02-28 14:05:34,539 INFO Succefully changed map to self.maps[self.mapIdx]=<game.TileMap.TileMap object at 0x00000211CF856480>
+2024-02-28 14:05:34,539 DEBUG CURRENT FPS: 44.843048095703125
+2024-02-28 14:05:34,566 ERROR Issue changing area to previous: 
+ 	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
+2024-02-28 14:05:34,567 DEBUG CURRENT FPS: 44.843048095703125
+2024-02-28 14:05:34,589 ERROR Issue changing area to previous: 
+ 	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
+2024-02-28 14:05:34,590 DEBUG CURRENT FPS: 44.843048095703125
+2024-02-28 14:05:34,612 ERROR Issue changing area to previous: 
+ 	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
+2024-02-28 14:05:34,613 DEBUG CURRENT FPS: 44.843048095703125
+2024-02-28 14:05:34,635 ERROR Issue changing area to previous: 
+ 	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
+2024-02-28 14:05:34,636 DEBUG CURRENT FPS: 44.843048095703125
+2024-02-28 14:05:34,658 INFO Succefully changed map to self.maps[self.mapIdx]=<game.TileMap.TileMap object at 0x00000211CF8564B0>
+2024-02-28 14:05:34,659 DEBUG CURRENT FPS: 44.843048095703125
+2024-02-28 14:05:34,676 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,793 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:56,808 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,676 DEBUG CURRENT FPS: 43.4782600402832
+2024-02-28 14:05:34,698 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,809 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:56,824 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,699 DEBUG CURRENT FPS: 43.4782600402832
+2024-02-28 14:05:34,720 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
-2024-02-27 10:47:56,825 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:56,842 INFO Succefully changed map to self.maps[self.mapIdx]=<game.TileMap.TileMap object at 0x00000138D4B808C0>
-2024-02-27 10:47:56,843 DEBUG CURRENT FPS: 60.975608825683594
-2024-02-27 10:47:56,863 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,720 DEBUG CURRENT FPS: 43.4782600402832
+2024-02-28 14:05:34,744 ERROR Issue changing area to previous: 
+ 	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
+2024-02-28 14:05:34,744 DEBUG CURRENT FPS: 43.4782600402832
+2024-02-28 14:05:34,766 INFO Succefully changed map to self.maps[self.mapIdx]=<game.TileMap.TileMap object at 0x00000211CF856480>
+2024-02-28 14:05:34,767 DEBUG CURRENT FPS: 43.4782600402832
+2024-02-28 14:05:34,794 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,863 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,879 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,794 DEBUG CURRENT FPS: 43.4782600402832
+2024-02-28 14:05:34,815 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,880 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,896 ERROR Issue changing area to previous: 
+2024-02-28 14:05:34,817 DEBUG CURRENT FPS: 43.4782600402832
+2024-02-28 14:05:34,837 ERROR Issue changing area to previous: 
  	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,896 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,913 ERROR Issue changing area to previous: 
- 	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,913 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,929 ERROR Issue changing area to previous: 
- 	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,929 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,945 ERROR Issue changing area to previous: 
- 	 	 	when self.mapIdx=0 added by step=-1, self.mapIdx is out of range.
-2024-02-27 10:47:56,946 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,962 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,977 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:56,994 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:57,011 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:57,029 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:57,045 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:57,062 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:57,078 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:57,095 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:57,113 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:57,127 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:57,145 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:57,162 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:57,178 DEBUG CURRENT FPS: 60.240966796875
-2024-02-27 10:47:57,197 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:57,214 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:57,231 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:57,247 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:57,263 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:57,279 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:57,296 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:57,312 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:57,328 DEBUG CURRENT FPS: 59.88024139404297
-2024-02-27 10:47:57,476 INFO Game method gameHandler.loop=<function loop at 0x00000138D2A49D00> has finished running.
+2024-02-28 14:05:34,838 DEBUG CURRENT FPS: 43.4782600402832
+2024-02-28 14:05:34,859 DEBUG CURRENT FPS: 43.4782600402832
+2024-02-28 14:05:34,882 DEBUG CURRENT FPS: 43.4782600402832
+2024-02-28 14:05:34,905 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,928 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,949 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,972 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:34,996 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:35,018 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:35,040 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:35,062 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:35,085 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:35,108 DEBUG CURRENT FPS: 44.4444465637207
+2024-02-28 14:05:35,132 INFO Succefully changed map to self.maps[self.mapIdx]=<game.TileMap.TileMap object at 0x00000211CF8564B0>
+2024-02-28 14:05:35,132 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:35,150 ERROR Issue changing area to previous: 
+ 	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
+2024-02-28 14:05:35,150 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:35,172 ERROR Issue changing area to previous: 
+ 	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
+2024-02-28 14:05:35,173 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:35,194 ERROR Issue changing area to previous: 
+ 	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
+2024-02-28 14:05:35,194 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:35,216 ERROR Issue changing area to previous: 
+ 	 	 	when self.mapIdx=1 added by step=1, self.mapIdx is out of range.
+2024-02-28 14:05:35,217 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:35,240 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:35,262 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:35,284 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:35,307 DEBUG CURRENT FPS: 44.24778747558594
+2024-02-28 14:05:35,481 INFO Game method gameHandler.loop=<function loop at 0x00000211CD7094E0> has finished running.
