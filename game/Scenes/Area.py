@@ -5,9 +5,12 @@ from game.Scenes.BaseScene import Scene
 import os
 import importlib
 import globalVars.PathConstants as PATH_CONSTANTS
+import globalVars.SceneConstants as SCENE_CONSTANTS
 
 class Area(Scene):
-    def __init__(self, map_idx : int):
+    def __init__(self, name, map_idx : int):
+        super().__init__(name)
+        self.state = SCENE_CONSTANTS.STATE_INITIALIZING
         self.currentMap = None
         self.maps = ()
         self.mapIdx = 0
@@ -33,7 +36,7 @@ class Area(Scene):
         cwd = os.getcwd();
         file = None
         try:
-            logger.debug(f"Importing scenes...")
+            logger.info(f"Loading Maps for area {self.name=}...")
             mapsDirectory = os.path.join(cwd, 'gamedata/Maps')
             logger.debug(f"Mapsdirectory: {os.listdir(mapsDirectory)=}")
             for folder in os.listdir(mapsDirectory):
@@ -54,6 +57,7 @@ class Area(Scene):
                     except Exception as e:
                         file_path = os.path.abspath(os.path.join(mapsDirectory, folder))
                         logger.error(f"Failed to load scene module {mapModulePath} in file {file_path}: {e}")
+            logger.info(f"Successfully loaded all Maps for area {self.name=}.")
 
         except Exception as e:
             logger.error(f"Failed to load maps.\nException: {e}")
@@ -80,11 +84,11 @@ class Area(Scene):
             return None
         keys = pygame.key.get_pressed()
         if keys[pygame.K_e]:
-            self.changeAreaByStep(time_now= timenow)
+            self.changeMapByStep(time_now= timenow)
         elif keys[pygame.K_q]:
-            self.changeAreaByStep(time_now= timenow, positive=False)
+            self.changeMapByStep(time_now= timenow, positive=False)
 
-    def changeAreaByStep(self, time_now: int, step=1, positive=True):
+    def changeMapByStep(self, time_now: int, step=1, positive=True):
         if positive and step < 0:
             step = abs(step)
         elif (not positive) and step > 0:
