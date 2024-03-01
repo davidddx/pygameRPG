@@ -6,15 +6,17 @@ import os
 import importlib
 import globalVars.PathConstants as PATH_CONSTANTS
 import globalVars.SceneConstants as SCENE_CONSTANTS
+from game.Player import Player
 
 class Area(Scene):
-    def __init__(self, name, map_idx : int):
+    def __init__(self, name, map_idx : int, _player : Player):
         super().__init__(name)
         self.state = SCENE_CONSTANTS.STATE_INITIALIZING
         self.currentMap = None
         self.maps = ()
         self.mapIdx = 0
         self.timeLastChangedArea = 0
+        self.player = _player
         try:
             logger.debug(f"Class {Area=} initializing....")
             self.mapIdx = map_idx
@@ -28,6 +30,7 @@ class Area(Scene):
         # self.player.update();
         AREA_SWITCH_COOLDOWN = 70
         self.displayMap(_map=self.currentMap, screen=screen)
+        self.player.update(screen=screen)
         self.checkChangeAreaSignal(cool_down = AREA_SWITCH_COOLDOWN)
 
     def initLoadMaps(self) -> tuple:
