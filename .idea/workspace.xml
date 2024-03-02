@@ -4,14 +4,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="DEBUG/IDE">
+    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="added player">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/Game.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Game.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/Player.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Player.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/SceneHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/SceneHandler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/Scenes/Area.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Scenes/Area.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/Scenes/TitleScreen.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Scenes/TitleScreen.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/TileMap.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/TileMap.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/utils/Camera.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap1.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap2.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/gamedata/Save/SavedData.py" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Save/SavedData.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/globalVars/SceneConstants.py" beforeDir="false" afterPath="$PROJECT_DIR$/globalVars/SceneConstants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/globalVars/PathConstants.py" beforeDir="false" afterPath="$PROJECT_DIR$/globalVars/PathConstants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/globalVars/SettingsConstants.py" beforeDir="false" afterPath="$PROJECT_DIR$/globalVars/SettingsConstants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteDown.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteDown.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteDownLeft.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteDownLeft.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteDownRight.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteDownRight.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteLeft.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteLeft.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteRight.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteRight.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteUp.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteUp.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteUpLeft.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteUpLeft.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteUpRight.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteUpRight.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/PlrHead.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/PlrHead.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/PlrPants.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/PlrPants.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/PlrShirt.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/PlrShirt.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/projectDebug.log" beforeDir="false" afterPath="$PROJECT_DIR$/projectDebug.log" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -93,70 +109,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1708439761952</updated>
-    </task>
-    <task id="LOCAL-00016" summary="added update">
-      <option name="closed" value="true" />
-      <created>1708634265107</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1708634265107</updated>
-    </task>
-    <task id="LOCAL-00017" summary="added logging">
-      <option name="closed" value="true" />
-      <created>1708634280519</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1708634280519</updated>
-    </task>
-    <task id="LOCAL-00018" summary="ide/debug">
-      <option name="closed" value="true" />
-      <created>1708634286766</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1708634286767</updated>
-    </task>
-    <task id="LOCAL-00019" summary="test images">
-      <option name="closed" value="true" />
-      <created>1708635539714</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1708635539714</updated>
-    </task>
-    <task id="LOCAL-00020" summary="file name change">
-      <option name="closed" value="true" />
-      <created>1708649002020</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1708649002020</updated>
-    </task>
-    <task id="LOCAL-00021" summary="ide/test/debug">
-      <option name="closed" value="true" />
-      <created>1708649013814</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1708649013814</updated>
-    </task>
-    <task id="LOCAL-00022" summary="Setting tilemap system">
-      <option name="closed" value="true" />
-      <created>1708649031461</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1708649031461</updated>
-    </task>
-    <task id="LOCAL-00023" summary="added TILE_SIZE">
-      <option name="closed" value="true" />
-      <created>1708649830351</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1708649830351</updated>
     </task>
     <task id="LOCAL-00024" summary="testing map">
       <option name="closed" value="true" />
@@ -486,17 +438,74 @@
       <option name="project" value="LOCAL" />
       <updated>1709147466336</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="added player">
+      <option name="closed" value="true" />
+      <created>1709266448260</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1709266448260</updated>
+    </task>
+    <task id="LOCAL-00066" summary="added player loader">
+      <option name="closed" value="true" />
+      <created>1709266463001</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1709266463001</updated>
+    </task>
+    <task id="LOCAL-00067" summary="included player information">
+      <option name="closed" value="true" />
+      <created>1709266472477</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1709266472477</updated>
+    </task>
+    <task id="LOCAL-00068" summary="newline">
+      <option name="closed" value="true" />
+      <created>1709266483131</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1709266483131</updated>
+    </task>
+    <task id="LOCAL-00069" summary="player sprites">
+      <option name="closed" value="true" />
+      <created>1709266493309</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1709266493309</updated>
+    </task>
+    <task id="LOCAL-00070" summary="added parts stored in a player spritegroup">
+      <option name="closed" value="true" />
+      <created>1709266521621</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1709266521621</updated>
+    </task>
+    <task id="LOCAL-00071" summary="debug/ide">
+      <option name="closed" value="true" />
+      <created>1709266529430</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1709266529430</updated>
+    </task>
+    <task id="LOCAL-00072" summary="added player">
+      <option name="closed" value="true" />
+      <created>1709266545295</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1709266545295</updated>
+    </task>
+    <option name="localTasksCounter" value="73" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="commenting &amp; uncommenting" />
-    <MESSAGE value="added TITLE_SCREEN constant" />
-    <MESSAGE value="debug/ide" />
-    <MESSAGE value="added background, playbutton, dirtsprite" />
-    <MESSAGE value="added more Saved Data constants" />
-    <MESSAGE value="no more map loading in scene handler" />
-    <MESSAGE value="changed window dimensions" />
     <MESSAGE value="added variable MAP_ID and tested some sprites" />
     <MESSAGE value="added map id, placing spriteGroups in a tuple, changed map data to be lists instead of tuples" />
     <MESSAGE value="framework for TitleScreen scene" />
@@ -515,6 +524,23 @@
     <MESSAGE value="added Title Screen" />
     <MESSAGE value="variable name changes, titlescreen background position set to middle of screen" />
     <MESSAGE value="DEBUG/IDE" />
-    <option name="LAST_COMMIT_MESSAGE" value="DEBUG/IDE" />
+    <MESSAGE value="added player loader" />
+    <MESSAGE value="included player information" />
+    <MESSAGE value="newline" />
+    <MESSAGE value="player sprites" />
+    <MESSAGE value="added parts stored in a player spritegroup" />
+    <MESSAGE value="debug/ide" />
+    <MESSAGE value="added player" />
+    <option name="LAST_COMMIT_MESSAGE" value="added player" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/game/TileMap.py</url>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
