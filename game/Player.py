@@ -10,16 +10,15 @@ class PlayerPart(pygame.sprite.Sprite):
         self.rect = image.get_rect(topleft= pos)
 
 class Player:
-    def __init__(self, pos : tuple[int,int], head_img : pygame.Surface, shirt_img : pygame.Surface, pants_img : pygame.Surface):
+    def __init__(self, pos : tuple[int,int], head_img : pygame.Surface, body_img : pygame.Surface):
         self.playerGroup = pygame.sprite.Group()
         try:
-            logger.debug(f"class {Player=} initializing....")
-            self.playerGroup = Player.getPlayerGroup(head = head_img,
-                                                     shirt = shirt_img, pants = pants_img, group=self.playerGroup, pos=pos)
-            logger.debug(f"class {Player=} intialized.")
+            logger.info(f"class {Player=} initializing....")
+            self.playerGroup = Player.getPlayerGroup(head = head_img, body = body_img, group=self.playerGroup, pos=pos)
+            logger.info(f"class {Player=} initialized.")
 
         except Exception as e:
-            logger.info(f"Failed to intialize class {Player=}.\n Error: {e}")
+            logger.info(f"Failed to initialize class {Player=}.\n Error: {e}")
 
     @staticmethod
     def render(player_group, screen):
@@ -27,16 +26,20 @@ class Player:
             screen.blit(_part.image, (_part.rect.x, _part.rect.y))
 
     @staticmethod
-    def getPlayerGroup(head : pygame.Surface, shirt : pygame.Surface, pants : pygame.Surface,
+    def getPlayerGroup(head : pygame.Surface, body : pygame.Surface,
                        group : pygame.sprite.Group, pos : tuple[int, int]) -> pygame.sprite.Group:
-        partHead = PlayerPart(pos = pos, image = head, group = group)
-        partShirt = PlayerPart(pos = (pos[0], pos[1] + int(head.get_height())), image = shirt, group= group)
-        partPants = PlayerPart(pos = (pos[0], int(partShirt.rect.y + shirt.get_height())), image=pants, group=group)
-        group.add(partHead)
-        group.add(partShirt)
-        group.add(partPants)
+        partList = []
 
+        partHead = PlayerPart(pos = (pos[0] - int(body.get_width() - head.get_width()), pos[1]), image= head, group= group)
+        partBody = PlayerPart(pos = (pos[0], pos[1] + head.get_width()), image = body, group= group)
         return group
+
+    def handleInput(self):
+        if pygame.K_a:
+            pass
+        elif pygame.K_d:
+            pass
+        
 
     def update(self, screen):
         Player.render(self.playerGroup, screen=screen)

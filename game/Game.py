@@ -30,25 +30,16 @@ class Game:
                 pass
             case 3:
                 pass
-        shirt = None
-        match saved_data.PLAYER_SHIRT_ID:
+        body = None
+        match saved_data.PLAYER_BODY_ID:
             case 0:
-                shirt = pygame.image.load(playerImageDir + "/PlrShirt.png")
+                body = pygame.image.load(playerImageDir + "/PlrBody.png")
             case 1:
                 pass
             case 2:
                 pass
             case 3:
                 pass
-        pants = None
-        match saved_data.PLAYER_PANTS_ID:
-            case 0:
-                pants = pygame.image.load(playerImageDir + "/PlrPants.png")
-            case 1:
-                pass
-            case 2:
-                pass
-            case 3:
-                pass
-        return Player(pos= saved_data.PLAYER_POSITION, head_img= head, shirt_img= shirt, pants_img= pants)
+
+        return Player(pos= saved_data.PLAYER_POSITION, head_img= head, body_img= body)
 
