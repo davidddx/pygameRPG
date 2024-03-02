@@ -1,6 +1,5 @@
 from game.Scenes.BaseScene import Scene
 from game.utils.Button import ImagedButton
-from game.utils.Camera import Camera
 from game.utils.Button import ImagedButton
 import globalVars.SettingsConstants as globalVars
 import globalVars.PathConstants as PATH_CONSTANTS
