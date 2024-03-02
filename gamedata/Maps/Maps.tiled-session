@@ -1,0 +1,72 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "TileSets/Test.tsx",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Maps/testmap/level1.tmx": {
+            "scale": 0.08191550925925925,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 8050.978452843518,
+                "y": 2874.913458142
+            }
+        },
+        "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Maps/testmap/rulesloc/autotilingrules.tmx": {
+            "scale": 0.36861979166666664,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 960.3391027905334,
+                "y": 641.5824796891558
+            }
+        },
+        "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Tilesets/TestTileSet.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        },
+        "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Tilesets/backgroundimages.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Tilesets/objectTileSet.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Tilesets/savannahgrasslands.tsx": {
+            "scaleInDock": 1
+        },
+        "TestMaps/TestMap1.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 102.5,
+                "y": 329
+            }
+        },
+        "TileSets/Test.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        }
+    },
+    "last.imagePath": "C:/Users/david/Documents/GitHub/pygameRPG/pygameRPG/images/test",
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+        "TestMaps/TestMap1.tmx",
+        "TileSets/Test.tsx"
+    ],
+    "project": "Maps.tiled-project",
+    "property.type": "bool",
+    "recentFiles": [
+        "TestMaps/TestMap1.tmx",
+        "TileSets/Test.tsx",
+        "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Maps/testmap/level1.tmx",
+        "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Tilesets/TestTileSet.tsx",
+        "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Maps/testmap/rulesloc/autotilingrules.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.type": 1
+}
