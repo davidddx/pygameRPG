@@ -2,6 +2,7 @@ import pygame
 from debug.logger import logger
 import globalVars.SettingsConstants as globalVars
 import globalVars.TilemapConstants as mapVars
+import pytmx as pyTMX
 
 
 class Tile(pygame.sprite.Sprite):
@@ -15,25 +16,14 @@ class Tile(pygame.sprite.Sprite):
         self.customProperties = custom_properties
 
 
-
-
 class TileMap:
-    def __init__(self, tile_set: dict[str, dict], tile_map: list[list[list[str]]], MAP_ID: int):
-        # tile_map should be in the following form:
-        # Layer0 = ( (uniqueTileCharA0, uniqueTileCharB0, .... ), (uniqueTileCharA1, uniqueTileCharB1, ....), ...)
-        # Layer1 = ( (uniqueTileCharA0, uniqueTileCharB0, .... ), (uniqueTileCharA1, uniqueTileCharB1, ....), ...)
-        # .......
-        # .......
-        # .......
-        # Map = (Layer0, Layer1, ....)
+    def __init__(self, tmx_data, MAP_ID: int):
+
         self.spriteGroups = ()
         self.mapID = 0
         try:
             logger.debug(f"Class {TileMap=} initializing....")
-            logger.debug(f"{tile_map=}")
-            self.spriteGroups = TileMap.convertListToSpriteGroups(tile_set=tile_set,
-                                                                     tile_map=tile_map,
-                                                                     tile_size=globalVars.TILE_SIZE)
+            self.spriteGroups = TileMap.convertTMXToSpriteGroups(tmx_data= tmx_data)
             self.mapID = MAP_ID
             logger.debug(f"Class {TileMap=} initialized.")
         except Exception as e:
@@ -70,25 +60,42 @@ class TileMap:
         spriteGroupNonCollision.add(tileListNonCollision)
         return (spriteGroupNonCollision, spriteGroupCollision)
 
+    @staticmethod
+    def convertTMXToSpriteGroups(tmx_data : pyTMX.TiledMap) -> tuple[pygame.sprite.Group,pygame.sprite.Group]:
+        spriteGroupCollision = pygame.sprite.Group()
+        spriteGroupNonCollision = pygame.sprite.Group()
+        try:
+            logger.info(f"Converting map tmx data to spritegroups...")
+            visibleLayers = tmx_data.visible_layers
+            layerIndex = 0
+            for layer in visibleLayers:
+
+                if not hasattr(layer, "data"):
+                    continue
+                logger.debug(dir(layer))
+                for x, y, surface in layer.tiles():
+                    pos = (globalVars.TILE_SIZE * x, globalVars.TILE_SIZE * y)
+                    props = tmx_data.get_tile_properties(x, y, layerIndex);
+                    collision = None
+                    try:
+                        collision = props["collision"]
+                    except Exception as e:
+                        collision = False
+                    tile = Tile(pos= pos, collidable= collision, image= surface)
+                    if collision:
+                        spriteGroupCollision.add(tile)
+                    else:
+                        spriteGroupNonCollision.add(tile)
+                    pass
+
+                layerIndex += 1
+        except Exception as e:
+            logger.error(f"Failed tmx to sprite.Group conversion: {e}")
+
+        logger.info(f"Converted map tmx data to spritegroups.")
+        return (spriteGroupCollision, spriteGroupNonCollision)
+
 class TileSet:
-    # tile_set should be in the following form :
-    # Letter1Properties = TileSet.createTileProperties(name= "Letter1", image = Letter1Directory,
-    #                                       customProperties=aDictionaryOfCustomProperties, collision=True)
-    # Letter2Properties = TileSet.createTileProperties(name= "Letter2", image = Letter2Directory,
-    #                                       customProperties=aDictionaryOfCustomProperties, collision=False)
-    # .........................
-    # .........................
-    # .........................
-    # .........................
-    #
-    # tileset = {
-    #   Letter1 : Letter1Properties
-    #   Letter2 : Letter2Properties
-    # .........................
-    # .........................
-    # .........................
-    # .........................
-    # }
     @staticmethod
     def createTileProperties(name: str, image: pygame.Surface, customProperties=None, collision=False) -> dict:
         logger.debug(f"Creating properties for tile {name=}. ")

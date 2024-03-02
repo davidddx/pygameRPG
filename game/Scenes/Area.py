@@ -7,6 +7,8 @@ import importlib
 import globalVars.PathConstants as PATH_CONSTANTS
 import globalVars.SceneConstants as SCENE_CONSTANTS
 from game.Player import Player
+import numpy as np
+import pytmx.util_pygame as PyTMXpg
 
 class Area(Scene):
     def __init__(self, name, map_idx : int, _player : Player):
@@ -17,11 +19,13 @@ class Area(Scene):
         self.mapIdx = 0
         self.timeLastChangedArea = 0
         self.player = _player
+        self.camera = None
         try:
             logger.debug(f"Class {Area=} initializing....")
             self.mapIdx = map_idx
-            self.maps = self.initLoadMaps()
+            self.maps = self.loadTestMaps()
             self.currentMap = self.maps[self.mapIdx]
+            self.camera = np.array([])
             logger.debug(f"Class {Area=} intialized.")
         except Exception as e:
             logger.error(f"Failed {Area=} class initialization.\n Error: {e}")
@@ -32,6 +36,16 @@ class Area(Scene):
         self.displayMap(_map=self.currentMap, screen=screen)
         self.player.update(screen=screen)
         self.checkChangeAreaSignal(cool_down = AREA_SWITCH_COOLDOWN)
+
+    def loadTestMaps(self) -> tuple:
+        maps = []
+        TestMapDir = os.path.join(os.getcwd(),PATH_CONSTANTS.GAME_DATA, PATH_CONSTANTS.MAPS,PATH_CONSTANTS.TEST_MAPS)
+        mapId = 0
+        for file in os.listdir(TestMapDir):
+            tmxData = PyTMXpg.load_pygame(os.path.join(TestMapDir, file))
+            maps.append(TileMap(tmx_data= tmxData, MAP_ID=mapId))
+            mapId += 1
+        return tuple(maps)
 
     def initLoadMaps(self) -> tuple:
 
