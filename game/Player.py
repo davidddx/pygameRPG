@@ -1,20 +1,30 @@
 import pygame
 from debug.logger import logger
 import globalVars.SettingsConstants as globalVars
-
+import gamedata.Save.SavedData as SAVED_DATA
+from typing import NamedTuple
 
 class PlayerPart(pygame.sprite.Sprite):
-    def __init__(self, pos : tuple[int, int], image : pygame.Surface, group : pygame.sprite.Group):
+    def __init__(self, pos: tuple[int, int], image: pygame.Surface, group: pygame.sprite.Group):
         super().__init__(group)
         self.image = image
-        self.rect = image.get_rect(topleft= pos)
+        self.rect = image.get_rect(topleft=pos)
+
+class PossiblePlayerStates:
+    RUNNING = "RUNNING"
+    WALKING = "WALKING"
+    STANDING = "STANDING"
 
 class Player:
-    def __init__(self, pos : tuple[int,int], head_img : pygame.Surface, body_img : pygame.Surface):
+    def __init__(self, pos: tuple[int, int], head_img: pygame.Surface, body_img: pygame.Surface):
         self.playerGroup = pygame.sprite.Group()
+        self.movementState = ""
         try:
             logger.info(f"class {Player=} initializing....")
-            self.playerGroup = Player.getPlayerGroup(head = head_img, body = body_img, group=self.playerGroup, pos=pos)
+
+            self.playerGroup = Player.generatePlayerGroup(head=head_img, body=body_img, group=self.playerGroup, pos=pos)
+            self.movementState = PossiblePlayerStates.STANDING
+
             logger.info(f"class {Player=} initialized.")
 
         except Exception as e:
@@ -26,20 +36,64 @@ class Player:
             screen.blit(_part.image, (_part.rect.x, _part.rect.y))
 
     @staticmethod
-    def getPlayerGroup(head : pygame.Surface, body : pygame.Surface,
-                       group : pygame.sprite.Group, pos : tuple[int, int]) -> pygame.sprite.Group:
+    def generatePlayerGroup(head: pygame.Surface, body: pygame.Surface,
+                            group: pygame.sprite.Group, pos: tuple[int, int]) -> pygame.sprite.Group:
         partList = []
 
-        partHead = PlayerPart(pos = (pos[0] - int(body.get_width() - head.get_width()), pos[1]), image= head, group= group)
-        partBody = PlayerPart(pos = (pos[0], pos[1] + head.get_width()), image = body, group= group)
+        partHead = PlayerPart(pos=(pos[0] - int(body.get_width() - head.get_width()), pos[1]), image=head, group=group)
+        partBody = PlayerPart(pos=(pos[0], pos[1] + head.get_width()), image=body, group=group)
         return group
 
     def handleInput(self):
-        if pygame.K_a:
-            pass
-        elif pygame.K_d:
-            pass
-        
+        keys = pygame.key.get_pressed()
+
+        def handleWalkingInput(_keys):
+            diagonalStep = 0.7
+            nonDiagonalStep = 1
+            noStep = 0
+            if _keys[SAVED_DATA.PLAYER_RUN_KEY_ID]:
+                self.movementState = PossiblePlayerStates.RUNNING
+                diagonalStep *= 2
+                nonDiagonalStep *= 2
+
+            ### WALKING RIGHT ###
+
+            if _keys[SAVED_DATA.PLAYER_WALK_RIGHT_KEY_ID]:
+                if (_keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID] and _keys[SAVED_DATA.PLAYER_WALK_DOWN_KEY_ID]):
+                    self.movePlayerGroup(step_x=nonDiagonalStep, step_y=noStep)
+                elif _keys[SAVED_DATA.PLAYER_WALK_DOWN_KEY_ID]:
+                    self.movePlayerGroup(step_x=diagonalStep, step_y=diagonalStep)
+                elif _keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID]:
+                    self.movePlayerGroup(step_x=diagonalStep, step_y=-diagonalStep)
+                else:
+                    self.movePlayerGroup(step_x=nonDiagonalStep, step_y=noStep)
+                return None
+            elif _keys[SAVED_DATA.PLAYER_WALK_LEFT_KEY_ID]:
+                if _keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID] and _keys[SAVED_DATA.PLAYER_WALK_DOWN_KEY_ID]:
+                    self.movePlayerGroup(step_x=-nonDiagonalStep, step_y=noStep);
+                elif _keys[SAVED_DATA.PLAYER_WALK_DOWN_KEY_ID]:
+                    self.movePlayerGroup(step_x=-diagonalStep, step_y=diagonalStep)
+                elif _keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID]:
+                    self.movePlayerGroup(step_x=-diagonalStep, step_y=-diagonalStep)
+                else:
+                    self.movePlayerGroup(step_x=-nonDiagonalStep, step_y=noStep)
+                return None
+            elif _keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID]:
+                self.movePlayerGroup(step_x= noStep, step_y= -nonDiagonalStep)
+                return None
+            elif _keys[SAVED_DATA.PLAYER_WALK_DOWN_KEY_ID]:
+                self.movePlayerGroup(step_x= noStep, step_y= nonDiagonalStep)
+
+        handleWalkingInput(keys)
+
+    def movePlayerGroup(self, step_x: float, step_y:float):
+        for part in self.playerGroup:
+            part.rect.x += step_x
+            part.rect.y += step_y
 
     def update(self, screen):
         Player.render(self.playerGroup, screen=screen)
+        try:
+            self.handleInput()
+        except Exception as e:
+            logger.errorg(f"Could not handle player input. Error: {e}")
