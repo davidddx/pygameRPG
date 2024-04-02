@@ -12,6 +12,6 @@ formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 try:
-    logger.info('logger has been initialized')
+    logger.info('LOGGER HAS BEEN INITIALIZED')
 except Exception as e:
     print(f"Error during logging: {e}")
