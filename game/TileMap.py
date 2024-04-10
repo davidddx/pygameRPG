@@ -17,6 +17,7 @@ class Tile(pygame.sprite.Sprite):
 
 
 class TileMap:
+    trueSpriteGroupID = 0
     def __init__(self, tmx_data, MAP_ID: int):
 
         self.spriteGroups = ()
@@ -43,7 +44,7 @@ class TileMap:
             for yvalue, column in enumerate(layer):
                 for xvalue, letter in enumerate(column):
                     # logger.debug(f"{xvalue=}, {yvalue=}, {layerNumber=}")
-                    if not letter in tile_set.keys():
+                    if letter not in tile_set.keys():
                         logger.error(
                             f"{letter=} in {xvalue=}, {yvalue=}, {layerNumber=} \n is not defined in {tile_set=}")
                         continue
@@ -64,6 +65,7 @@ class TileMap:
     def convertTMXToSpriteGroups(tmx_data : pyTMX.TiledMap) -> tuple[pygame.sprite.Group,pygame.sprite.Group]:
         spriteGroupCollision = pygame.sprite.Group()
         spriteGroupNonCollision = pygame.sprite.Group()
+        trueSpriteGroup = pygame.sprite.Group()
         try:
             logger.info(f"Converting map tmx data to spritegroups...")
             visibleLayers = tmx_data.visible_layers
@@ -86,14 +88,14 @@ class TileMap:
                         spriteGroupCollision.add(tile)
                     else:
                         spriteGroupNonCollision.add(tile)
-                    pass
+                    trueSpriteGroup.add(tile)
 
                 layerIndex += 1
         except Exception as e:
             logger.error(f"Failed tmx to sprite.Group conversion: {e}")
 
         logger.info(f"Converted map tmx data to spritegroups.")
-        return (spriteGroupCollision, spriteGroupNonCollision)
+        return (trueSpriteGroup, spriteGroupNonCollision, spriteGroupCollision)
 
 class TileSet:
     @staticmethod

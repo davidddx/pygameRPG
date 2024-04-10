@@ -90,9 +90,13 @@ class Area(Scene):
         self.currentMap = 0
 
     def displayMap(self, _map : TileMap, screen):
-        for spriteGroup in _map.spriteGroups:
-            for tile in spriteGroup:
-                screen.blit(tile.image, (tile.rect.x, tile.rect.y))
+        for tile in _map.spriteGroups[TileMap.trueSpriteGroupID]:
+            screen.blit(tile.image, (tile.rect.x, tile.rect.y))
+
+        # for spriteGroup in _map.spriteGroups:
+        #     logger.debug(f"{spriteGroup=}")
+        #     for tile in spriteGroup:
+        #         screen.blit(tile.image, (tile.rect.x, tile.rect.y))
 
 
     def checkChangeAreaSignal(self, cool_down : int):
