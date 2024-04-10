@@ -46,50 +46,41 @@ class Player:
 
     def handleInput(self):
         keys = pygame.key.get_pressed()
+        self.handleWalkingInput(keys)
 
-        def handleWalkingInput(_keys):
-            diagonalStep = 1.4
-            nonDiagonalStep = 2
-            noStep = 0
-            if _keys[SAVED_DATA.PLAYER_RUN_KEY_ID]:
-                self.movementState = PossiblePlayerStates.RUNNING
-                diagonalStep *= 2
-                nonDiagonalStep *= 2
+    def handleWalkingInput(self, keys):
+        diagonalStep = 2
+        nonDiagonalStep = 3
+        noStep = 0
 
-            ### WALKING RIGHT ###
+        if keys[SAVED_DATA.PLAYER_RUN_KEY_ID]:
+            self.movementState = PossiblePlayerStates.RUNNING
+            diagonalStep *= 2
+            nonDiagonalStep *= 2
 
-            if _keys[SAVED_DATA.PLAYER_WALK_RIGHT_KEY_ID]:
-                if _keys[SAVED_DATA.PLAYER_WALK_DOWN_KEY_ID]:
-                    logger.debug("Player currently walking right && down")
-                    self.movePlayerGroup(step_x=diagonalStep, step_y=diagonalStep)
-                elif _keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID]:
-                    logger.debug("Player currently walking right && up")
-                    self.movePlayerGroup(step_x=diagonalStep, step_y=-diagonalStep)
-                else:
-                    logger.debug("Player currently walking right")
-
-                    self.movePlayerGroup(step_x=nonDiagonalStep, step_y=noStep)
-            elif _keys[SAVED_DATA.PLAYER_WALK_LEFT_KEY_ID]:
-                if _keys[SAVED_DATA.PLAYER_WALK_DOWN_KEY_ID]:
-                    self.movePlayerGroup(step_x=-diagonalStep, step_y=diagonalStep)
-                elif _keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID]:
-                    self.movePlayerGroup(step_x=-diagonalStep, step_y=-diagonalStep)
-                else:
-                    logger.debug("Player currently walking left")
-                    self.movePlayerGroup(step_x=-nonDiagonalStep, step_y=noStep)
-            elif _keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID]:
-                self.movePlayerGroup(step_x= noStep, step_y= -nonDiagonalStep)
-                logger.debug("Player currently walking up")
-            elif _keys[SAVED_DATA.PLAYER_WALK_DOWN_KEY_ID]:
-                self.movePlayerGroup(step_x= noStep, step_y= nonDiagonalStep)
-                logger.debug("Player currently walking down")
+        if keys[SAVED_DATA.PLAYER_WALK_RIGHT_KEY_ID]:
+            if keys[SAVED_DATA.PLAYER_WALK_DOWN_KEY_ID]:
+                self.movePlayerGroup(diagonalStep, diagonalStep)
+            elif keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID]:
+                self.movePlayerGroup(diagonalStep, -diagonalStep)
             else:
-                logger.debug("Player currently not moving")
-                self.movementState = PossiblePlayerStates.NOT_MOVING
+                self.movePlayerGroup(nonDiagonalStep, noStep)
+        elif keys[SAVED_DATA.PLAYER_WALK_LEFT_KEY_ID]:
+            if keys[SAVED_DATA.PLAYER_WALK_DOWN_KEY_ID]:
+                self.movePlayerGroup(-diagonalStep, diagonalStep)
+            elif keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID]:
+                self.movePlayerGroup(-diagonalStep, -diagonalStep)
+            else:
+                self.movePlayerGroup(-nonDiagonalStep, noStep)
+        elif keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID]:
+            self.movePlayerGroup(noStep, -nonDiagonalStep)
+        elif keys[SAVED_DATA.PLAYER_WALK_DOWN_KEY_ID]:
+            self.movePlayerGroup(noStep, nonDiagonalStep)
+        else:
+            self.movementState = PossiblePlayerStates.NOT_MOVING
 
-        handleWalkingInput(keys)
-
-    def movePlayerGroup(self, step_x: float, step_y:float):
+    def movePlayerGroup(self, step_x: int, step_y:int):
+        logger.debug(f"Moving Player group. Walkspeed: ({step_x=}, {step_y=}")
         for part in self.playerGroup:
             part.rect.x += step_x
             part.rect.y += step_y
