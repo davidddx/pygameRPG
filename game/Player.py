@@ -2,13 +2,21 @@ import pygame
 from debug.logger import logger
 import globalVars.SettingsConstants as globalVars
 import gamedata.Save.SavedData as SAVED_DATA
-from typing import NamedTuple
-
+import numpy as np
 class PlayerPart(pygame.sprite.Sprite):
-    def __init__(self, pos: tuple[int, int], image: pygame.Surface, group: pygame.sprite.Group):
+    def __init__(self,image: pygame.Surface, group: pygame.sprite.Group):
         super().__init__(group)
+        self.offset = []
         self.image = image
-        self.rect = image.get_rect(topleft=pos)
+
+    def setPartOffset(self, x_offset, y_offset):
+        self.offset = [x_offset, y_offset]
+
+    def outputInfo(self):
+        logger.debug(f"Player part info: \n \t {self.offset=} \n \t {self.image=}")
+
+
+
 
 class PossiblePlayerStates:
     RUNNING = "RUNNING"
@@ -16,32 +24,56 @@ class PossiblePlayerStates:
     NOT_MOVING = "NOT_MOVING"
 
 class Player:
+    PLAYER_HEAD_OFFSET = 0
+    PLAYER_BODY_OFFSET = 0
+
     def __init__(self, pos: tuple[int, int], head_img: pygame.Surface, body_img: pygame.Surface):
         self.playerGroup = pygame.sprite.Group()
         self.movementState = ""
+        self.rect = None
         try:
             logger.info(f"class {Player=} initializing....")
 
-            self.playerGroup = Player.generatePlayerGroup(head=head_img, body=body_img, group=self.playerGroup, pos=pos)
+            self.playerGroup = Player.generatePlayerGroup(head=head_img, body=body_img, group=self.playerGroup)
+
+            for _part in self.playerGroup:
+                _part.outputInfo()
+
+            self.rect = Player.generateRect(player_group = self.playerGroup, pos=pos)
             self.movementState = PossiblePlayerStates.NOT_MOVING
-
             logger.info(f"class {Player=} initialized.")
-
         except Exception as e:
             logger.info(f"Failed to initialize class {Player=}.\n Error: {e}")
 
-    @staticmethod
-    def render(player_group, screen):
+    def render(self, player_group, screen):
+        ##########################################################################
+        # ELIMINATE THIS LINE LATER #
+        pygame.draw.rect(surface=screen, color=(255, 255, 255), rect=self.rect)
+        ##########################################################################
+
         for _part in player_group:
-            screen.blit(_part.image, (_part.rect.x, _part.rect.y))
+            screen.blit(_part.image, (self.rect.x + _part.offset[0], self.rect.y + _part.offset[1]))
+
+    @staticmethod
+    def generateRect(player_group : pygame.sprite.Group, pos : tuple[int, int]) -> pygame.rect.Rect:
+        sumWidths = 0
+        sumHeights = 0
+        for _part in player_group:
+            sumWidths = _part.image.get_width()
+            sumHeights += _part.image.get_height()
+        rect = pygame.Rect(pos[0], pos[1], sumWidths, sumHeights)
+
+        return rect
 
     @staticmethod
     def generatePlayerGroup(head: pygame.Surface, body: pygame.Surface,
-                            group: pygame.sprite.Group, pos: tuple[int, int]) -> pygame.sprite.Group:
+                            group: pygame.sprite.Group) -> pygame.sprite.Group:
         partList = []
 
-        partHead = PlayerPart(pos=(pos[0] - int(body.get_width() - head.get_width()), pos[1]), image=head, group=group)
-        partBody = PlayerPart(pos=(pos[0], pos[1] + head.get_width()), image=body, group=group)
+        partHead = PlayerPart(image=head, group=group)
+        partHead.setPartOffset(x_offset= - int(body.get_width() - head.get_width()), y_offset = 0)
+        partBody = PlayerPart(image=body, group=group)
+        partBody.setPartOffset(x_offset= 0, y_offset= head.get_width())
         return group
 
     def handleInput(self):
@@ -60,33 +92,35 @@ class Player:
 
         if keys[SAVED_DATA.PLAYER_WALK_RIGHT_KEY_ID]:
             if keys[SAVED_DATA.PLAYER_WALK_DOWN_KEY_ID]:
-                self.movePlayerGroup(diagonalStep, diagonalStep)
+                self.movePlayer(diagonalStep, diagonalStep)
             elif keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID]:
-                self.movePlayerGroup(diagonalStep, -diagonalStep)
+                self.movePlayer(diagonalStep, -diagonalStep)
             else:
-                self.movePlayerGroup(nonDiagonalStep, noStep)
+                self.movePlayer(nonDiagonalStep, noStep)
         elif keys[SAVED_DATA.PLAYER_WALK_LEFT_KEY_ID]:
             if keys[SAVED_DATA.PLAYER_WALK_DOWN_KEY_ID]:
-                self.movePlayerGroup(-diagonalStep, diagonalStep)
+                self.movePlayer(-diagonalStep, diagonalStep)
             elif keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID]:
-                self.movePlayerGroup(-diagonalStep, -diagonalStep)
+                self.movePlayer(-diagonalStep, -diagonalStep)
             else:
-                self.movePlayerGroup(-nonDiagonalStep, noStep)
+                self.movePlayer(-nonDiagonalStep, noStep)
         elif keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID]:
-            self.movePlayerGroup(noStep, -nonDiagonalStep)
+            self.movePlayer(noStep, -nonDiagonalStep)
         elif keys[SAVED_DATA.PLAYER_WALK_DOWN_KEY_ID]:
-            self.movePlayerGroup(noStep, nonDiagonalStep)
+            self.movePlayer(noStep, nonDiagonalStep)
         else:
             self.movementState = PossiblePlayerStates.NOT_MOVING
 
-    def movePlayerGroup(self, step_x: int, step_y:int):
+    def movePlayer(self, step_x: int, step_y:int):
         logger.debug(f"Moving Player group. Walkspeed: ({step_x=}, {step_y=}")
-        for part in self.playerGroup:
-            part.rect.x += step_x
-            part.rect.y += step_y
+        self.setPlayerPos(self.rect.x + step_x, self.rect.y + step_y)
+
+    def setPlayerPos(self, pos_x : float, pos_y : float):
+        self.rect.x = pos_x
+        self.rect.y = pos_y
 
     def update(self, screen):
-        Player.render(self.playerGroup, screen=screen)
+        self.render(player_group=self.playerGroup, screen=screen)
         try:
             self.handleInput()
         except Exception as e:
