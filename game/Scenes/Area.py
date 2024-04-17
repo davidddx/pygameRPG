@@ -86,6 +86,7 @@ class Area(Scene):
         for _map in maps:
             if _map.mapID == map_id:
                 return _map
+
     def clearScene(self):
         self.currentMap = 0
 
@@ -98,6 +99,8 @@ class Area(Scene):
         #     for tile in spriteGroup:
         #         screen.blit(tile.image, (tile.rect.x, tile.rect.y))
 
+    def player_collision_checker(self, player : Player, map : TileMap):
+        pass
 
     def checkChangeAreaSignal(self, cool_down : int):
         timenow = pygame.time.get_ticks()
