@@ -4,11 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="removed camera">
+    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="movement">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/debug/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/debug/logger.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/Player.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Player.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gamedata/Save/SavedData.py" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Save/SavedData.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gamedata/Maps/Maps.tiled-session" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/Maps.tiled-session" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap1.tmx" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap1.tmx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gamedata/Maps/TileSets/Test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/TileSets/Test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/Fence.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/Fence.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/titleScreenBackground.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/titleScreenBackground.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/projectDebug.log" beforeDir="false" afterPath="$PROJECT_DIR$/projectDebug.log" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -26,6 +28,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;davidddx&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/davidddx/pygameRPG&quot;,
+    &quot;accountId&quot;: &quot;747fce5d-8095-48e4-99b6-7e76082f0ed3&quot;
+  }
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
 }</component>
@@ -78,7 +92,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-09665e90c3a7-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.15026.15" />
+        <option value="bundled-python-sdk-0509580d9d50-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.14494.241" />
       </set>
     </attachedChunks>
   </component>
@@ -90,70 +104,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1708439761952</updated>
-    </task>
-    <task id="LOCAL-00034" summary="planning saved data system">
-      <option name="closed" value="true" />
-      <created>1708917887254</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1708917887254</updated>
-    </task>
-    <task id="LOCAL-00035" summary="added more variables">
-      <option name="closed" value="true" />
-      <created>1708917910591</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1708917910591</updated>
-    </task>
-    <task id="LOCAL-00036" summary="moved TileMap file">
-      <option name="closed" value="true" />
-      <created>1708917952560</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1708917952560</updated>
-    </task>
-    <task id="LOCAL-00037" summary="testmap2">
-      <option name="closed" value="true" />
-      <created>1708917975070</created>
-      <option name="number" value="00037" />
-      <option name="presentableId" value="LOCAL-00037" />
-      <option name="project" value="LOCAL" />
-      <updated>1708917975070</updated>
-    </task>
-    <task id="LOCAL-00038" summary="moved to Scenes dir, edited map loading to occur using methods of class Area">
-      <option name="closed" value="true" />
-      <created>1708993070340</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
-      <option name="project" value="LOCAL" />
-      <updated>1708993070340</updated>
-    </task>
-    <task id="LOCAL-00039" summary="Added Base class for Scenes">
-      <option name="closed" value="true" />
-      <created>1708993092023</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
-      <option name="project" value="LOCAL" />
-      <updated>1708993092023</updated>
-    </task>
-    <task id="LOCAL-00040" summary="commenting &amp; uncommenting">
-      <option name="closed" value="true" />
-      <created>1708993107695</created>
-      <option name="number" value="00040" />
-      <option name="presentableId" value="LOCAL-00040" />
-      <option name="project" value="LOCAL" />
-      <updated>1708993107695</updated>
-    </task>
-    <task id="LOCAL-00041" summary="added TITLE_SCREEN constant">
-      <option name="closed" value="true" />
-      <created>1708993120591</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1708993120591</updated>
     </task>
     <task id="LOCAL-00042" summary="debug/ide">
       <option name="closed" value="true" />
@@ -483,7 +433,71 @@
       <option name="project" value="LOCAL" />
       <updated>1709423924014</updated>
     </task>
-    <option name="localTasksCounter" value="83" />
+    <task id="LOCAL-00083" summary="added buggy movement system">
+      <option name="closed" value="true" />
+      <created>1712072426248</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1712072426249</updated>
+    </task>
+    <task id="LOCAL-00084" summary="changed logger initialization text">
+      <option name="closed" value="true" />
+      <created>1712072460971</created>
+      <option name="number" value="00084" />
+      <option name="presentableId" value="LOCAL-00084" />
+      <option name="project" value="LOCAL" />
+      <updated>1712072460971</updated>
+    </task>
+    <task id="LOCAL-00085" summary="debug/ide">
+      <option name="closed" value="true" />
+      <created>1712072468325</created>
+      <option name="number" value="00085" />
+      <option name="presentableId" value="LOCAL-00085" />
+      <option name="project" value="LOCAL" />
+      <updated>1712072468325</updated>
+    </task>
+    <task id="LOCAL-00086" summary="added saved player controls to here">
+      <option name="closed" value="true" />
+      <created>1712072484143</created>
+      <option name="number" value="00086" />
+      <option name="presentableId" value="LOCAL-00086" />
+      <option name="project" value="LOCAL" />
+      <updated>1712072484143</updated>
+    </task>
+    <task id="LOCAL-00087" summary="fixed movement">
+      <option name="closed" value="true" />
+      <created>1712157968486</created>
+      <option name="number" value="00087" />
+      <option name="presentableId" value="LOCAL-00087" />
+      <option name="project" value="LOCAL" />
+      <updated>1712157968487</updated>
+    </task>
+    <task id="LOCAL-00088" summary="edited map loading">
+      <option name="closed" value="true" />
+      <created>1712720283137</created>
+      <option name="number" value="00088" />
+      <option name="presentableId" value="LOCAL-00088" />
+      <option name="project" value="LOCAL" />
+      <updated>1712720283138</updated>
+    </task>
+    <task id="LOCAL-00089" summary="fence image">
+      <option name="closed" value="true" />
+      <created>1712720298214</created>
+      <option name="number" value="00089" />
+      <option name="presentableId" value="LOCAL-00089" />
+      <option name="project" value="LOCAL" />
+      <updated>1712720298214</updated>
+    </task>
+    <task id="LOCAL-00090" summary="movement">
+      <option name="closed" value="true" />
+      <created>1712720322491</created>
+      <option name="number" value="00090" />
+      <option name="presentableId" value="LOCAL-00090" />
+      <option name="project" value="LOCAL" />
+      <updated>1712720322491</updated>
+    </task>
+    <option name="localTasksCounter" value="91" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -530,20 +544,12 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="added scene name property" />
-    <MESSAGE value="added logging" />
-    <MESSAGE value="added state, changed method name to ChangeAreaByStep, more logging" />
-    <MESSAGE value="added save data" />
-    <MESSAGE value="added STATE_PAUSED string" />
-    <MESSAGE value="added Title Screen" />
-    <MESSAGE value="variable name changes, titlescreen background position set to middle of screen" />
     <MESSAGE value="DEBUG/IDE" />
     <MESSAGE value="added player loader" />
     <MESSAGE value="included player information" />
     <MESSAGE value="newline" />
     <MESSAGE value="player sprites" />
     <MESSAGE value="added parts stored in a player spritegroup" />
-    <MESSAGE value="debug/ide" />
     <MESSAGE value="added player" />
     <MESSAGE value="using tiled for maps" />
     <MESSAGE value="sprite edits/tiled" />
@@ -555,16 +561,14 @@
     <MESSAGE value="will change back" />
     <MESSAGE value="will most likely change" />
     <MESSAGE value="removed camera" />
-    <option name="LAST_COMMIT_MESSAGE" value="removed camera" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/game/TileMap.py</url>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="added buggy movement system" />
+    <MESSAGE value="changed logger initialization text" />
+    <MESSAGE value="debug/ide" />
+    <MESSAGE value="added saved player controls to here" />
+    <MESSAGE value="fixed movement" />
+    <MESSAGE value="edited map loading" />
+    <MESSAGE value="fence image" />
+    <MESSAGE value="movement" />
+    <option name="LAST_COMMIT_MESSAGE" value="movement" />
   </component>
 </project>
