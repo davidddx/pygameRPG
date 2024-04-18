@@ -9,6 +9,7 @@ import globalVars.SceneConstants as SCENE_CONSTANTS
 from game.Player import Player
 import numpy as np
 import pytmx.util_pygame as PyTMXpg
+import globalVars.TilemapConstants as MAP_CONSTS
 
 class Area(Scene):
     def __init__(self, name, map_idx : int, _player : Player):
@@ -34,6 +35,7 @@ class Area(Scene):
         # self.player.update();
         AREA_SWITCH_COOLDOWN = 70
         self.displayMap(_map=self.currentMap, screen=screen)
+        self.playerCollisionHandler(player=self.player, _map=self.currentMap)
         self.player.update(screen=screen)
         self.checkChangeAreaSignal(cool_down = AREA_SWITCH_COOLDOWN)
 
@@ -92,6 +94,7 @@ class Area(Scene):
 
     def displayMap(self, _map : TileMap, screen):
         for tile in _map.spriteGroups[TileMap.trueSpriteGroupID]:
+            # if not tile.inRange: continue
             screen.blit(tile.image, (tile.rect.x, tile.rect.y))
 
         # for spriteGroup in _map.spriteGroups:
@@ -99,8 +102,25 @@ class Area(Scene):
         #     for tile in spriteGroup:
         #         screen.blit(tile.image, (tile.rect.x, tile.rect.y))
 
-    def player_collision_checker(self, player : Player, map : TileMap):
-        pass
+    def playerCollisionHandler(self, player : Player, _map : TileMap):
+
+
+        COLLISION_TOLERANCE = 10
+        collisionOccured = False
+        player.onCollision = False
+        for tile in _map.spriteGroups[MAP_CONSTS.COLLIDABLE_GROUP_ID]:
+            # if not tile.inRange: continue
+
+            if not player.rect.colliderect(tile):
+                continue
+            collisionOccured = True
+            player.rectColor = (0,0,0)
+            player.onCollision = True
+        if not collisionOccured:
+            player.rectColor = (255,255,255)
+            return None
+
+        ## handling collision ##
 
     def checkChangeAreaSignal(self, cool_down : int):
         timenow = pygame.time.get_ticks()
