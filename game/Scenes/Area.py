@@ -108,16 +108,30 @@ class Area(Scene):
         COLLISION_TOLERANCE = 10
         collisionOccured = False
         player.onCollision = False
+        BLACK = (0,0,0)
+        WHITE = (255,255,255)
         for tile in _map.spriteGroups[MAP_CONSTS.COLLIDABLE_GROUP_ID]:
-            # if not tile.inRange: continue
-
             if not player.rect.colliderect(tile):
                 continue
             collisionOccured = True
-            player.rectColor = (0,0,0)
+            player.rectColor = BLACK
             player.onCollision = True
+
+            if abs(player.rect.right - tile.rect.left) < COLLISION_TOLERANCE and player.movementDirection[0] > 0:
+                player.rect.right = tile.rect.left
+                player.velocity[0] = 0
+
+            if abs(player.rect.left - tile.rect.right) < COLLISION_TOLERANCE and player.movementDirection[0] < 0:
+                player.rect.left = tile.rect.right
+                player.velocity[0] = 0
+            if abs(player.rect.bottom - tile.rect.top) < COLLISION_TOLERANCE and player.movementDirection[1] > 0:
+                player.rect.bottom = tile.rect.top
+                player.velocity[1] = 0
+            if abs(player.rect.top - tile.rect.bottom) < COLLISION_TOLERANCE and player.movementDirection[1] < 0:
+                player.rect.top = tile.rect.bottom
+                player.velocity[1] = 0
         if not collisionOccured:
-            player.rectColor = (255,255,255)
+            player.rectColor = WHITE
             return None
 
         ## handling collision ##
