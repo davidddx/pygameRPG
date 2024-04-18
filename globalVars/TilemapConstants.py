@@ -5,3 +5,5 @@ Y = "Y"
 Z = "Z"
 COLLISION = "collision"
 CUSTOM = "custom"
+COLLIDABLE_GROUP_ID = 2
+NON_COLLIDABLE_GROUP_ID = 1
