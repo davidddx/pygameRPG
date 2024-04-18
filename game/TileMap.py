@@ -12,7 +12,7 @@ class Tile(pygame.sprite.Sprite):
         self.collision = collidable
         self.image = image
         self.rect = image.get_rect(topleft=pos)
-        self.isInRange = False
+        self.inRange = False
         self.customProperties = custom_properties
 
 
@@ -29,37 +29,6 @@ class TileMap:
             logger.debug(f"Class {TileMap=} initialized.")
         except Exception as e:
             logger.error(f"Failed {TileMap=} class initialization.\n Error: {e}")
-
-
-    @staticmethod
-    def convertListToSpriteGroups(tile_set : dict, tile_map: list[list[list[str]]], tile_size) \
-            -> tuple[pygame.sprite.Group, pygame.sprite.Group]:
-        spriteGroupCollision = pygame.sprite.Group()
-        spriteGroupNonCollision = pygame.sprite.Group()
-        tileListCollision = []
-        tileListNonCollision = []
-        logger.debug(f"{len(tile_map)=}")
-
-        for layerNumber, layer in enumerate(tile_map):
-            for yvalue, column in enumerate(layer):
-                for xvalue, letter in enumerate(column):
-                    # logger.debug(f"{xvalue=}, {yvalue=}, {layerNumber=}")
-                    if letter not in tile_set.keys():
-                        logger.error(
-                            f"{letter=} in {xvalue=}, {yvalue=}, {layerNumber=} \n is not defined in {tile_set=}")
-                        continue
-                    tileProperties = tile_set[letter]
-                    image = tileProperties[mapVars.IMAGE]
-                    collidable = tileProperties[mapVars.COLLISION]
-                    tile = Tile(pos=(xvalue * globalVars.TILE_SIZE, yvalue * globalVars.TILE_SIZE), collidable=collidable,
-                                image=image)
-                    if tile.collision:
-                        tileListCollision.append(tile)
-                    else:
-                        tileListNonCollision.append(tile)
-        spriteGroupCollision.add(tileListCollision)
-        spriteGroupNonCollision.add(tileListNonCollision)
-        return (spriteGroupNonCollision, spriteGroupCollision)
 
     @staticmethod
     def convertTMXToSpriteGroups(tmx_data : pyTMX.TiledMap) -> tuple[pygame.sprite.Group,pygame.sprite.Group]:
