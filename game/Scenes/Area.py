@@ -119,17 +119,12 @@ class Area(Scene):
 
             if abs(player.rect.right - tile.rect.left) < COLLISION_TOLERANCE and player.movementDirection[0] > 0:
                 player.rect.right = tile.rect.left
-                player.velocity[0] = 0
-
             if abs(player.rect.left - tile.rect.right) < COLLISION_TOLERANCE and player.movementDirection[0] < 0:
                 player.rect.left = tile.rect.right
-                player.velocity[0] = 0
             if abs(player.rect.bottom - tile.rect.top) < COLLISION_TOLERANCE and player.movementDirection[1] > 0:
                 player.rect.bottom = tile.rect.top
-                player.velocity[1] = 0
             if abs(player.rect.top - tile.rect.bottom) < COLLISION_TOLERANCE and player.movementDirection[1] < 0:
                 player.rect.top = tile.rect.bottom
-                player.velocity[1] = 0
         if not collisionOccured:
             player.rectColor = WHITE
             return None
