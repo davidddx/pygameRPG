@@ -42,14 +42,14 @@
             "scale": 2,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 145.75,
-                "y": 265
+                "x": 139.25,
+                "y": 109.25
             }
         },
         "TileSets/Test.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 1,
-            "scaleInEditor": 3
+            "scaleInDock": 4,
+            "scaleInEditor": 4
         }
     },
     "last.imagePath": "C:/Users/david/Documents/GitHub/pygameRPG/pygameRPG/images/test",

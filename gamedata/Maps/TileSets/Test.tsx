@@ -92,42 +92,81 @@
   <image width="32" height="32" source="../../../images/test/Fence.png"/>
  </tile>
  <tile id="15">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <image width="32" height="32" source="../../../images/test/FenceLeftEnd.png"/>
  </tile>
  <tile id="16">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <image width="32" height="32" source="../../../images/test/FenceRightEnd,png.png"/>
  </tile>
  <tile id="17">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <image width="32" height="32" source="../../../images/test/FenceBottomLeft.png"/>
  </tile>
  <tile id="18">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <image width="32" height="32" source="../../../images/test/FenceBottomRight.png"/>
  </tile>
  <tile id="19">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <image width="32" height="32" source="../../../images/test/FenceTopLeft.png"/>
  </tile>
  <tile id="20">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <image width="32" height="32" source="../../../images/test/FenceTopRight.png"/>
  </tile>
  <tile id="21">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <image width="32" height="32" source="../../../images/test/FenceVertical.png"/>
  </tile>
  <tile id="22">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <image width="32" height="32" source="../../../images/test/FenceHorizontal2.png"/>
  </tile>
  <tile id="23">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <image width="32" height="32" source="../../../images/test/FenceVertical2.png"/>
  </tile>
  <tile id="24">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <image width="32" height="32" source="../../../images/test/FenceBottomLeft2.png"/>
  </tile>
  <tile id="25">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <image width="32" height="32" source="../../../images/test/FenceBottomRight2.png"/>
  </tile>
  <tile id="26">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <image width="32" height="32" source="../../../images/test/FenceTopLeft2.png"/>
  </tile>
  <tile id="27">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <image width="32" height="32" source="../../../images/test/FenceTopRight2.png"/>
  </tile>
  <tile id="28">
@@ -151,23 +190,6 @@
    <wangtile tileid="11" wangid="0,1,0,2,0,1,0,1"/>
    <wangtile tileid="12" wangid="0,1,0,1,0,1,0,2"/>
    <wangtile tileid="13" wangid="0,2,0,1,0,1,0,1"/>
-  </wangset>
-  <wangset name="Fence" type="corner" tile="-1">
-   <wangcolor name="Fence" color="#ff0000" tile="-1" probability="1"/>
-   <wangcolor name="Dirt" color="#00ff00" tile="-1" probability="1"/>
-   <wangtile tileid="4" wangid="0,2,0,2,0,2,0,2"/>
-   <wangtile tileid="14" wangid="0,2,0,1,0,1,0,2"/>
-   <wangtile tileid="17" wangid="0,1,0,2,0,2,0,2"/>
-   <wangtile tileid="18" wangid="0,2,0,2,0,2,0,1"/>
-   <wangtile tileid="19" wangid="0,2,0,1,0,2,0,2"/>
-   <wangtile tileid="20" wangid="0,1,0,1,0,2,0,1"/>
-   <wangtile tileid="21" wangid="0,1,0,1,0,2,0,2"/>
-   <wangtile tileid="22" wangid="0,1,0,2,0,2,0,1"/>
-   <wangtile tileid="23" wangid="0,2,0,2,0,1,0,1"/>
-   <wangtile tileid="24" wangid="0,1,0,2,0,2,0,2"/>
-   <wangtile tileid="25" wangid="0,1,0,1,0,1,0,2"/>
-   <wangtile tileid="26" wangid="0,1,0,2,0,1,0,1"/>
-   <wangtile tileid="27" wangid="0,1,0,1,0,2,0,1"/>
   </wangset>
  </wangsets>
 </tileset>
