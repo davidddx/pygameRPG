@@ -1,3 +1,4 @@
+import globalVars.SettingsConstants
 from debug.logger import logger
 from game.TileMap import TileMap
 import pygame
@@ -7,7 +8,6 @@ import importlib
 import globalVars.PathConstants as PATH_CONSTANTS
 import globalVars.SceneConstants as SCENE_CONSTANTS
 from game.Player import Player
-import numpy as np
 import pytmx.util_pygame as PyTMXpg
 import globalVars.TilemapConstants as MAP_CONSTS
 
@@ -21,23 +21,25 @@ class Area(Scene):
         self.timeLastChangedArea = 0
         self.player = _player
         self.camera = None
-        try:
-            logger.debug(f"Class {Area=} initializing....")
-            self.mapIdx = map_idx
-            self.maps = self.loadTestMaps()
-            self.currentMap = self.maps[self.mapIdx]
-            self.camera = np.array([])
-            logger.debug(f"Class {Area=} intialized.")
-        except Exception as e:
-            logger.error(f"Failed {Area=} class initialization.\n Error: {e}")
 
+        logger.debug(f"Class {Area=} initializing....")
+        self.mapIdx = map_idx
+        self.maps = self.loadTestMaps()
+        self.currentMap = self.maps[self.mapIdx]
+        self.camera = (0.0,0.0)
+        logger.debug(f"Class {Area=} intialized.")
+
+    @staticmethod
+    def updateCameraPos(player_pos : tuple[float, float], current_camera : tuple[float,float]) -> tuple[float, float]:
+        return player_pos[0] - globalVars.SettingsConstants.SCREEN_WIDTH/2, player_pos[1] - globalVars.SettingsConstants.SCREEN_HEIGHT/2
     def update(self, screen):
         # self.player.update();
         AREA_SWITCH_COOLDOWN = 70
-        self.displayMap(_map=self.currentMap, screen=screen)
+        self.displayMap(_map=self.currentMap, screen=screen, camera=self.camera)
         self.playerCollisionHandler(player=self.player, _map=self.currentMap)
-        self.player.update(screen=screen)
-        self.checkChangeAreaSignal(cool_down = AREA_SWITCH_COOLDOWN)
+        self.player.update(screen=screen, camera=self.camera)
+        self.camera = Area.updateCameraPos(player_pos = self.player.getPlayerPos(), current_camera=self.camera)
+        self.checkChangeMapSignal(cool_down = AREA_SWITCH_COOLDOWN)
 
     def loadTestMaps(self) -> tuple:
         maps = []
@@ -47,6 +49,7 @@ class Area(Scene):
             tmxData = PyTMXpg.load_pygame(os.path.join(TestMapDir, file))
             maps.append(TileMap(tmx_data= tmxData, MAP_ID=mapId))
             mapId += 1
+        logger.debug(f"{maps=}")
         return tuple(maps)
 
     def initLoadMaps(self) -> tuple:
@@ -92,10 +95,10 @@ class Area(Scene):
     def clearScene(self):
         self.currentMap = 0
 
-    def displayMap(self, _map : TileMap, screen):
+    def displayMap(self, _map : TileMap, screen, camera: tuple[float, float]):
         for tile in _map.spriteGroups[TileMap.trueSpriteGroupID]:
             # if not tile.inRange: continue
-            screen.blit(tile.image, (tile.rect.x, tile.rect.y))
+            screen.blit(tile.image, (tile.rect.x - camera[0], tile.rect.y - camera[1]))
 
         # for spriteGroup in _map.spriteGroups:
         #     logger.debug(f"{spriteGroup=}")
@@ -117,21 +120,24 @@ class Area(Scene):
             player.rectColor = BLACK
             player.onCollision = True
 
-            if abs(player.rect.right - tile.rect.left) < COLLISION_TOLERANCE and player.movementDirection[0] > 0:
-                player.rect.right = tile.rect.left
-            if abs(player.rect.left - tile.rect.right) < COLLISION_TOLERANCE and player.movementDirection[0] < 0:
-                player.rect.left = tile.rect.right
-            if abs(player.rect.bottom - tile.rect.top) < COLLISION_TOLERANCE and player.movementDirection[1] > 0:
-                player.rect.bottom = tile.rect.top
-            if abs(player.rect.top - tile.rect.bottom) < COLLISION_TOLERANCE and player.movementDirection[1] < 0:
-                player.rect.top = tile.rect.bottom
+            if tile.collisionType == TileMap.COLLISION_TYPE_WALL_ID:
+                if abs(player.rect.right - tile.rect.left) < COLLISION_TOLERANCE and player.movementDirection[0] > 0:
+                    player.rect.right = tile.rect.left
+                if abs(player.rect.left - tile.rect.right) < COLLISION_TOLERANCE and player.movementDirection[0] < 0:
+                    player.rect.left = tile.rect.right
+                if abs(player.rect.bottom - tile.rect.top) < COLLISION_TOLERANCE and player.movementDirection[1] > 0:
+                    player.rect.bottom = tile.rect.top
+                if abs(player.rect.top - tile.rect.bottom) < COLLISION_TOLERANCE and player.movementDirection[1] < 0:
+                    player.rect.top = tile.rect.bottom
+
+
         if not collisionOccured:
             player.rectColor = WHITE
             return None
 
         ## handling collision ##
 
-    def checkChangeAreaSignal(self, cool_down : int):
+    def checkChangeMapSignal(self, cool_down : int):
         timenow = pygame.time.get_ticks()
         if timenow - self.timeLastChangedArea <= cool_down:
             return None

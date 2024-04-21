@@ -50,14 +50,21 @@ class Player:
         except Exception as e:
             logger.info(f"Failed to initialize class {Player=}.\n Error: {e}")
 
-    def render(self, player_group, screen):
+
+
+    def render(self, player_group, screen, camera_offset):
         ##########################################################################
         # ELIMINATE THIS LINE LATER #
-        pygame.draw.rect(surface=screen, color=self.rectColor, rect=self.rect)
+        rectToDraw = pygame.Rect(self.rect.x - camera_offset[0],
+                                 self.rect.y - camera_offset[1],
+                                 self.rect.width,
+                                 self.rect.height)
+        pygame.draw.rect(surface=screen, color=self.rectColor, rect=rectToDraw)
         ##########################################################################
 
         for _part in player_group:
-            screen.blit(_part.image, (self.rect.x + _part.offset[0], self.rect.y + _part.offset[1]))
+            screen.blit(_part.image, (self.rect.x + _part.offset[0] - camera_offset[0],
+                                      self.rect.y + _part.offset[1] - camera_offset[1]))
 
     @staticmethod
     def generateRect(player_group : pygame.sprite.Group, pos : tuple[int, int]) -> pygame.rect.Rect:
@@ -101,7 +108,7 @@ class Player:
     def handleWalkingInput(self, keys):
 
         self.movementState = Player.checkPlayerMovementState(keys=keys, movement_state= self.movementState)
-        logger.debug(f"{self.movementState=}")
+        # logger.debug(f"{self.movementState=}")
 
         if keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID]:
             self.movementDirection[1] = -1
@@ -117,9 +124,8 @@ class Player:
             self.movementDirection[0] = 0
 
     def movePlayer(self, direction: list, velocity: list):
-        logger.debug(f"Moving Player group. \n Direction: {self.movementDirection=}, \n Velocity: {self.velocity=}")
-        step_x = 0
-        step_y = 0
+        # logger.debug(f"Moving Player group. \n Direction: {self.movementDirection=}, \n Velocity: {self.velocity=}")
+        step_x, step_y = 0, 0
         diagonalStep = 2
         nonDiagonalStep = 3
         if abs(direction[0]) == abs(direction[1]):
@@ -137,9 +143,11 @@ class Player:
         self.rect.x = pos_x
         self.rect.y = pos_y
 
+    def getPlayerPos(self) -> tuple[float, float]:
+        return self.rect.x, self.rect.y
 
-    def update(self, screen):
-        self.render(player_group=self.playerGroup, screen=screen)
+    def update(self, screen, camera : tuple[float, float]):
+        self.render(player_group=self.playerGroup, screen=screen, camera_offset=camera)
         try:
             self.handleInput()
             self.movePlayer(direction=self.movementDirection, velocity = self.velocity);
