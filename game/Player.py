@@ -4,8 +4,9 @@ import globalVars.SettingsConstants as globalVars
 import gamedata.Save.SavedData as SAVED_DATA
 import numpy as np
 class PlayerPart(pygame.sprite.Sprite):
-    def __init__(self,image: pygame.Surface, group: pygame.sprite.Group):
+    def __init__(self,image: pygame.Surface, group: pygame.sprite.Group, name: str):
         super().__init__(group)
+        self.name = name
         self.offset = []
         self.image = image
 
@@ -63,6 +64,8 @@ class Player:
         ##########################################################################
 
         for _part in player_group:
+            logger.debug(f"blitting _part {_part.name=} to position: \n "
+                         f"({self.rect.x + _part.offset[0] - camera_offset[0]},{self.rect.y + _part.offset[1] - camera_offset[1]})")
             screen.blit(_part.image, (self.rect.x + _part.offset[0] - camera_offset[0],
                                       self.rect.y + _part.offset[1] - camera_offset[1]))
 
@@ -82,9 +85,9 @@ class Player:
                             group: pygame.sprite.Group) -> pygame.sprite.Group:
         partList = []
 
-        partHead = PlayerPart(image=head, group=group)
+        partHead = PlayerPart(image=head, group=group, name="head")
         partHead.setPartOffset(x_offset= - int(body.get_width() - head.get_width()), y_offset = 0)
-        partBody = PlayerPart(image=body, group=group)
+        partBody = PlayerPart(image=body, group=group, name="body")
         partBody.setPartOffset(x_offset= 0, y_offset= head.get_width())
         return group
 
@@ -128,7 +131,7 @@ class Player:
         step_x, step_y = 0, 0
         diagonalStep = 2
         nonDiagonalStep = 3
-        if abs(direction[0]) == abs(direction[1]):
+        if abs(direction[0]) == abs(direction[1]) == 1:
             step_x = direction[0] * diagonalStep
             step_y = direction[1] * diagonalStep
         else:
@@ -140,6 +143,7 @@ class Player:
         self.setPlayerPos(self.rect.x + (step_x * self.velocity[0]), self.rect.y + (step_y * self.velocity[1]))
 
     def setPlayerPos(self, pos_x : float, pos_y : float):
+        logger.debug(f"setting player rect pos to: {self.rect.x}, {self.rect.y}")
         self.rect.x = pos_x
         self.rect.y = pos_y
 
