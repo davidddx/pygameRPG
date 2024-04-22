@@ -1,4 +1,4 @@
-import globalVars.SettingsConstants
+import globalVars.SettingsConstants as SETTINGS
 from debug.logger import logger
 from game.TileMap import TileMap
 import pygame
@@ -12,29 +12,30 @@ import pytmx.util_pygame as PyTMXpg
 import globalVars.TilemapConstants as MAP_CONSTS
 
 class Area(Scene):
+
     def __init__(self, name, map_idx : int, _player : Player):
         super().__init__(name)
         self.state = SCENE_CONSTANTS.STATE_INITIALIZING
-        self.currentMap = None
-        self.maps = ()
-        self.mapIdx = 0
-        self.timeLastChangedArea = 0
+        self.timeLastChangedMap = 0
         self.player = _player
-        self.camera = None
 
         logger.debug(f"Class {Area=} initializing....")
         self.mapIdx = map_idx
         self.maps = self.loadTestMaps()
         self.currentMap = self.maps[self.mapIdx]
-        self.camera = (0.0,0.0)
+        self.camera = self.initializeCamera()
         logger.debug(f"Class {Area=} intialized.")
 
     @staticmethod
     def updateCameraPos(player_pos : tuple[float, float], current_camera : tuple[float,float]) -> tuple[float, float]:
-        return player_pos[0] - globalVars.SettingsConstants.SCREEN_WIDTH/2, player_pos[1] - globalVars.SettingsConstants.SCREEN_HEIGHT/2
+        return player_pos[0] - SETTINGS.SCREEN_WIDTH/2, player_pos[1] - SETTINGS.SCREEN_HEIGHT/2
+
+    def initializeCamera(self):
+        return self.player.rect.x - SETTINGS.SCREEN_WIDTH/2, self.player.rect.y - SETTINGS.SCREEN_HEIGHT/2
+
     def update(self, screen):
         # self.player.update();
-        AREA_SWITCH_COOLDOWN = 70
+        AREA_SWITCH_COOLDOWN = 150
         self.displayMap(_map=self.currentMap, screen=screen, camera=self.camera)
         self.playerCollisionHandler(player=self.player, _map=self.currentMap)
         self.player.update(screen=screen, camera=self.camera)
@@ -46,10 +47,13 @@ class Area(Scene):
         TestMapDir = os.path.join(os.getcwd(),PATH_CONSTANTS.GAME_DATA, PATH_CONSTANTS.MAPS,PATH_CONSTANTS.TEST_MAPS)
         mapId = 0
         for file in os.listdir(TestMapDir):
-            tmxData = PyTMXpg.load_pygame(os.path.join(TestMapDir, file))
-            maps.append(TileMap(tmx_data= tmxData, MAP_ID=mapId))
+            fileName = os.path.join(TestMapDir, file)
+            tmxData = PyTMXpg.load_pygame(fileName)
+            maps.append(TileMap(tmx_data= tmxData, MAP_ID=mapId, name=fileName))
             mapId += 1
-        logger.debug(f"{maps=}")
+        logger.debug(f"Maps: ")
+        for _map in maps:
+            logger.debug(f"{_map.name}")
         return tuple(maps)
 
     def initLoadMaps(self) -> tuple:
@@ -87,17 +91,19 @@ class Area(Scene):
 
         return maps
 
-    def loadScene(self, map_id : int, maps : tuple):
+    @staticmethod
+    def loadMap(self, map_id : int, maps : tuple):
         for _map in maps:
             if _map.mapID == map_id:
                 return _map
 
-    def clearScene(self):
+    def clearMap(self):
         self.currentMap = 0
 
     def displayMap(self, _map : TileMap, screen, camera: tuple[float, float]):
         for tile in _map.spriteGroups[TileMap.trueSpriteGroupID]:
-            # if not tile.inRange: continue
+            if abs(self.player.rect.x - tile.rect.x) - SETTINGS.TILE_SIZE > SETTINGS.SCREEN_WIDTH/2 or abs(self.player.rect.y - tile.rect.y) - SETTINGS.TILE_SIZE > SETTINGS.SCREEN_HEIGHT/2:
+                continue
             screen.blit(tile.image, (tile.rect.x - camera[0], tile.rect.y - camera[1]))
 
         # for spriteGroup in _map.spriteGroups:
@@ -139,11 +145,11 @@ class Area(Scene):
 
     def checkChangeMapSignal(self, cool_down : int):
         timenow = pygame.time.get_ticks()
-        if timenow - self.timeLastChangedArea <= cool_down:
+        if timenow - self.timeLastChangedMap <= cool_down:
             return None
         keys = pygame.key.get_pressed()
         if keys[pygame.K_e]:
-            self.changeMapByStep(time_now= timenow)
+            self.changeMapByStep(time_now= timenow, step=1, positive=True)
         elif keys[pygame.K_q]:
             self.changeMapByStep(time_now= timenow, positive=False)
 
@@ -169,7 +175,13 @@ class Area(Scene):
                 f"Issue changing area to previous: \n \t \t \twhen {self.mapIdx=} added by {step=}, self.mapIdx is out of range.")
             return None
 
-        self.clearScene()
-        self.currentMap = self.loadScene(maps= self.maps, map_id= self.mapIdx)
+        self.clear()
+        self.currentMap = self.loadMap(maps= self.maps, map_id= self.mapIdx)
         logger.info(f"Succefully changed map to {self.maps[self.mapIdx]=}")
+        self.timeLastChangedMap = time_now
 
+    def clear(self):
+        pass
+    @staticmethod
+    def checkMapsForDoorID():
+        pass
