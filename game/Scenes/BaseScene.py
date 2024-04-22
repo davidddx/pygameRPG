@@ -12,5 +12,5 @@ class Scene(ABC):
         pass
 
     @abstractmethod
-    def clearScene(self):
+    def clear(self):
         pass
