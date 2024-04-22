@@ -6,12 +6,11 @@ import os
 from game.Player import Player
 class Game:
     def __init__(self):
-        try:
-            logger.debug(f"Class {Game=} initializing....")
-            self.sceneHandler = SceneHandler(_player = Game.loadPlayer(saved_data=SAVED_DATA));
-            logger.debug(f"Class {Game=} intialized.")
-        except Exception as e:
-            logger.error(f"Failed {Game=} class initialization.\n Error: {e} \n File: Game.py")
+
+        logger.debug(f"Class {Game=} initializing....")
+        self.sceneHandler = SceneHandler(_player = Game.loadPlayer(saved_data=SAVED_DATA));
+        logger.debug(f"Class {Game=} intialized.")
+
 
     def run(self, screen):
         self.sceneHandler.run(screen=screen)
