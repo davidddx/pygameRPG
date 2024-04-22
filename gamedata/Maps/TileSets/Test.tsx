@@ -88,89 +88,108 @@
  <tile id="14">
   <properties>
    <property name="collision" type="bool" value="true"/>
+   <property name="collisionType" type="int" value="0"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/Fence.png"/>
  </tile>
  <tile id="15">
   <properties>
    <property name="collision" type="bool" value="true"/>
+   <property name="collisionType" type="int" value="0"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/FenceLeftEnd.png"/>
  </tile>
  <tile id="16">
   <properties>
    <property name="collision" type="bool" value="true"/>
+   <property name="collisionType" type="int" value="0"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/FenceRightEnd,png.png"/>
  </tile>
  <tile id="17">
   <properties>
    <property name="collision" type="bool" value="true"/>
+   <property name="collisionType" type="int" value="0"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/FenceBottomLeft.png"/>
  </tile>
  <tile id="18">
   <properties>
    <property name="collision" type="bool" value="true"/>
+   <property name="collisionType" type="int" value="0"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/FenceBottomRight.png"/>
  </tile>
  <tile id="19">
   <properties>
    <property name="collision" type="bool" value="true"/>
+   <property name="collisionType" type="int" value="0"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/FenceTopLeft.png"/>
  </tile>
  <tile id="20">
   <properties>
    <property name="collision" type="bool" value="true"/>
+   <property name="collisionType" type="int" value="0"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/FenceTopRight.png"/>
  </tile>
  <tile id="21">
   <properties>
    <property name="collision" type="bool" value="true"/>
+   <property name="collisionType" type="int" value="0"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/FenceVertical.png"/>
  </tile>
  <tile id="22">
   <properties>
    <property name="collision" type="bool" value="true"/>
+   <property name="collisionType" type="int" value="0"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/FenceHorizontal2.png"/>
  </tile>
  <tile id="23">
   <properties>
    <property name="collision" type="bool" value="true"/>
+   <property name="collisionType" type="int" value="0"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/FenceVertical2.png"/>
  </tile>
  <tile id="24">
   <properties>
    <property name="collision" type="bool" value="true"/>
+   <property name="collisionType" type="int" value="0"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/FenceBottomLeft2.png"/>
  </tile>
  <tile id="25">
   <properties>
    <property name="collision" type="bool" value="true"/>
+   <property name="collisionType" type="int" value="0"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/FenceBottomRight2.png"/>
  </tile>
  <tile id="26">
   <properties>
    <property name="collision" type="bool" value="true"/>
+   <property name="collisionType" type="int" value="0"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/FenceTopLeft2.png"/>
  </tile>
  <tile id="27">
   <properties>
    <property name="collision" type="bool" value="true"/>
+   <property name="collisionType" type="int" value="0"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/FenceTopRight2.png"/>
  </tile>
  <tile id="28">
-  <image width="32" height="32" source="../../../images/test/Nothing.png"/>
+  <properties>
+   <property name="DOOR" type="bool" value="true"/>
+   <property name="collision" type="int" value="1"/>
+   <property name="collisionType" type="int" value="0"/>
+  </properties>
+  <image width="32" height="32" source="../../../images/test/door.png"/>
  </tile>
  <wangsets>
   <wangset name="DirtGrass" type="corner" tile="-1">
