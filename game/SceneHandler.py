@@ -13,23 +13,16 @@ from game.Player import Player
 class SceneHandler:
     def __init__(self, _player : Player):
         self.scenes = ()
-        self.Areas = None
-        self.player = None
-        self.currentScene = None
-
         self.currentSceneIndex = 0
         self.SCENE_COUNT = 0
         self.timeLastChangedScene = pygame.time.get_ticks()
         self.TitleScreen = None
-        try:
-            logger.debug(f"Class {SceneHandler=} initializing....")
-            self.Areas = self.loadAreas(_player= _player);
-            self.player = _player
-            self.TitleScreen = TitleScreen(background=pygame.image.load(os.getcwd() + '/images/test/titleScreenBackground.png'))
-            self.currentScene = self.TitleScreen
-            logger.debug(f"Class {SceneHandler=} intialized.")
-        except Exception as e:
-            logger.error(f"Failed {SceneHandler=} class initialization.\n Error: {e}")
+        logger.debug(f"Class {SceneHandler=} initializing....")
+        self.Areas = self.loadAreas(_player= _player);
+        self.player = _player
+        self.TitleScreen = TitleScreen(background=pygame.image.load(os.getcwd() + '/images/test/titleScreenBackground.png'))
+        self.currentScene = self.TitleScreen
+        logger.debug(f"Class {SceneHandler=} intialized.")
 
 
     def loadAreas(self, _player) -> list[Area]:
