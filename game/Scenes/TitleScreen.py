@@ -38,5 +38,5 @@ class TitleScreen(Scene):
 
         return state
 
-    def clearScene(self):
+    def clear(self):
         pass
