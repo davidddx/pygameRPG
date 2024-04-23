@@ -23,15 +23,16 @@ class Area(Scene):
         self.mapIdx = map_idx
         self.maps = self.loadTestMaps()
         self.currentMap = self.maps[self.mapIdx]
-        self.camera = self.initializeCamera()
+        self.camera = Area.initializeCamera(player_rect = _player.rect)
         logger.debug(f"Class {Area=} intialized.")
 
     @staticmethod
-    def updateCameraPos(player_pos : tuple[float, float], current_camera : tuple[float,float]) -> tuple[float, float]:
-        return player_pos[0] - SETTINGS.SCREEN_WIDTH/2, player_pos[1] - SETTINGS.SCREEN_HEIGHT/2
+    def updateCameraPos(player_pos : tuple[float, float], player_rect : pygame.Rect, current_camera : tuple[float,float]) -> tuple[float, float]:
+        return player_pos[0] - SETTINGS.SCREEN_WIDTH/2 + player_rect.width/2, player_pos[1] - SETTINGS.SCREEN_HEIGHT/2 + player_rect.height/2
 
-    def initializeCamera(self):
-        return self.player.rect.x - SETTINGS.SCREEN_WIDTH/2, self.player.rect.y - SETTINGS.SCREEN_HEIGHT/2
+    @staticmethod
+    def initializeCamera(player_rect : pygame.Rect):
+        return player_rect.x - SETTINGS.SCREEN_WIDTH/2 + player_rect.width/2, player_rect.y - SETTINGS.SCREEN_HEIGHT/2 + player_rect.height/2
 
     def update(self, screen):
         # self.player.update();
@@ -39,7 +40,7 @@ class Area(Scene):
         self.displayMap(_map=self.currentMap, screen=screen, camera=self.camera)
         self.playerCollisionHandler(player=self.player, _map=self.currentMap)
         self.player.update(screen=screen, camera=self.camera)
-        self.camera = Area.updateCameraPos(player_pos = self.player.getPlayerPos(), current_camera=self.camera)
+        self.camera = Area.updateCameraPos(player_pos = self.player.getPlayerPos(), current_camera=self.camera, player_rect=self.player.rect)
         self.checkChangeMapSignal(cool_down = AREA_SWITCH_COOLDOWN)
 
     def loadTestMaps(self) -> tuple:
