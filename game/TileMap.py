@@ -24,36 +24,32 @@ class TileMap:
     COLLISION_TYPE_WALL_ID = 0
     COLLISION_TYPE_MARKER_ID = 1
 
-    def __init__(self, tmx_data, MAP_ID: int, name=""):
-
+    def __init__(self, tmx_data, map_id: int, name=""):
+        logger.debug(f"Class {TileMap=} initializing....")
         self.spriteGroups = ()
         self.doors = []
-        self.mapID = 0
         self.name = name
-        try:
-            logger.debug(f"Class {TileMap=} initializing....")
-            self.spriteGroups = TileMap.convertTMXToSpriteGroups(tmx_data= tmx_data)
-            self.mapID = MAP_ID
-            logger.debug(f"Class {TileMap=} initialized.")
-        except Exception as e:
-            logger.error(f"Failed {TileMap=} class initialization.\n Error: {e}")
+        self.mapID = map_id
+        self.spriteGroups = self.convertTMXToSpriteGroups(tmx_data= tmx_data)
+        logger.debug(f"Class {TileMap=} initialized.")
 
-    @staticmethod
-    def convertTMXToSpriteGroups(tmx_data : pyTMX.TiledMap) -> tuple[pygame.sprite.Group,pygame.sprite.Group,pygame.sprite.Group,pygame.sprite.Group]:
+
+    def clear(self):
+        pass
+
+    def convertTMXToSpriteGroups(self, tmx_data : pyTMX.TiledMap) -> tuple[pygame.sprite.Group,pygame.sprite.Group,pygame.sprite.Group,pygame.sprite.Group]:
         spriteGroupCollision = pygame.sprite.Group()
         spriteGroupNonCollision = pygame.sprite.Group()
         trueSpriteGroup = pygame.sprite.Group()
-        try:
-            logger.info(f"Converting map tmx data to spritegroups...")
-            visibleLayers = tmx_data.visible_layers
-            layerIndex = 0
-            for layer in visibleLayers:
-                if not hasattr(layer, "data"):
-                    continue
-                logger.debug(dir(layer))
+        logger.info(f"Converting map tmx data to spritegroups...")
+        visibleLayers = tmx_data.visible_layers
+        logger.debug(f"{visibleLayers=}")
+        layerIndex = 0
+        for layer in visibleLayers:
+            if isinstance(layer, pyTMX.TiledTileLayer):
                 for x, y, surface in layer.tiles():
                     pos = (globalVars.TILE_SIZE * x, globalVars.TILE_SIZE * y)
-                    props = tmx_data.get_tile_properties(x, y, layerIndex);
+                    props = tmx_data.get_tile_properties(x, y, layerIndex)
                     collision = None
                     collisionType = None
                     try:
@@ -68,10 +64,19 @@ class TileMap:
                     else:
                         spriteGroupNonCollision.add(tile)
                     trueSpriteGroup.add(tile)
+            elif isinstance(layer, pyTMX.TiledObjectGroup):
+                name = "name"
+                for _object in layer:
+                    properties = _object.properties
+                    if properties[name] == Door.strNAME:
+                        doorId = properties[Door.strDOOR_ID]
+                        self.doors.append(Door(DOOR_ID=doorId, image=_object.image,
+                                               id_current_map= self.mapID, pos= (_object.x * _object.width, _object.y * _object.height)  ))
 
-                layerIndex += 1
-        except Exception as e:
-            logger.error(f"Failed tmx to sprite.Group conversion: {e}")
+            layerIndex += 1
+
+
+
 
         logger.info(f"Converted map tmx data to spritegroups.")
         return (trueSpriteGroup, spriteGroupNonCollision, spriteGroupCollision)
