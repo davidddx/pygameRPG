@@ -1,3 +1,5 @@
+import pytmx
+
 import globalVars.SettingsConstants as SETTINGS
 from debug.logger import logger
 from game.TileMap import TileMap
@@ -10,96 +12,82 @@ import globalVars.SceneConstants as SCENE_CONSTANTS
 from game.Player import Player
 import pytmx.util_pygame as PyTMXpg
 import globalVars.TilemapConstants as MAP_CONSTS
+from game.Door import Door
 
 class Area(Scene):
 
-    def __init__(self, name, map_idx : int, _player : Player):
+    def __init__(self, name, starting_map_idx : int, _player : Player):
+
+        logger.debug(f"Class {Area=} initializing....")
         super().__init__(name)
         self.state = SCENE_CONSTANTS.STATE_INITIALIZING
         self.timeLastChangedMap = 0
         self.player = _player
+        self.mapIdx = starting_map_idx
+        self.mapData = Area.loadMapTmxData()
+        self.doors = Area.loadDoors(self.mapData)
+        self.currentMap = Area.loadMapById(tmx_data= self.mapData, id= starting_map_idx)
 
-        logger.debug(f"Class {Area=} initializing....")
-        self.mapIdx = map_idx
-        self.maps = self.loadTestMaps()
-        self.currentMap = self.maps[self.mapIdx]
         self.camera = Area.initializeCamera(player_rect = _player.rect)
         logger.debug(f"Class {Area=} intialized.")
 
     @staticmethod
-    def updateCameraPos(player_pos : tuple[float, float], player_rect : pygame.Rect, current_camera : tuple[float,float]) -> tuple[float, float]:
-        return player_pos[0] - SETTINGS.SCREEN_WIDTH/2 + player_rect.width/2, player_pos[1] - SETTINGS.SCREEN_HEIGHT/2 + player_rect.height/2
-
-    @staticmethod
-    def initializeCamera(player_rect : pygame.Rect):
-        return player_rect.x - SETTINGS.SCREEN_WIDTH/2 + player_rect.width/2, player_rect.y - SETTINGS.SCREEN_HEIGHT/2 + player_rect.height/2
-
-    def update(self, screen):
-        # self.player.update();
-        AREA_SWITCH_COOLDOWN = 150
-        self.displayMap(_map=self.currentMap, screen=screen, camera=self.camera)
-        self.playerCollisionHandler(player=self.player, _map=self.currentMap)
-        self.player.update(screen=screen, camera=self.camera)
-        self.camera = Area.updateCameraPos(player_pos = self.player.getPlayerPos(), current_camera=self.camera, player_rect=self.player.rect)
-        self.checkChangeMapSignal(cool_down = AREA_SWITCH_COOLDOWN)
-
-    def loadTestMaps(self) -> tuple:
-        maps = []
+    def loadMapTmxData() -> list[list[pytmx.TiledMap, str]]:
         TestMapDir = os.path.join(os.getcwd(),PATH_CONSTANTS.GAME_DATA, PATH_CONSTANTS.MAPS,PATH_CONSTANTS.TEST_MAPS)
         mapId = 0
+        mapTmxData = []
         for file in os.listdir(TestMapDir):
             fileName = os.path.join(TestMapDir, file)
             tmxData = PyTMXpg.load_pygame(fileName)
-            maps.append(TileMap(tmx_data= tmxData, MAP_ID=mapId, name=fileName))
-            mapId += 1
-        logger.debug(f"Maps: ")
-        for _map in maps:
-            logger.debug(f"{_map.name}")
-        return tuple(maps)
+            mapTmxData.append([tmxData, fileName])
 
-    def initLoadMaps(self) -> tuple:
-
-        maps = []
-        cwd = os.getcwd();
-        file = None
-        try:
-            logger.info(f"Loading Maps for area {self.name=}...")
-            mapsDirectory = os.path.join(cwd, 'gamedata/Maps')
-            logger.debug(f"Mapsdirectory: {os.listdir(mapsDirectory)=}")
-            for folder in os.listdir(mapsDirectory):
-                folderPath = os.path.join(os.path.join(mapsDirectory, folder))
-                for fileName in os.listdir(folderPath):
-                    if not (fileName.endswith(".py") and not fileName.startswith("__")):
-                        continue
-                    mapModuleName = fileName[:-3]  # Remove the ".py" extension
-                    mapModulePath = f'{PATH_CONSTANTS.GAME_DATA}.{PATH_CONSTANTS.MAPS}.{folder}.{mapModuleName}'
-                    logger.debug(f"Fetching maps from {folder=} \n Current Map: {mapModulePath=}")
-                    try:
-                        mapModule = importlib.import_module(mapModulePath)
-                        logger.debug(f"Loading map module: {mapModule=}")
-
-                        maps.append(TileMap(tile_set=mapModule.TileSet, tile_map=mapModule.Map,
-                                          MAP_ID=mapModule.MAP_ID))
-                        logger.debug(f"Loaded map module: {mapModule}")
-                    except Exception as e:
-                        file_path = os.path.abspath(os.path.join(mapsDirectory, folder))
-                        logger.error(f"Failed to load scene module {mapModulePath} in file {file_path}: {e}")
-            logger.info(f"Successfully loaded all Maps for area {self.name=}.")
-
-        except Exception as e:
-            logger.error(f"Failed to load maps.\nException: {e}")
-        maps = tuple(maps)
-
-        return maps
+        return mapTmxData
 
     @staticmethod
-    def loadMap(self, map_id : int, maps : tuple):
-        for _map in maps:
-            if _map.mapID == map_id:
-                return _map
+    def loadDoors(tmx_data: list[list[pytmx.TiledMap, str]]) -> list[Door]:
+        ### Fetching the doors ###
+        doors = []
+        mapId = 0
 
-    def clearMap(self):
-        self.currentMap = 0
+        for data, fileName in tmx_data:
+            visibleLayers = data.visible_layers
+            for layer in visibleLayers:
+                if not isinstance(layer, pytmx.TiledObjectGroup): continue
+                name = "name"
+                for _object in layer:
+                    properties = _object.properties
+                    if properties[name] == Door.strNAME:
+                        doorId = properties[Door.strDOOR_ID]
+                        doors.append(Door(DOOR_ID=doorId, image=_object.image,
+                                               id_current_map=mapId,
+                                               pos=(_object.x * _object.width, _object.y * _object.height)))
+            mapId+=1
+
+        doorAreaInfoDict = dict()
+        for door in doors:
+            if door.id in doorAreaInfoDict:
+                doorList = doorAreaInfoDict[door.id]
+                door.idDestinationMap = doorList[0].idCurrentMap
+                doorList[0].idDestinationMap = door.idCurrentMap
+                doorList.append(door.idCurrentMap)
+            else:
+                doorAreaInfoDict[door.id] = [door]
+        for door in doors:
+            door.writeOutput()
+        return doors
+
+    @staticmethod
+    def loadMapById(tmx_data: list[list[pytmx.TiledMap, str]], id: int) -> TileMap:
+        dataIdx = 0
+        nameIdx = 1
+        tmxData = tmx_data[id][dataIdx]
+        fileName = tmx_data[id][nameIdx]
+
+        return TileMap(tmx_data= tmxData, map_id= id, name= fileName)
+        # return TileMap(tmx_data= tmxData, map_id=mapId, name=fileName)
+
+    def clear(self):
+        self.currentMap.clear()
 
     def displayMap(self, _map : TileMap, screen, camera: tuple[float, float]):
         for tile in _map.spriteGroups[TileMap.trueSpriteGroupID]:
@@ -170,19 +158,30 @@ class Area(Scene):
                 f"Issue changing area to previous: \n \t \t \twhen {self.mapIdx=} added by {step=}, self.mapIdx is out of range.")
             return None
 
-        if self.mapIdx >= len(self.maps):
+        if self.mapIdx >= len(self.mapData):
             self.mapIdx = originalIdx
             logger.error(
                 f"Issue changing area to previous: \n \t \t \twhen {self.mapIdx=} added by {step=}, self.mapIdx is out of range.")
             return None
 
         self.clear()
-        self.currentMap = self.loadMap(maps= self.maps, map_id= self.mapIdx)
-        logger.info(f"Succefully changed map to {self.maps[self.mapIdx]=}")
+        self.currentMap = Area.loadMapById(tmx_data= self.mapData, id= self.mapIdx)
+        logger.info(f"Successfully changed map to {self.currentMap=}")
         self.timeLastChangedMap = time_now
 
-    def clear(self):
-        pass
     @staticmethod
-    def checkMapsForDoorID():
-        pass
+    def updateCameraPos(player_pos : tuple[float, float], player_rect : pygame.Rect, current_camera : tuple[float,float]) -> tuple[float, float]:
+        return player_pos[0] - SETTINGS.SCREEN_WIDTH/2 + player_rect.width/2, player_pos[1] - SETTINGS.SCREEN_HEIGHT/2 + player_rect.height/2
+
+    @staticmethod
+    def initializeCamera(player_rect : pygame.Rect):
+        return player_rect.x - SETTINGS.SCREEN_WIDTH/2 + player_rect.width/2, player_rect.y - SETTINGS.SCREEN_HEIGHT/2 + player_rect.height/2
+
+    def update(self, screen):
+        # self.player.update();
+        AREA_SWITCH_COOLDOWN = 150
+        self.displayMap(_map=self.currentMap, screen=screen, camera=self.camera)
+        self.playerCollisionHandler(player=self.player, _map=self.currentMap)
+        self.player.update(screen=screen, camera=self.camera)
+        self.camera = Area.updateCameraPos(player_pos = self.player.getPlayerPos(), current_camera=self.camera, player_rect=self.player.rect)
+        self.checkChangeMapSignal(cool_down = AREA_SWITCH_COOLDOWN)
