@@ -185,9 +185,9 @@
  </tile>
  <tile id="28">
   <properties>
-   <property name="DOOR" type="bool" value="true"/>
-   <property name="collision" type="int" value="1"/>
+   <property name="collision" type="bool" value="true"/>
    <property name="collisionType" type="int" value="0"/>
+   <property name="name" value="door"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/door.png"/>
  </tile>

@@ -218,7 +218,7 @@
 </data>
  </layer>
  <objectgroup id="3" name="Object Layer 1">
-  <object id="1" gid="29" x="992" y="256" width="32" height="32">
+  <object id="1" name="door" gid="29" x="992" y="256" width="32" height="32">
    <properties>
     <property name="DOOR_ID" type="int" value="1"/>
    </properties>
