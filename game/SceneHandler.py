@@ -36,15 +36,15 @@ class SceneHandler:
 
         logger.info(f"Loaded all Areas.")
 
-        # areas.append(Area(name="test", map_idx=0))
-        return [Area(name="test", map_idx=0, _player= _player)]
+        # areas.append(Area(name="test", starting_map_idx=0))
+        return [Area(name="test", starting_map_idx=0, _player= _player)]
 
     def loadArea(self, idx : int) -> Area:
         return self.Areas[idx];
 
     def loadCurrentScene(self, _type: str, index : int):
         if _type == PATH_CONSTANTS.AREA:
-            return Area(map_idx= index, name="Test")
+            return Area(starting_map_idx= index, name="Test")
         elif _type == PATH_CONSTANTS.TITLE_SCREEN:
             return self.TitleScreen
 
