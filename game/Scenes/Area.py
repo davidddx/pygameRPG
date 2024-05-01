@@ -26,9 +26,7 @@ class Area(Scene):
         self.mapIdx = starting_map_idx
         self.mapData = Area.loadMapTmxData()
         self.doors = Area.loadDoors(self.mapData)
-        self.currentMap = Area.loadMapById(tmx_data= self.mapData, id= starting_map_idx)
-
-        self.camera = Area.initializeCamera(player_rect = _player.rect)
+        self.currentMap = Area.loadMapById(tmx_data= self.mapData, id= starting_map_idx, _doors= self.doors, _player=self.player)
         logger.debug(f"Class {Area=} intialized.")
 
     @staticmethod
@@ -54,13 +52,16 @@ class Area(Scene):
             for layer in visibleLayers:
                 if not isinstance(layer, pytmx.TiledObjectGroup): continue
                 name = "name"
+
                 for _object in layer:
                     properties = _object.properties
                     if properties[name] == Door.strNAME:
+                        entryPoint = (properties[Door.strENTRY_POINT_X], properties[Door.strENTRY_POINT_Y])
+
                         doorId = properties[Door.strDOOR_ID]
                         doors.append(Door(DOOR_ID=doorId, image=_object.image,
                                                id_current_map=mapId,
-                                               pos=(_object.x * _object.width, _object.y * _object.height)))
+                                               pos=(_object.x * _object.width, _object.y * _object.height), entry_point = entryPoint))
             mapId+=1
 
         doorAreaInfoDict = dict()
@@ -77,60 +78,23 @@ class Area(Scene):
         return doors
 
     @staticmethod
-    def loadMapById(tmx_data: list[list[pytmx.TiledMap, str]], id: int) -> TileMap:
+    def loadMapById(tmx_data: list[list[pytmx.TiledMap, str]], id: int, _doors: list[Door], _player: Player) -> TileMap:
         dataIdx = 0
         nameIdx = 1
         tmxData = tmx_data[id][dataIdx]
         fileName = tmx_data[id][nameIdx]
+        doors = []
+        for door in _doors:
+            if not door.idCurrentMap == id:
+                continue
+            doors.append(door)
 
-        return TileMap(tmx_data= tmxData, map_id= id, name= fileName)
+        return TileMap(tmx_data= tmxData, map_id= id, name= fileName, _doors= doors, player=_player)
         # return TileMap(tmx_data= tmxData, map_id=mapId, name=fileName)
 
     def clear(self):
         self.currentMap.clear()
 
-    def displayMap(self, _map : TileMap, screen, camera: tuple[float, float]):
-        for tile in _map.spriteGroups[TileMap.trueSpriteGroupID]:
-            if abs(self.player.rect.x - tile.rect.x) - SETTINGS.TILE_SIZE > SETTINGS.SCREEN_WIDTH/2 or abs(self.player.rect.y - tile.rect.y) - SETTINGS.TILE_SIZE > SETTINGS.SCREEN_HEIGHT/2:
-                continue
-            screen.blit(tile.image, (tile.rect.x - camera[0], tile.rect.y - camera[1]))
-
-        # for spriteGroup in _map.spriteGroups:
-        #     logger.debug(f"{spriteGroup=}")
-        #     for tile in spriteGroup:
-        #         screen.blit(tile.image, (tile.rect.x, tile.rect.y))
-
-    def playerCollisionHandler(self, player : Player, _map : TileMap):
-
-
-        COLLISION_TOLERANCE = 10
-        collisionOccured = False
-        player.onCollision = False
-        BLACK = (0,0,0)
-        WHITE = (255,255,255)
-        for tile in _map.spriteGroups[MAP_CONSTS.COLLIDABLE_GROUP_ID]:
-            if not player.rect.colliderect(tile):
-                continue
-            collisionOccured = True
-            player.rectColor = BLACK
-            player.onCollision = True
-
-            if tile.collisionType == TileMap.COLLISION_TYPE_WALL_ID:
-                if abs(player.rect.right - tile.rect.left) < COLLISION_TOLERANCE and player.movementDirection[0] > 0:
-                    player.rect.right = tile.rect.left
-                if abs(player.rect.left - tile.rect.right) < COLLISION_TOLERANCE and player.movementDirection[0] < 0:
-                    player.rect.left = tile.rect.right
-                if abs(player.rect.bottom - tile.rect.top) < COLLISION_TOLERANCE and player.movementDirection[1] > 0:
-                    player.rect.bottom = tile.rect.top
-                if abs(player.rect.top - tile.rect.bottom) < COLLISION_TOLERANCE and player.movementDirection[1] < 0:
-                    player.rect.top = tile.rect.bottom
-
-
-        if not collisionOccured:
-            player.rectColor = WHITE
-            return None
-
-        ## handling collision ##
 
     def checkChangeMapSignal(self, cool_down : int):
         timenow = pygame.time.get_ticks()
@@ -165,23 +129,19 @@ class Area(Scene):
             return None
 
         self.clear()
-        self.currentMap = Area.loadMapById(tmx_data= self.mapData, id= self.mapIdx)
+        self.currentMap = Area.loadMapById(tmx_data= self.mapData, id= self.mapIdx, _doors=self.doors, _player=self.player)
         logger.info(f"Successfully changed map to {self.currentMap=}")
         self.timeLastChangedMap = time_now
 
-    @staticmethod
-    def updateCameraPos(player_pos : tuple[float, float], player_rect : pygame.Rect, current_camera : tuple[float,float]) -> tuple[float, float]:
-        return player_pos[0] - SETTINGS.SCREEN_WIDTH/2 + player_rect.width/2, player_pos[1] - SETTINGS.SCREEN_HEIGHT/2 + player_rect.height/2
+    def changeMapById(self, time_now: int, id: int):
+        self.clear()
+        self.currentMap = Area.loadMapById(tmx_data = self.mapData, id= self.mapIdx, _doors = self.doors, _player=self.player)
 
-    @staticmethod
-    def initializeCamera(player_rect : pygame.Rect):
-        return player_rect.x - SETTINGS.SCREEN_WIDTH/2 + player_rect.width/2, player_rect.y - SETTINGS.SCREEN_HEIGHT/2 + player_rect.height/2
+        self.timeLastChangedMap = time_now
+
+    AREA_SWITCH_COOLDOWN = 150
 
     def update(self, screen):
-        # self.player.update();
-        AREA_SWITCH_COOLDOWN = 150
-        self.displayMap(_map=self.currentMap, screen=screen, camera=self.camera)
-        self.playerCollisionHandler(player=self.player, _map=self.currentMap)
-        self.player.update(screen=screen, camera=self.camera)
-        self.camera = Area.updateCameraPos(player_pos = self.player.getPlayerPos(), current_camera=self.camera, player_rect=self.player.rect)
-        self.checkChangeMapSignal(cool_down = AREA_SWITCH_COOLDOWN)
+
+        self.currentMap.update(screen=screen)
+        self.checkChangeMapSignal(cool_down=Area.AREA_SWITCH_COOLDOWN)
