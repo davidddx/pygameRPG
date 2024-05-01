@@ -17,6 +17,7 @@ class Door(pygame.sprite.Sprite):
         self.idCurrentMap = id_current_map
         self.rect = image.get_rect(topleft=pos)
         self.entryPoint = entry_point
+        self.inRange = False
 
     def writeOutput(self):
         logger.debug(f"Writing door output")
@@ -24,4 +25,5 @@ class Door(pygame.sprite.Sprite):
         logger.debug(f"{self.id=}")
         logger.debug(f"{self.idCurrentMap=}")
         logger.debug(f"{self.entryPoint=}")
+        logger.debug(f"{self.image=}")
         logger.debug(f"{(self.rect.x, self.rect.y)=}")
