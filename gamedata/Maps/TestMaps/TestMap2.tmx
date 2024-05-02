@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="103" height="104" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="8">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="103" height="104" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="9">
  <tileset firstgid="1" source="../TileSets/Test.tsx"/>
  <layer id="1" name="Tile Layer 1" width="103" height="104">
   <data encoding="csv">
@@ -238,5 +238,6 @@
     <property name="DOOR_ID" type="int" value="2"/>
    </properties>
   </object>
+  <object id="8" gid="30" x="32" y="192" width="32" height="32"/>
  </objectgroup>
 </map>

@@ -4,12 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="semi-working collision">
+    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="added more to writeOutput function">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/Door.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Door.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/Player.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Player.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/Scenes/Area.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Scenes/Area.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/TileMap.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/TileMap.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gamedata/Maps/Maps.tiled-session" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/Maps.tiled-session" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap1.tmx" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap1.tmx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap2.tmx" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap2.tmx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap3.tmx" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap3.tmx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gamedata/Maps/TileSets/Test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/TileSets/Test.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/projectDebug.log" beforeDir="false" afterPath="$PROJECT_DIR$/projectDebug.log" afterDir="false" />
     </list>
@@ -40,6 +44,9 @@
     &quot;accountId&quot;: &quot;747fce5d-8095-48e4-99b6-7e76082f0ed3&quot;
   }
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="QODANA_PROBLEMS_VIEW_TAB" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
 }</component>
@@ -54,7 +61,8 @@
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -64,6 +72,11 @@
       <recent name="C:\Users\david\Documents\GitHub\pygameRPG\pygameRPG\gamedata\Maps" />
       <recent name="C:\Users\david\Documents\GitHub\pygameRPG\pygameRPG\main" />
     </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="print(&quot;h&quot;" />
+    </option>
   </component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
@@ -104,214 +117,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1708439761952</updated>
-    </task>
-    <task id="LOCAL-00053" summary="IDE/DEBUG">
-      <option name="closed" value="true" />
-      <created>1709050341196</created>
-      <option name="number" value="00053" />
-      <option name="presentableId" value="LOCAL-00053" />
-      <option name="project" value="LOCAL" />
-      <updated>1709050341196</updated>
-    </task>
-    <task id="LOCAL-00054" summary="added string property name">
-      <option name="closed" value="true" />
-      <created>1709050368694</created>
-      <option name="number" value="00054" />
-      <option name="presentableId" value="LOCAL-00054" />
-      <option name="project" value="LOCAL" />
-      <updated>1709050368694</updated>
-    </task>
-    <task id="LOCAL-00055" summary="make screen parameter of type pygame.Surface">
-      <option name="closed" value="true" />
-      <created>1709050392907</created>
-      <option name="number" value="00055" />
-      <option name="presentableId" value="LOCAL-00055" />
-      <option name="project" value="LOCAL" />
-      <updated>1709050392907</updated>
-    </task>
-    <task id="LOCAL-00056" summary="adding TitleScreen functionality">
-      <option name="closed" value="true" />
-      <created>1709050411143</created>
-      <option name="number" value="00056" />
-      <option name="presentableId" value="LOCAL-00056" />
-      <option name="project" value="LOCAL" />
-      <updated>1709050411143</updated>
-    </task>
-    <task id="LOCAL-00057" summary="added scene name property">
-      <option name="closed" value="true" />
-      <created>1709147272682</created>
-      <option name="number" value="00057" />
-      <option name="presentableId" value="LOCAL-00057" />
-      <option name="project" value="LOCAL" />
-      <updated>1709147272682</updated>
-    </task>
-    <task id="LOCAL-00058" summary="added logging">
-      <option name="closed" value="true" />
-      <created>1709147298929</created>
-      <option name="number" value="00058" />
-      <option name="presentableId" value="LOCAL-00058" />
-      <option name="project" value="LOCAL" />
-      <updated>1709147298929</updated>
-    </task>
-    <task id="LOCAL-00059" summary="added state, changed method name to ChangeAreaByStep, more logging">
-      <option name="closed" value="true" />
-      <created>1709147334885</created>
-      <option name="number" value="00059" />
-      <option name="presentableId" value="LOCAL-00059" />
-      <option name="project" value="LOCAL" />
-      <updated>1709147334885</updated>
-    </task>
-    <task id="LOCAL-00060" summary="added save data">
-      <option name="closed" value="true" />
-      <created>1709147349190</created>
-      <option name="number" value="00060" />
-      <option name="presentableId" value="LOCAL-00060" />
-      <option name="project" value="LOCAL" />
-      <updated>1709147349190</updated>
-    </task>
-    <task id="LOCAL-00061" summary="added STATE_PAUSED string">
-      <option name="closed" value="true" />
-      <created>1709147362485</created>
-      <option name="number" value="00061" />
-      <option name="presentableId" value="LOCAL-00061" />
-      <option name="project" value="LOCAL" />
-      <updated>1709147362486</updated>
-    </task>
-    <task id="LOCAL-00062" summary="added Title Screen">
-      <option name="closed" value="true" />
-      <created>1709147383211</created>
-      <option name="number" value="00062" />
-      <option name="presentableId" value="LOCAL-00062" />
-      <option name="project" value="LOCAL" />
-      <updated>1709147383211</updated>
-    </task>
-    <task id="LOCAL-00063" summary="variable name changes, titlescreen background position set to middle of screen">
-      <option name="closed" value="true" />
-      <created>1709147455847</created>
-      <option name="number" value="00063" />
-      <option name="presentableId" value="LOCAL-00063" />
-      <option name="project" value="LOCAL" />
-      <updated>1709147455847</updated>
-    </task>
-    <task id="LOCAL-00064" summary="DEBUG/IDE">
-      <option name="closed" value="true" />
-      <created>1709147466336</created>
-      <option name="number" value="00064" />
-      <option name="presentableId" value="LOCAL-00064" />
-      <option name="project" value="LOCAL" />
-      <updated>1709147466336</updated>
-    </task>
-    <task id="LOCAL-00065" summary="added player">
-      <option name="closed" value="true" />
-      <created>1709266448260</created>
-      <option name="number" value="00065" />
-      <option name="presentableId" value="LOCAL-00065" />
-      <option name="project" value="LOCAL" />
-      <updated>1709266448260</updated>
-    </task>
-    <task id="LOCAL-00066" summary="added player loader">
-      <option name="closed" value="true" />
-      <created>1709266463001</created>
-      <option name="number" value="00066" />
-      <option name="presentableId" value="LOCAL-00066" />
-      <option name="project" value="LOCAL" />
-      <updated>1709266463001</updated>
-    </task>
-    <task id="LOCAL-00067" summary="included player information">
-      <option name="closed" value="true" />
-      <created>1709266472477</created>
-      <option name="number" value="00067" />
-      <option name="presentableId" value="LOCAL-00067" />
-      <option name="project" value="LOCAL" />
-      <updated>1709266472477</updated>
-    </task>
-    <task id="LOCAL-00068" summary="newline">
-      <option name="closed" value="true" />
-      <created>1709266483131</created>
-      <option name="number" value="00068" />
-      <option name="presentableId" value="LOCAL-00068" />
-      <option name="project" value="LOCAL" />
-      <updated>1709266483131</updated>
-    </task>
-    <task id="LOCAL-00069" summary="player sprites">
-      <option name="closed" value="true" />
-      <created>1709266493309</created>
-      <option name="number" value="00069" />
-      <option name="presentableId" value="LOCAL-00069" />
-      <option name="project" value="LOCAL" />
-      <updated>1709266493309</updated>
-    </task>
-    <task id="LOCAL-00070" summary="added parts stored in a player spritegroup">
-      <option name="closed" value="true" />
-      <created>1709266521621</created>
-      <option name="number" value="00070" />
-      <option name="presentableId" value="LOCAL-00070" />
-      <option name="project" value="LOCAL" />
-      <updated>1709266521621</updated>
-    </task>
-    <task id="LOCAL-00071" summary="debug/ide">
-      <option name="closed" value="true" />
-      <created>1709266529430</created>
-      <option name="number" value="00071" />
-      <option name="presentableId" value="LOCAL-00071" />
-      <option name="project" value="LOCAL" />
-      <updated>1709266529430</updated>
-    </task>
-    <task id="LOCAL-00072" summary="added player">
-      <option name="closed" value="true" />
-      <created>1709266545295</created>
-      <option name="number" value="00072" />
-      <option name="presentableId" value="LOCAL-00072" />
-      <option name="project" value="LOCAL" />
-      <updated>1709266545295</updated>
-    </task>
-    <task id="LOCAL-00073" summary="using tiled for maps">
-      <option name="closed" value="true" />
-      <created>1709423793114</created>
-      <option name="number" value="00073" />
-      <option name="presentableId" value="LOCAL-00073" />
-      <option name="project" value="LOCAL" />
-      <updated>1709423793114</updated>
-    </task>
-    <task id="LOCAL-00074" summary="sprite edits/tiled">
-      <option name="closed" value="true" />
-      <created>1709423808814</created>
-      <option name="number" value="00074" />
-      <option name="presentableId" value="LOCAL-00074" />
-      <option name="project" value="LOCAL" />
-      <updated>1709423808814</updated>
-    </task>
-    <task id="LOCAL-00075" summary="IDE/DEBUG">
-      <option name="closed" value="true" />
-      <created>1709423818590</created>
-      <option name="number" value="00075" />
-      <option name="presentableId" value="LOCAL-00075" />
-      <option name="project" value="LOCAL" />
-      <updated>1709423818590</updated>
-    </task>
-    <task id="LOCAL-00076" summary="sprite edits">
-      <option name="closed" value="true" />
-      <created>1709423832871</created>
-      <option name="number" value="00076" />
-      <option name="presentableId" value="LOCAL-00076" />
-      <option name="project" value="LOCAL" />
-      <updated>1709423832871</updated>
-    </task>
-    <task id="LOCAL-00077" summary="not needed">
-      <option name="closed" value="true" />
-      <created>1709423840654</created>
-      <option name="number" value="00077" />
-      <option name="presentableId" value="LOCAL-00077" />
-      <option name="project" value="LOCAL" />
-      <updated>1709423840654</updated>
-    </task>
-    <task id="LOCAL-00078" summary="testing purposes, will change back">
-      <option name="closed" value="true" />
-      <created>1709423872004</created>
-      <option name="number" value="00078" />
-      <option name="presentableId" value="LOCAL-00078" />
-      <option name="project" value="LOCAL" />
-      <updated>1709423872004</updated>
     </task>
     <task id="LOCAL-00079" summary="added TestMaps directory">
       <option name="closed" value="true" />
@@ -497,7 +302,215 @@
       <option name="project" value="LOCAL" />
       <updated>1713476235218</updated>
     </task>
-    <option name="localTasksCounter" value="102" />
+    <task id="LOCAL-00102" summary="fixed player-wall based collision">
+      <option name="closed" value="true" />
+      <created>1713580042284</created>
+      <option name="number" value="00102" />
+      <option name="presentableId" value="LOCAL-00102" />
+      <option name="project" value="LOCAL" />
+      <updated>1713580042285</updated>
+    </task>
+    <task id="LOCAL-00103" summary="map">
+      <option name="closed" value="true" />
+      <created>1713580052832</created>
+      <option name="number" value="00103" />
+      <option name="presentableId" value="LOCAL-00103" />
+      <option name="project" value="LOCAL" />
+      <updated>1713580052832</updated>
+    </task>
+    <task id="LOCAL-00104" summary="ide/logs">
+      <option name="closed" value="true" />
+      <created>1713580062072</created>
+      <option name="number" value="00104" />
+      <option name="presentableId" value="LOCAL-00104" />
+      <option name="project" value="LOCAL" />
+      <updated>1713580062072</updated>
+    </task>
+    <task id="LOCAL-00105" summary="Camera system">
+      <option name="closed" value="true" />
+      <created>1713743285538</created>
+      <option name="number" value="00105" />
+      <option name="presentableId" value="LOCAL-00105" />
+      <option name="project" value="LOCAL" />
+      <updated>1713743285539</updated>
+    </task>
+    <task id="LOCAL-00106" summary="sprites/maps">
+      <option name="closed" value="true" />
+      <created>1713743298066</created>
+      <option name="number" value="00106" />
+      <option name="presentableId" value="LOCAL-00106" />
+      <option name="project" value="LOCAL" />
+      <updated>1713743298066</updated>
+    </task>
+    <task id="LOCAL-00107" summary="Camera Initialization added">
+      <option name="closed" value="true" />
+      <created>1713815779129</created>
+      <option name="number" value="00107" />
+      <option name="presentableId" value="LOCAL-00107" />
+      <option name="project" value="LOCAL" />
+      <updated>1713815779130</updated>
+    </task>
+    <task id="LOCAL-00108" summary="changed abstract method name clearScene to clear">
+      <option name="closed" value="true" />
+      <created>1713815795331</created>
+      <option name="number" value="00108" />
+      <option name="presentableId" value="LOCAL-00108" />
+      <option name="project" value="LOCAL" />
+      <updated>1713815795331</updated>
+    </task>
+    <task id="LOCAL-00109" summary="no more try catch">
+      <option name="closed" value="true" />
+      <created>1713815821770</created>
+      <option name="number" value="00109" />
+      <option name="presentableId" value="LOCAL-00109" />
+      <option name="project" value="LOCAL" />
+      <updated>1713815821770</updated>
+    </task>
+    <task id="LOCAL-00110" summary="adding game world class">
+      <option name="closed" value="true" />
+      <created>1713815831499</created>
+      <option name="number" value="00110" />
+      <option name="presentableId" value="LOCAL-00110" />
+      <option name="project" value="LOCAL" />
+      <updated>1713815831499</updated>
+    </task>
+    <task id="LOCAL-00111" summary="clearscene to clear">
+      <option name="closed" value="true" />
+      <created>1713815841852</created>
+      <option name="number" value="00111" />
+      <option name="presentableId" value="LOCAL-00111" />
+      <option name="project" value="LOCAL" />
+      <updated>1713815841852</updated>
+    </task>
+    <task id="LOCAL-00112" summary="adding collision types">
+      <option name="closed" value="true" />
+      <created>1713815895208</created>
+      <option name="number" value="00112" />
+      <option name="presentableId" value="LOCAL-00112" />
+      <option name="project" value="LOCAL" />
+      <updated>1713815895209</updated>
+    </task>
+    <task id="LOCAL-00113" summary="DEBUG_MODE variable added">
+      <option name="closed" value="true" />
+      <created>1713815907391</created>
+      <option name="number" value="00113" />
+      <option name="presentableId" value="LOCAL-00113" />
+      <option name="project" value="LOCAL" />
+      <updated>1713815907391</updated>
+    </task>
+    <task id="LOCAL-00114" summary="no more try catch">
+      <option name="closed" value="true" />
+      <created>1713815924272</created>
+      <option name="number" value="00114" />
+      <option name="presentableId" value="LOCAL-00114" />
+      <option name="project" value="LOCAL" />
+      <updated>1713815924272</updated>
+    </task>
+    <task id="LOCAL-00115" summary="map editing on tiled">
+      <option name="closed" value="true" />
+      <created>1713815962034</created>
+      <option name="number" value="00115" />
+      <option name="presentableId" value="LOCAL-00115" />
+      <option name="project" value="LOCAL" />
+      <updated>1713815962034</updated>
+    </task>
+    <task id="LOCAL-00116" summary="map editing on tiled">
+      <option name="closed" value="true" />
+      <created>1713815966718</created>
+      <option name="number" value="00116" />
+      <option name="presentableId" value="LOCAL-00116" />
+      <option name="project" value="LOCAL" />
+      <updated>1713815966718</updated>
+    </task>
+    <task id="LOCAL-00117" summary="gave player parts names">
+      <option name="closed" value="true" />
+      <created>1713815980051</created>
+      <option name="number" value="00117" />
+      <option name="presentableId" value="LOCAL-00117" />
+      <option name="project" value="LOCAL" />
+      <updated>1713815980051</updated>
+    </task>
+    <task id="LOCAL-00118" summary="spacing">
+      <option name="closed" value="true" />
+      <created>1713816016823</created>
+      <option name="number" value="00118" />
+      <option name="presentableId" value="LOCAL-00118" />
+      <option name="project" value="LOCAL" />
+      <updated>1713816016823</updated>
+    </task>
+    <task id="LOCAL-00119" summary="centered camera">
+      <option name="closed" value="true" />
+      <created>1713832561238</created>
+      <option name="number" value="00119" />
+      <option name="presentableId" value="LOCAL-00119" />
+      <option name="project" value="LOCAL" />
+      <updated>1713832561238</updated>
+    </task>
+    <task id="LOCAL-00120" summary="Changed maps to load more dynamically and loading doors during Area class intialization.">
+      <option name="closed" value="true" />
+      <created>1713932441662</created>
+      <option name="number" value="00120" />
+      <option name="presentableId" value="LOCAL-00120" />
+      <option name="project" value="LOCAL" />
+      <updated>1713932441662</updated>
+    </task>
+    <task id="LOCAL-00121" summary="Added door class">
+      <option name="closed" value="true" />
+      <created>1713932451812</created>
+      <option name="number" value="00121" />
+      <option name="presentableId" value="LOCAL-00121" />
+      <option name="project" value="LOCAL" />
+      <updated>1713932451812</updated>
+    </task>
+    <task id="LOCAL-00122" summary="Removed try except finally">
+      <option name="closed" value="true" />
+      <created>1713932470039</created>
+      <option name="number" value="00122" />
+      <option name="presentableId" value="LOCAL-00122" />
+      <option name="project" value="LOCAL" />
+      <updated>1713932470039</updated>
+    </task>
+    <task id="LOCAL-00123" summary="Changed Area class parameter map_idx to starting_map_idx">
+      <option name="closed" value="true" />
+      <created>1713932503583</created>
+      <option name="number" value="00123" />
+      <option name="presentableId" value="LOCAL-00123" />
+      <option name="project" value="LOCAL" />
+      <updated>1713932503583</updated>
+    </task>
+    <task id="LOCAL-00124" summary="Removed try except block and added door loading">
+      <option name="closed" value="true" />
+      <created>1713932542861</created>
+      <option name="number" value="00124" />
+      <option name="presentableId" value="LOCAL-00124" />
+      <option name="project" value="LOCAL" />
+      <updated>1713932542861</updated>
+    </task>
+    <task id="LOCAL-00125" summary="Moved some functions and variables from Area class to Tilemap class">
+      <option name="closed" value="true" />
+      <created>1714524623397</created>
+      <option name="number" value="00125" />
+      <option name="presentableId" value="LOCAL-00125" />
+      <option name="project" value="LOCAL" />
+      <updated>1714524623398</updated>
+    </task>
+    <task id="LOCAL-00126" summary="added variable entryPoint">
+      <option name="closed" value="true" />
+      <created>1714524657805</created>
+      <option name="number" value="00126" />
+      <option name="presentableId" value="LOCAL-00126" />
+      <option name="project" value="LOCAL" />
+      <updated>1714524657805</updated>
+    </task>
+    <task id="LOCAL-00127" summary="added more to writeOutput function">
+      <option name="closed" value="true" />
+      <created>1714584358727</created>
+      <option name="number" value="00127" />
+      <option name="presentableId" value="LOCAL-00127" />
+      <option name="project" value="LOCAL" />
+      <updated>1714584358727</updated>
+    </task>
+    <option name="localTasksCounter" value="128" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -544,31 +557,31 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="not needed" />
-    <MESSAGE value="testing purposes, will change back" />
-    <MESSAGE value="added TestMaps directory" />
-    <MESSAGE value="will change back" />
-    <MESSAGE value="will most likely change" />
-    <MESSAGE value="removed camera" />
-    <MESSAGE value="added buggy movement system" />
-    <MESSAGE value="changed logger initialization text" />
-    <MESSAGE value="debug/ide" />
-    <MESSAGE value="added saved player controls to here" />
-    <MESSAGE value="fixed movement" />
-    <MESSAGE value="edited map loading" />
-    <MESSAGE value="fence image" />
-    <MESSAGE value="movement" />
-    <MESSAGE value="images" />
-    <MESSAGE value="maps/tilesets" />
-    <MESSAGE value="IDE" />
-    <MESSAGE value="created a single rect to hold player info and simplified playerpart class to offset and image." />
-    <MESSAGE value="planning collision handling" />
-    <MESSAGE value="refactored movement code &amp; movement input handling" />
-    <MESSAGE value="changed player run key" />
-    <MESSAGE value="adding player-map collision handling" />
-    <MESSAGE value="removed unused function" />
-    <MESSAGE value="removed unused constants" />
-    <MESSAGE value="semi-working collision" />
-    <option name="LAST_COMMIT_MESSAGE" value="semi-working collision" />
+    <MESSAGE value="fixed player-wall based collision" />
+    <MESSAGE value="map" />
+    <MESSAGE value="ide/logs" />
+    <MESSAGE value="Camera system" />
+    <MESSAGE value="sprites/maps" />
+    <MESSAGE value="Camera Initialization added" />
+    <MESSAGE value="changed abstract method name clearScene to clear" />
+    <MESSAGE value="adding game world class" />
+    <MESSAGE value="clearscene to clear" />
+    <MESSAGE value="adding collision types" />
+    <MESSAGE value="DEBUG_MODE variable added" />
+    <MESSAGE value="no more try catch" />
+    <MESSAGE value="map editing on tiled" />
+    <MESSAGE value="gave player parts names" />
+    <MESSAGE value="spacing" />
+    <MESSAGE value="centered camera" />
+    <MESSAGE value="Changed maps to load more dynamically and loading doors during Area class intialization." />
+    <MESSAGE value="Added door class" />
+    <MESSAGE value="Removed try except finally" />
+    <MESSAGE value="Changed Area class parameter map_idx to starting_map_idx" />
+    <MESSAGE value="Removed try except block and added door loading" />
+    <MESSAGE value="tiled" />
+    <MESSAGE value="Moved some functions and variables from Area class to Tilemap class" />
+    <MESSAGE value="added variable entryPoint" />
+    <MESSAGE value="added more to writeOutput function" />
+    <option name="LAST_COMMIT_MESSAGE" value="added more to writeOutput function" />
   </component>
 </project>

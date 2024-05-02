@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.10.2" name="Test" tilewidth="32" tileheight="32" tilecount="29" columns="0">
+<tileset version="1.10" tiledversion="1.10.2" name="Test" tilewidth="32" tileheight="32" tilecount="30" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <properties>
@@ -186,10 +186,17 @@
  <tile id="28">
   <properties>
    <property name="collision" type="bool" value="true"/>
-   <property name="collisionType" type="int" value="0"/>
+   <property name="collisionType" type="int" value="1"/>
+   <property name="entryPoint" type="int" value="1"/>
    <property name="name" value="door"/>
   </properties>
   <image width="32" height="32" source="../../../images/test/door.png"/>
+ </tile>
+ <tile id="29">
+  <properties>
+   <property name="name" value="SPAWN_DEFAULT"/>
+  </properties>
+  <image width="32" height="32" source="../../../images/test/DefaultSpawn.png"/>
  </tile>
  <wangsets>
   <wangset name="DirtGrass" type="corner" tile="-1">

@@ -42,11 +42,11 @@
             "expandedObjectLayers": [
                 6
             ],
-            "scale": 1,
+            "scale": 1.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 472,
-                "y": 188.5
+                "x": 752,
+                "y": 302.99999999999994
             }
         },
         "TestMaps/TestMap2.tmx": {
@@ -56,19 +56,19 @@
             "scale": 1.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 319.33333333333337,
-                "y": 130.33333333333331
+                "x": 277.99999999999994,
+                "y": 236.33333333333337
             }
         },
         "TestMaps/TestMap3.tmx": {
             "expandedObjectLayers": [
                 3
             ],
-            "scale": 0.75,
+            "scale": 1.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 1006.6666666666667,
-                "y": 271.33333333333326
+                "x": 1007.3333333333333,
+                "y": 271.66666666666663
             }
         },
         "TileSets/Test.tsx": {
