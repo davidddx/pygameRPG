@@ -12,7 +12,7 @@ import globalVars.SceneConstants as SCENE_CONSTANTS
 from game.Player import Player
 import pytmx.util_pygame as PyTMXpg
 import globalVars.TilemapConstants as MAP_CONSTS
-from game.Door import Door
+from game.Door import Door, DoorEntryPointIDs
 
 class Area(Scene):
 
@@ -56,12 +56,12 @@ class Area(Scene):
                 for _object in layer:
                     properties = _object.properties
                     if properties[name] == Door.strNAME:
-                        entryPoint = (properties[Door.strENTRY_POINT_X], properties[Door.strENTRY_POINT_Y])
+                        entryPoint = properties[Door.strENTRY_POINT]
 
                         doorId = properties[Door.strDOOR_ID]
                         doors.append(Door(DOOR_ID=doorId, image=_object.image,
                                                id_current_map=mapId,
-                                               pos=(_object.x * _object.width, _object.y * _object.height), entry_point = entryPoint))
+                                               pos=(_object.x, _object.y), entry_point = entryPoint))
             mapId+=1
 
         doorAreaInfoDict = dict()
@@ -78,7 +78,7 @@ class Area(Scene):
         return doors
 
     @staticmethod
-    def loadMapById(tmx_data: list[list[pytmx.TiledMap, str]], id: int, _doors: list[Door], _player: Player) -> TileMap:
+    def loadMapById(tmx_data: list[list[pytmx.TiledMap, str]], id: int, _doors: list[Door], _player: Player, spawn_pos = None) -> TileMap:
         dataIdx = 0
         nameIdx = 1
         tmxData = tmx_data[id][dataIdx]
@@ -89,7 +89,8 @@ class Area(Scene):
                 continue
             doors.append(door)
 
-        return TileMap(tmx_data= tmxData, map_id= id, name= fileName, _doors= doors, player=_player)
+        if spawn_pos is None: return TileMap(tmx_data= tmxData, map_id= id, name= fileName, _doors= doors, player=_player)
+        else: return TileMap(tmx_data= tmxData, map_id= id, name= fileName, _doors= doors, player=_player, player_pos= spawn_pos)
         # return TileMap(tmx_data= tmxData, map_id=mapId, name=fileName)
 
     def clear(self):
@@ -101,10 +102,39 @@ class Area(Scene):
         if timenow - self.timeLastChangedMap <= cool_down:
             return None
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_e]:
-            self.changeMapByStep(time_now= timenow, step=1, positive=True)
-        elif keys[pygame.K_q]:
-            self.changeMapByStep(time_now= timenow, positive=False)
+        if self.currentMap.collidedDoor:
+            destinationId = self.currentMap.collidedDoor.getIdDestinationMap()
+            self.changeMapById(time_now=timenow, id=destinationId,
+                               spawn_pos= Area.generatePlrSpawnPos(map_id=destinationId,
+                                                                   doors=self.doors,
+                                                                   collided_door=self.currentMap.collidedDoor))
+        if SETTINGS.DEBUG_MODE:
+            if keys[pygame.K_e]:
+                self.changeMapByStep(time_now= timenow, step=1, positive=True)
+            elif keys[pygame.K_q]:
+                self.changeMapByStep(time_now= timenow, positive=False)
+
+    @staticmethod
+    def generatePlrSpawnPos(map_id: int, doors: list[Door], collided_door: Door):
+        for door in doors:
+            if collided_door == door:
+                continue
+            if door.id != collided_door.id:
+                continue
+            doorPos = door.getPosition()
+            spawnPos = None
+            match door.entryPoint:
+                case DoorEntryPointIDs.LEFT:
+                    spawnPos = (doorPos[0] - door.rect.w, doorPos[1])
+                case DoorEntryPointIDs.RIGHT:
+                    spawnPos = (doorPos[0] + door.rect.w, doorPos[1])
+                case DoorEntryPointIDs.UP:
+                    spawnPos = (doorPos[0], doorPos[1] - door.rect.h)
+                case DoorEntryPointIDs.DOWN:
+                    spawnPos = (doorPos[0], doorPos[1] + door.rect.h)
+                case _:
+                    spawnPos = (doorPos[0], doorPos[1] + door.rect.h)
+            return spawnPos
 
     def changeMapByStep(self, time_now: int, step=1, positive=True):
         if positive and step < 0:
@@ -133,9 +163,9 @@ class Area(Scene):
         logger.info(f"Successfully changed map to {self.currentMap=}")
         self.timeLastChangedMap = time_now
 
-    def changeMapById(self, time_now: int, id: int):
+    def changeMapById(self, time_now: int, id: int, spawn_pos=None):
         self.clear()
-        self.currentMap = Area.loadMapById(tmx_data = self.mapData, id= self.mapIdx, _doors = self.doors, _player=self.player)
+        self.currentMap = Area.loadMapById(tmx_data = self.mapData, id= id, _doors = self.doors, _player=self.player, spawn_pos=spawn_pos)
 
         self.timeLastChangedMap = time_now
 
