@@ -24,32 +24,37 @@ class PossiblePlayerStates:
     WALKING = "WALKING"
     NOT_MOVING = "NOT_MOVING"
 
+class PlayerRectCollisionIDs:
+    UP = 0
+    DOWN = 1
+    LEFT = 2
+    RIGHT = 3
+
+class PlayerRectCollisionTypes:
+    DOOR = "Door"
+    WALL = "Wall"
+    NONE = "None"
+
 class Player:
     PLAYER_HEAD_OFFSET = 0
     PLAYER_BODY_OFFSET = 0
 
     def __init__(self, pos: tuple[int, int], head_img: pygame.Surface, body_img: pygame.Surface):
         self.playerGroup = pygame.sprite.Group()
-        self.movementState = ""
-        self.onCollision = False
-        self.rect = None
+        self.playerGroup = Player.generatePlayerGroup(head=head_img, body=body_img, group=self.playerGroup)
+        for _part in self.playerGroup:
+            _part.outputInfo()
+        self.velocity = [1, 1]
+        self.movementDirection = [0, 0]
+        self.onCollision = [False, False, False, False]
+        self.onCollisionWith = [None, None, None, None]
+        self.rect = Player.generateRect(player_group = self.playerGroup, pos=pos)
         self.rectColor = (255,255,255)
-        self.velocity = []  # format: [xVelocity, yVelocity]
-        self.movementDirection = [] # format: same as above.
-        try:
-            logger.info(f"class {Player=} initializing....")
-
-            self.playerGroup = Player.generatePlayerGroup(head=head_img, body=body_img, group=self.playerGroup)
-
-            for _part in self.playerGroup:
-                _part.outputInfo()
-            self.velocity = [1, 1]
-            self.movementDirection = [0, 0]
-            self.rect = Player.generateRect(player_group = self.playerGroup, pos=pos)
-            self.movementState = PossiblePlayerStates.NOT_MOVING
-            logger.info(f"class {Player=} initialized.")
-        except Exception as e:
-            logger.info(f"Failed to initialize class {Player=}.\n Error: {e}")
+        self.movementState = PossiblePlayerStates.NOT_MOVING
+        self.movable = False
+        logger.info(f"class {Player=} initialized.")
+        
+        
 
 
 
@@ -64,8 +69,8 @@ class Player:
         ##########################################################################
 
         for _part in player_group:
-            logger.debug(f"blitting _part {_part.name=} to position: \n "
-                         f"({self.rect.x + _part.offset[0] - camera_offset[0]},{self.rect.y + _part.offset[1] - camera_offset[1]})")
+            # logger.debug(f"blitting _part {_part.name=} to position: \n "
+            #              f"({self.rect.x + _part.offset[0] - camera_offset[0]},{self.rect.y + _part.offset[1] - camera_offset[1]})")
             screen.blit(_part.image, (self.rect.x + _part.offset[0] - camera_offset[0],
                                       self.rect.y + _part.offset[1] - camera_offset[1]))
 
@@ -91,10 +96,6 @@ class Player:
         partBody.setPartOffset(x_offset= 0, y_offset= head.get_width())
         return group
 
-    def handleInput(self):
-        keys = pygame.key.get_pressed()
-        self.handleWalkingInput(keys)
-
     @staticmethod
     def checkPlayerMovementState(keys, movement_state: str) -> str:
         if keys[SAVED_DATA.PLAYER_RUN_KEY_ID]:
@@ -107,6 +108,10 @@ class Player:
             movement_state = PossiblePlayerStates.NOT_MOVING
 
         return movement_state
+
+    def handleInput(self):
+        keys = pygame.key.get_pressed()
+        self.handleWalkingInput(keys)
 
     def handleWalkingInput(self, keys):
 
@@ -129,6 +134,7 @@ class Player:
     def movePlayer(self, direction: list, velocity: list):
         # logger.debug(f"Moving Player group. \n Direction: {self.movementDirection=}, \n Velocity: {self.velocity=}")
         step_x, step_y = 0, 0
+        if not self.movable: return None
         diagonalStep = 2
         nonDiagonalStep = 3
         if abs(direction[0]) == abs(direction[1]) == 1:
@@ -146,6 +152,18 @@ class Player:
         logger.debug(f"setting player rect pos to: {self.rect.x}, {self.rect.y}")
         self.rect.x = pos_x
         self.rect.y = pos_y
+
+    def setPlayerCollisionInfo(self, COLLISION_UP: bool, COLLISION_DOWN: bool, COLLISION_LEFT: bool, COLLISION_RIGHT: bool):
+        self.onCollision[PlayerRectCollisionIDs.UP] = COLLISION_UP
+        self.onCollision[PlayerRectCollisionIDs.DOWN] = COLLISION_DOWN
+        self.onCollision[PlayerRectCollisionIDs.RIGHT] = COLLISION_RIGHT
+        self.onCollision[PlayerRectCollisionIDs.LEFT] = COLLISION_LEFT
+
+    def getPlayerCollisionInfo(self):
+        return self.onCollision
+
+    def setPlayerMovability(self, value: bool):
+        self.movable = value
 
     def getPlayerPos(self) -> tuple[float, float]:
         return self.rect.x, self.rect.y
