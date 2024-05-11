@@ -4,17 +4,47 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="added more to writeOutput function">
+    <list default="true" id="a294c7fb-0ec7-4aef-9d29-e6b47f7c998b" name="Changes" comment="Spawn position symbol to use in tiled map editor">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/Door.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Door.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/Game.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Game.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/Player.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Player.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/Scenes/Area.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/Scenes/Area.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/TileMap.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/TileMap.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gamedata/Maps/Maps.tiled-session" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/Maps.tiled-session" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap1.tmx" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap1.tmx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap2.tmx" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap2.tmx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap3.tmx" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/TestMaps/TestMap3.tmx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gamedata/Maps/TileSets/Test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Maps/TileSets/Test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gamedata/Save/SavedData.py" beforeDir="false" afterPath="$PROJECT_DIR$/gamedata/Save/SavedData.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/globalVars/SettingsConstants.py" beforeDir="false" afterPath="$PROJECT_DIR$/globalVars/SettingsConstants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DefaultSpawn.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DefaultSpawn.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteCornerBottomLeft.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteCornerBottomLeft.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteCornerBottomRight.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteCornerBottomRight.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteCornerTopLeft.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteCornerTopLeft.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteCornerTopRight.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteCornerTopRight.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteDown.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteDown.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteDownLeft.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteDownLeft.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteDownRight.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteDownRight.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteLeft.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteLeft.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteMiddle.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteMiddle.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteRight.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteRight.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteUp.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteUp.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteUpLeft.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteUpLeft.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/DirtSpriteUpRight.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/DirtSpriteUpRight.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/Fence.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/Fence.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/FenceBottomLeft.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/FenceBottomLeft.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/FenceBottomLeft2.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/FenceBottomLeft2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/FenceBottomRight.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/FenceBottomRight.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/FenceBottomRight2.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/FenceBottomRight2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/FenceHorizontal2.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/FenceHorizontal2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/FenceLeftEnd.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/FenceLeftEnd.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/FenceRightEnd,png.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/FenceRightEnd,png.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/FenceTopLeft.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/FenceTopLeft.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/FenceTopLeft2.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/FenceTopLeft2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/FenceTopRight.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/FenceTopRight.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/FenceTopRight2.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/FenceTopRight2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/FenceVertical.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/FenceVertical.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/FenceVertical2.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/FenceVertical2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/GrassSprite.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/GrassSprite.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/PlrBody.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/PlrHead.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/PlrPants.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/PlrShirt.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/test/door.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/test/door.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/projectDebug.log" beforeDir="false" afterPath="$PROJECT_DIR$/projectDebug.log" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -117,54 +147,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1708439761952</updated>
-    </task>
-    <task id="LOCAL-00079" summary="added TestMaps directory">
-      <option name="closed" value="true" />
-      <created>1709423884009</created>
-      <option name="number" value="00079" />
-      <option name="presentableId" value="LOCAL-00079" />
-      <option name="project" value="LOCAL" />
-      <updated>1709423884010</updated>
-    </task>
-    <task id="LOCAL-00080" summary="will change back">
-      <option name="closed" value="true" />
-      <created>1709423894833</created>
-      <option name="number" value="00080" />
-      <option name="presentableId" value="LOCAL-00080" />
-      <option name="project" value="LOCAL" />
-      <updated>1709423894833</updated>
-    </task>
-    <task id="LOCAL-00081" summary="will most likely change">
-      <option name="closed" value="true" />
-      <created>1709423912646</created>
-      <option name="number" value="00081" />
-      <option name="presentableId" value="LOCAL-00081" />
-      <option name="project" value="LOCAL" />
-      <updated>1709423912646</updated>
-    </task>
-    <task id="LOCAL-00082" summary="removed camera">
-      <option name="closed" value="true" />
-      <created>1709423924014</created>
-      <option name="number" value="00082" />
-      <option name="presentableId" value="LOCAL-00082" />
-      <option name="project" value="LOCAL" />
-      <updated>1709423924014</updated>
-    </task>
-    <task id="LOCAL-00083" summary="added buggy movement system">
-      <option name="closed" value="true" />
-      <created>1712072426248</created>
-      <option name="number" value="00083" />
-      <option name="presentableId" value="LOCAL-00083" />
-      <option name="project" value="LOCAL" />
-      <updated>1712072426249</updated>
-    </task>
-    <task id="LOCAL-00084" summary="changed logger initialization text">
-      <option name="closed" value="true" />
-      <created>1712072460971</created>
-      <option name="number" value="00084" />
-      <option name="presentableId" value="LOCAL-00084" />
-      <option name="project" value="LOCAL" />
-      <updated>1712072460971</updated>
     </task>
     <task id="LOCAL-00085" summary="debug/ide">
       <option name="closed" value="true" />
@@ -510,7 +492,55 @@
       <option name="project" value="LOCAL" />
       <updated>1714584358727</updated>
     </task>
-    <option name="localTasksCounter" value="128" />
+    <task id="LOCAL-00128" summary="added Player Spawn Position generation">
+      <option name="closed" value="true" />
+      <created>1714693624227</created>
+      <option name="number" value="00128" />
+      <option name="presentableId" value="LOCAL-00128" />
+      <option name="project" value="LOCAL" />
+      <updated>1714693624227</updated>
+    </task>
+    <task id="LOCAL-00129" summary="added Player Spawn Position based on door entry">
+      <option name="closed" value="true" />
+      <created>1714693639920</created>
+      <option name="number" value="00129" />
+      <option name="presentableId" value="LOCAL-00129" />
+      <option name="project" value="LOCAL" />
+      <updated>1714693639920</updated>
+    </task>
+    <task id="LOCAL-00130" summary="added collision types and variable movable that determines if a player can move">
+      <option name="closed" value="true" />
+      <created>1714693710537</created>
+      <option name="number" value="00130" />
+      <option name="presentableId" value="LOCAL-00130" />
+      <option name="project" value="LOCAL" />
+      <updated>1714693710537</updated>
+    </task>
+    <task id="LOCAL-00131" summary="added door collision, player movement cooldown on map switch, and map spawn point generation">
+      <option name="closed" value="true" />
+      <created>1714693802317</created>
+      <option name="number" value="00131" />
+      <option name="presentableId" value="LOCAL-00131" />
+      <option name="project" value="LOCAL" />
+      <updated>1714693802317</updated>
+    </task>
+    <task id="LOCAL-00132" summary="Tiled/debug/ide">
+      <option name="closed" value="true" />
+      <created>1714693814420</created>
+      <option name="number" value="00132" />
+      <option name="presentableId" value="LOCAL-00132" />
+      <option name="project" value="LOCAL" />
+      <updated>1714693814420</updated>
+    </task>
+    <task id="LOCAL-00133" summary="Spawn position symbol to use in tiled map editor">
+      <option name="closed" value="true" />
+      <created>1714693837714</created>
+      <option name="number" value="00133" />
+      <option name="presentableId" value="LOCAL-00133" />
+      <option name="project" value="LOCAL" />
+      <updated>1714693837714</updated>
+    </task>
+    <option name="localTasksCounter" value="134" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -557,12 +587,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fixed player-wall based collision" />
-    <MESSAGE value="map" />
-    <MESSAGE value="ide/logs" />
-    <MESSAGE value="Camera system" />
-    <MESSAGE value="sprites/maps" />
-    <MESSAGE value="Camera Initialization added" />
     <MESSAGE value="changed abstract method name clearScene to clear" />
     <MESSAGE value="adding game world class" />
     <MESSAGE value="clearscene to clear" />
@@ -582,6 +606,12 @@
     <MESSAGE value="Moved some functions and variables from Area class to Tilemap class" />
     <MESSAGE value="added variable entryPoint" />
     <MESSAGE value="added more to writeOutput function" />
-    <option name="LAST_COMMIT_MESSAGE" value="added more to writeOutput function" />
+    <MESSAGE value="added Player Spawn Position generation" />
+    <MESSAGE value="added Player Spawn Position based on door entry" />
+    <MESSAGE value="added collision types and variable movable that determines if a player can move" />
+    <MESSAGE value="added door collision, player movement cooldown on map switch, and map spawn point generation" />
+    <MESSAGE value="Tiled/debug/ide" />
+    <MESSAGE value="Spawn position symbol to use in tiled map editor" />
+    <option name="LAST_COMMIT_MESSAGE" value="Spawn position symbol to use in tiled map editor" />
   </component>
 </project>
