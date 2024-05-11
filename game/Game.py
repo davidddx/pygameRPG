@@ -39,7 +39,7 @@ class Game:
             "arms" : pygame.image.load(f"{armsDir}/PlrArms{saved_data.PLAYER_ARMS_ID}.png"),
         }
         plrParts = {
-            "player": pygame.image.load(f"{playerImageDir}/plrSpriteReferenceNew.png")
+            "player": pygame.image.load(f"{playerImageDir}/PlrSpriteReferenceNew.png")
         }
 
         #
