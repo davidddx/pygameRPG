@@ -2,19 +2,24 @@ import pygame
 from debug.logger import logger
 import globalVars.SettingsConstants as globalVars
 import gamedata.Save.SavedData as SAVED_DATA
-import numpy as np
+
+
+def loadWalkAnimSprites() -> list[pygame.surface]:
+    pass
+
+
 class PlayerPart(pygame.sprite.Sprite):
+    WalkAnimSprites = loadWalkAnimSprites()
+    currentPartAnimationIndex = 0
+
     def __init__(self,image: pygame.Surface, group: pygame.sprite.Group, name: str):
         super().__init__(group)
         self.name = name
-        self.offset = []
         self.image = image
 
-    def setPartOffset(self, x_offset, y_offset):
-        self.offset = [x_offset, y_offset]
 
     def outputInfo(self):
-        logger.debug(f"Player part info: \n \t {self.offset=} \n \t {self.image=}")
+        logger.debug(f"Player part info: \n \t {self.name=} \n \t {self.image=} ")
 
 
 
@@ -36,12 +41,11 @@ class PlayerRectCollisionTypes:
     NONE = "None"
 
 class Player:
-    PLAYER_HEAD_OFFSET = 0
-    PLAYER_BODY_OFFSET = 0
 
-    def __init__(self, pos: tuple[int, int], head_img: pygame.Surface, body_img: pygame.Surface):
+
+    def __init__(self, pos: tuple[int, int], plrPartsDict: dict[str, pygame.Surface]):
         self.playerGroup = pygame.sprite.Group()
-        self.playerGroup = Player.generatePlayerGroup(head=head_img, body=body_img, group=self.playerGroup)
+        self.playerGroup = Player.generatePlayerGroup(parts=plrPartsDict, group=self.playerGroup)
         for _part in self.playerGroup:
             _part.outputInfo()
         self.velocity = [1, 1]
@@ -53,10 +57,6 @@ class Player:
         self.movementState = PossiblePlayerStates.NOT_MOVING
         self.movable = False
         logger.info(f"class {Player=} initialized.")
-        
-        
-
-
 
     def render(self, player_group, screen, camera_offset):
         ##########################################################################
@@ -70,30 +70,25 @@ class Player:
 
         for _part in player_group:
             # logger.debug(f"blitting _part {_part.name=} to position: \n "
-            #              f"({self.rect.x + _part.offset[0] - camera_offset[0]},{self.rect.y + _part.offset[1] - camera_offset[1]})")
-            screen.blit(_part.image, (self.rect.x + _part.offset[0] - camera_offset[0],
-                                      self.rect.y + _part.offset[1] - camera_offset[1]))
+            screen.blit(_part.image, (self.rect.x - camera_offset[0],
+                                      self.rect.y - camera_offset[1]))
 
     @staticmethod
     def generateRect(player_group : pygame.sprite.Group, pos : tuple[int, int]) -> pygame.rect.Rect:
-        sumWidths = 0
-        sumHeights = 0
+        rectWidth = rectHeight = 0
         for _part in player_group:
-            sumWidths = _part.image.get_width()
-            sumHeights += _part.image.get_height()
-        rect = pygame.Rect(pos[0], pos[1], sumWidths, sumHeights)
+            rectWidth = _part.image.get_width()
+            rectHeight = _part.image.get_height()
+            break
+        rect = pygame.Rect(pos[0], pos[1], rectWidth, rectHeight)
 
         return rect
 
     @staticmethod
-    def generatePlayerGroup(head: pygame.Surface, body: pygame.Surface,
-                            group: pygame.sprite.Group) -> pygame.sprite.Group:
-        partList = []
+    def generatePlayerGroup(parts: dict[str, pygame.Surface], group: pygame.sprite.Group) -> pygame.sprite.Group:
+        for name in parts:
+            PlayerPart(image=parts[name], group=group, name=name)
 
-        partHead = PlayerPart(image=head, group=group, name="head")
-        partHead.setPartOffset(x_offset= - int(body.get_width() - head.get_width()), y_offset = 0)
-        partBody = PlayerPart(image=body, group=group, name="body")
-        partBody.setPartOffset(x_offset= 0, y_offset= head.get_width())
         return group
 
     @staticmethod
