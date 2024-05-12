@@ -42,11 +42,11 @@
             "expandedObjectLayers": [
                 6
             ],
-            "scale": 1.5,
-            "selectedLayer": 2,
+            "scale": 1,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 479.99999999999994,
-                "y": 319.66666666666663
+                "x": 494,
+                "y": 311.5
             }
         },
         "TestMaps/TestMap2.tmx": {
@@ -56,8 +56,8 @@
             "scale": 1.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 1648,
-                "y": 1663.6666666666665
+                "x": 1646.6666666666665,
+                "y": 1662.3333333333333
             }
         },
         "TestMaps/TestMap3.tmx": {
@@ -67,7 +67,7 @@
             "scale": 1.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 1002.6666666666666,
+                "x": 1001.3333333333333,
                 "y": 270.33333333333337
             }
         },
@@ -90,10 +90,10 @@
     "project": "Maps.tiled-project",
     "property.type": "string",
     "recentFiles": [
-        "TestMaps/TestMap1.tmx",
         "TestMaps/TestMap2.tmx",
         "TileSets/Test.tsx",
         "TestMaps/TestMap3.tmx",
+        "TestMaps/TestMap1.tmx",
         "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Maps/testmap/level1.tmx",
         "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Tilesets/TestTileSet.tsx",
         "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Maps/testmap/rulesloc/autotilingrules.tmx"
