@@ -1,38 +1,56 @@
 from debug.logger import logger
-import globalVars.PathConstants as PATH_CONSTANTS
-from game.TileMap import TileMap
 from game.Scenes.Area import Area
 import os
-import importlib
 import pygame
+import importlib
 import gamedata.Save.SavedData as SAVED_DATA
 from game.Scenes.TitleScreen import TitleScreen
 import globalVars.SceneConstants as SCENE_CONSTANTS
-from game.Player import Player
+from game.Player import Player, PlayerPart
 
 class SceneHandler:
-    def __init__(self, _player : Player):
+    def __init__(self):
         self.scenes = ()
-        self.currentSceneIndex = 0
-        self.SCENE_COUNT = 0
-        self.timeLastChangedScene = pygame.time.get_ticks()
-        self.TitleScreen = None
+        self.timeLastChangedScene = pygame.time.get_ticks() 
         logger.debug(f"Class {SceneHandler=} initializing....")
-        self.Areas = self.loadAreas(_player= _player);
-        self.player = _player
+        self.player = SceneHandler.loadPlayer()
+        self.Areas = self.loadTestArea(_player= self.player);
         self.TitleScreen = TitleScreen(background=pygame.image.load(os.getcwd() + '/images/test/titleScreenBackground.png'))
         self.currentScene = self.TitleScreen
         logger.debug(f"Class {SceneHandler=} intialized.")
 
+    @staticmethod
+    def loadPlayer() -> Player:
+        cwd = os.getcwd()
+        playerSpriteDir = cwd + "/images/test/PlrSpriteTest"
+        playerPartDirs = {
+                PlayerPart.hair: playerSpriteDir + "/PlrHair",
+                PlayerPart.eyes: playerSpriteDir + "/PlrEyes",
+                PlayerPart.eyebrows: playerSpriteDir + "/PlrEyebrows",
+                PlayerPart.head: playerSpriteDir + "/PlrHead",
+                PlayerPart.arms: playerSpriteDir + "/PlrArms", 
+                PlayerPart.shirt: playerSpriteDir + "/PlrShirt",
+                PlayerPart.pants: playerSpriteDir + "/PlrPants",
+                PlayerPart.shoes: playerSpriteDir + "/PlrShoes",
+
+        }
+        playerAnimDir = playerSpriteDir + "/AnimationTesting"
+        return Player(pos = SAVED_DATA.PLAYER_POSITION, 
+                      plr_sprite_path= playerSpriteDir, plr_parts_path = playerPartDirs, plr_anim_path = playerAnimDir) 
+
+    def loadTestArea(self, _player) -> list[Area]:
+        logger.info(f"Loading Test Area....")
+        return [Area(name = "test", starting_map_idx=SAVED_DATA.CURRENT_MAP_INDEX, _player=_player)]
 
     def loadAreas(self, _player) -> list[Area]:
         logger.info(f"Loading Areas........")
         areas = []
+        cwd = os.getcwd()
         try:
-            pass
+            areaDir = f"{cwd}/gamedata/Areas"
             # Code that loads areas
         except Exception as e:
-            logger.error(f"Failed to load areas. Error: {e}")
+            logger.error(f"Failed to load areas. error: {e}")
 
         logger.info(f"Loaded all Areas.")
 
@@ -42,16 +60,10 @@ class SceneHandler:
     def loadArea(self, idx : int) -> Area:
         return self.Areas[idx];
 
-    def loadCurrentScene(self, _type: str, index : int):
-        if _type == PATH_CONSTANTS.AREA:
-            return Area(starting_map_idx= index, name="Test")
-        elif _type == PATH_CONSTANTS.TITLE_SCREEN:
-            return self.TitleScreen
-
     def checkSceneState(self, currentScene):
         if not currentScene.state == SCENE_CONSTANTS.STATE_FINISHED:
             return None
-        self.currentScene = 0
+        del self.currentScene 
         logger.debug(f"{currentScene=}")
         self.currentScene = self.loadArea(SAVED_DATA.CURRENT_AREA_INDEX)
 

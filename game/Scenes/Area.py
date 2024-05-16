@@ -11,7 +11,6 @@ import globalVars.PathConstants as PATH_CONSTANTS
 import globalVars.SceneConstants as SCENE_CONSTANTS
 from game.Player import Player
 import pytmx.util_pygame as PyTMXpg
-import globalVars.TilemapConstants as MAP_CONSTS
 from game.Door import Door, DoorEntryPointIDs
 
 class Area(Scene):
@@ -34,11 +33,14 @@ class Area(Scene):
         TestMapDir = os.path.join(os.getcwd(),PATH_CONSTANTS.GAME_DATA, PATH_CONSTANTS.MAPS,PATH_CONSTANTS.TEST_MAPS)
         mapId = 0
         mapTmxData = []
+        mapNames = []
         for file in os.listdir(TestMapDir):
             fileName = os.path.join(TestMapDir, file)
-            tmxData = PyTMXpg.load_pygame(fileName)
+            mapNames.append(fileName)
+        mapNames.sort()
+        for mapName in mapNames:
+            tmxData = pytmx.load_pygame(mapName)
             mapTmxData.append([tmxData, fileName])
-
         return mapTmxData
 
     @staticmethod
