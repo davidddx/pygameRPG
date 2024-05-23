@@ -1,5 +1,4 @@
 import pytmx
-
 import globalVars.SettingsConstants as SETTINGS
 from debug.logger import logger
 from game.TileMap import TileMap
