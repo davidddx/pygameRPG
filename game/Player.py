@@ -107,7 +107,8 @@ class Player:
     def writeOutputOfPlayerGroups(self):
         for group in self.playerSprites:
             for part in group:
-                part.writeOutputPrint()
+                pass
+                #part.writeOutputPrint()
     @staticmethod
     def loadPlayerTestGroups(sprite_path: str, animation_path: str) -> list[pygame.sprite.Group]:
         playerDirections = [
@@ -136,13 +137,13 @@ class Player:
                                  self.rect.y - camera_offset[1],
                                  self.rect.width,
                                  self.rect.height)
-        # pygame.draw.rect(surface=screen, color=self.rectColor, rect=rectToDraw)
+        pygame.draw.rect(surface=screen, color=self.rectColor, rect=rectToDraw)
         ##########################################################################
 
         for _part in player_sprite:
             # logger.debug(f"blitting _part {_part.name=} to position: \n "
             screen.blit(_part.walkAnimationImages[PlayerPart.walkAnimationIndex], (self.rect.x - camera_offset[0],
-                                      self.rect.y - camera_offset[1]))
+                                      self.rect.y - camera_offset[1] - self.rect.height/2))
 
     def updateAnimation(self):
         if self.movementState == PossiblePlayerMovementStates.NOT_MOVING:
@@ -168,7 +169,7 @@ class Player:
         for player_group in player_groups:
             for _part in player_group:
                 rectWidth = _part.walkAnimationImages[0].get_width()
-                rectHeight = _part.walkAnimationImages[0].get_height()
+                rectHeight = _part.walkAnimationImages[0].get_height()/2
                 break
             break;
         rect = pygame.Rect(pos[0], pos[1], rectWidth, rectHeight)
@@ -177,16 +178,14 @@ class Player:
 
 
     def updatePlayerMovementState(self, keys):
-        if keys[SAVED_DATA.PLAYER_RUN_KEY_ID]:
-            if self.movementState != PossiblePlayerMovementStates.RUNNING:
-                self.movementState = PossiblePlayerMovementStates.RUNNING
-        elif keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID] or keys[SAVED_DATA.PLAYER_WALK_LEFT_KEY_ID] \
+        if keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID] or keys[SAVED_DATA.PLAYER_WALK_LEFT_KEY_ID] \
                 or keys[SAVED_DATA.PLAYER_WALK_DOWN_KEY_ID] or keys[SAVED_DATA.PLAYER_WALK_RIGHT_KEY_ID]:
             self.movementState = PossiblePlayerMovementStates.WALKING
+            if keys[SAVED_DATA.PLAYER_RUN_KEY_ID]:
+                self.movementState = PossiblePlayerMovementStates.RUNNING
         else:
             self.movementState = PossiblePlayerMovementStates.NOT_MOVING
-
-
+       
     def handleInput(self, keys):
         keys = pygame.key.get_pressed()
         self.handleWalkingInput(keys)

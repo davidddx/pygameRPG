@@ -129,7 +129,7 @@ class TileMap:
                     try:
                         collision = props["collision"]
                         collisionType = props["collisionType"]
-                    except Exception as e:
+                    except:
                         collision = False
                         collisionType = None
                     tile = Tile(pos= pos, collidable= collision, image= surface, collision_type=collisionType)
@@ -164,11 +164,22 @@ class TileMap:
         logger.info(f"Converted map tmx data to spritegroups.")
         return (trueSpriteGroup, spriteGroupNonCollision, spriteGroupCollision)
 
-    def displayMap(self, screen, camera: tuple[float, float]):
+    def displayMap(self, screen, camera: tuple[float, float], player: Player):
+        renderAfterGroup = pygame.sprite.Group()
         for tile in self.spriteGroups[TileMap.trueSpriteGroupID]:
             if abs(self.player.rect.x - tile.rect.x) - SETTINGS.TILE_SIZE > SETTINGS.SCREEN_WIDTH/2 or abs(self.player.rect.y - tile.rect.y) - SETTINGS.TILE_SIZE > SETTINGS.SCREEN_HEIGHT/2:
                 continue
+            if self.player.rect.y < tile.rect.y:
+                try:
+                    if tile.collision:
+                        renderAfterGroup.add(tile)
+                        continue
+                except:
+                    pass
             # logger.debug(f"Blitting tile of type: {type(tile)=}")
+            screen.blit(tile.image, (tile.rect.x - camera[0], tile.rect.y - camera[1]))
+        player.update(screen= screen, camera= camera)
+        for tile in renderAfterGroup:
             screen.blit(tile.image, (tile.rect.x - camera[0], tile.rect.y - camera[1]))
 
     @staticmethod
@@ -186,8 +197,7 @@ class TileMap:
 
     def update(self, screen):
         self.checkMapCooldownForPlayerMovement()
-        self.displayMap(screen=screen, camera=self.camera)
-        self.camera = TileMap.updateCameraPos(player_pos = self.player.getPlayerPos(), current_camera=self.camera, player_rect=self.player.rect)
-
-        self.player.update(screen= screen, camera= self.camera)
+        self.displayMap(screen=screen, camera=self.camera, player= self.player)
+        #self.player.update(screen= screen, camera= self.camera)
         self.playerCollisionHandler(player= self.player)
+        self.camera = TileMap.updateCameraPos(player_pos = self.player.getPlayerPos(), current_camera=self.camera, player_rect=self.player.rect)
