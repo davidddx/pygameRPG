@@ -7,21 +7,43 @@ class PlayerPart(pygame.sprite.Sprite):
     walkAnimationIndex = 0
     timeLastAnimated = 0
     walkAnimationCooldown = 100 #in milliseconds
-    eyes = "eyes"
-    eyebrows = "eyebrows"
-    head = "head"
-    pants = "pants"
-    shirt = "shirt"
-    shoes = "shoes"
-    arms = "arms"
-    hair = "hair"
+    eyes = "Eyes"
+    eyebrows = "Eyebrows"
+    head = "Head"
+    pants = "Pants"
+    shirt = "Shirt"
+    feet = "Feet"
+    arms = "Arms"
+    hair = "Hair"
+    names = [
+        head,
+        eyes,
+        eyebrows,
+        shirt,
+        pants,
+        feet,
+        arms,
+        hair,
+    ]
     def __init__(self,group: pygame.sprite.Group, partName: str, direction_id: int, animation_path: str):
         super().__init__(group)
-        self.partName = partName
+        self.name = partName
         self.direction_id = direction_id
-        self.walkAnimationImages = PlayerPart.loadWalkAnimSpritesTest(animation_path,
-                                                                  PlayerPart.translateDirectionID(direction_id))
+        self.direction = PlayerPart.translateDirectionID(self.direction_id)
+        self.walkAnimationImages = PlayerPart.loadWalkAnimSprites(animation_path= animation_path)
+    
+    @staticmethod
+    def loadWalkAnimSprites(animation_path: str):
+        walkAnimList = []
+        try:
 
+            numWalkFrames = 4
+            for i in range(numWalkFrames):
+                walkAnimList.append(pygame.image.load(f"{animation_path}/{i}.png"))
+        except Exception as e:
+            logger.debug(f"Could not load walk animations for {animation_path=}, {e}")
+
+        return walkAnimList
     @staticmethod
     def translateDirectionID(direction_id: int) -> str:
         match direction_id:
@@ -48,7 +70,7 @@ class PlayerPart(pygame.sprite.Sprite):
     def writeOutput(self):
         logger.debug(f"Player part info: \n \t {self.name=} \n \t {self.image=} ")
     def writeOutputPrint(self):
-        print(f"Player part info: \n \t {self.partName=} \n \t {self.direction_id=} \n \t Facing {self.translateDirectionID(self.direction_id)}. ")
+        print(f"Player part info: \n \t {self.name=} \n \t {self.direction_id=} \n \t Facing {self.translateDirectionID(self.direction_id)}. ")
 
 
     @staticmethod 
@@ -87,10 +109,10 @@ class Player:
     FACING_SIDE_LEFT_ID = 6
     FACING_FRONT_LEFT_ID = 7
 
-    def __init__(self, pos: tuple[int, int], plr_parts_path: dict[str, str],
-                 plr_anim_path: str,  
-                 plr_sprite_path: str):
-        self.playerSprites = Player.loadPlayerTestGroups(sprite_path= plr_sprite_path, animation_path = plr_anim_path)
+    def __init__(self, pos: tuple[int, int], plr_parts_path: str,
+                 plr_direction_path: dict[int, str]):  
+        self.playerSprites = Player.loadPlayerGroups(direction_path =
+                                                     plr_direction_path) 
         self.writeOutputOfPlayerGroups()
         self.currentDirectionalIdx = 0;
         self.velocity = [1, 1]
@@ -107,28 +129,34 @@ class Player:
     def writeOutputOfPlayerGroups(self):
         for group in self.playerSprites:
             for part in group:
-                pass
+                part.writeOutput()
+                
                 #part.writeOutputPrint()
     @staticmethod
-    def loadPlayerTestGroups(sprite_path: str, animation_path: str) -> list[pygame.sprite.Group]:
-        playerDirections = [
-            sprite_path + "/PlrSpriteReferenceFront.png", 
-            sprite_path + "/PlrSpriteReferenceFrontRight.png",
-            sprite_path + "/PlrSpriteReferenceRightSide.png",
-            sprite_path + "/PlrSpriteReferenceBackRight.png", 
-            sprite_path + "/PlrSpriteReferenceBack.png", 
-            sprite_path + "/PlrSpriteReferenceBackLeft.png", 
-            sprite_path + "/PlrSpriteReferenceLeftSide.png", 
-            sprite_path + "/PlrSpriteReferenceFrontLeft.png", 
-        ]
+    def loadPlayerGroups(direction_path: dict[int, str]) -> list[pygame.sprite.Group]:
         playerGroups = []
-        for i in range(len(playerDirections)):
-            playerGroups.append(pygame.sprite.Group())
-        for i in range(len(playerDirections)):
-            name = playerDirections[i]
-            playerDirections[i] = PlayerPart(partName = "FULL", group= playerGroups[i],
-                                             animation_path = animation_path, direction_id=i)  
+        def createPart(name: str, direction_path: str, group: pygame.sprite.Group, direction_id: int):
+            direction_path += "/" + name
+            if (name == PlayerPart.hair):
+                direction_path += f"/{SAVED_DATA.PLAYER_HAIR_STYLE_ID}"
+                direction_path += f"/{SAVED_DATA.PLAYER_HAIR_COLOR_ID}"
+            else:
+            
+                direction_path +=  "/" + str(getattr(SAVED_DATA, "PLAYER_" + name.upper() + "_ID"))
+            logger.debug(f"{direction_path=}") 
+            return PlayerPart(animation_path = direction_path, group= group, partName = name, direction_id = direction_id)
+        for key in direction_path.keys():
+            group = pygame.sprite.Group()
+            for name in PlayerPart.names:
+                logger.info(f"adding part {name} to {direction_path[key]} group")
+                group.add(createPart(name= name, direction_path= direction_path[key], group= group, direction_id= key))
+            playerGroups.append(group)
+
+
         return playerGroups
+
+
+    
 
     def render(self, player_sprite, screen, camera_offset):
         ##########################################################################
@@ -141,9 +169,12 @@ class Player:
         ##########################################################################
 
         for _part in player_sprite:
-            # logger.debug(f"blitting _part {_part.name=} to position: \n "
-            screen.blit(_part.walkAnimationImages[PlayerPart.walkAnimationIndex], (self.rect.x - camera_offset[0],
-                                      self.rect.y - camera_offset[1] - self.rect.height/2))
+            try:
+                screen.blit(_part.walkAnimationImages[PlayerPart.walkAnimationIndex], (self.rect.x - camera_offset[0],
+                                          self.rect.y - camera_offset[1] - self.rect.height/2))
+            except Exception as e:
+                
+                logger.info(f"could not blit part {_part.name=} to screen, {e=}")
 
     def updateAnimation(self):
         if self.movementState == PossiblePlayerMovementStates.NOT_MOVING:
@@ -164,7 +195,7 @@ class Player:
         
 
     @staticmethod
-    def generateRect(player_groups : pygame.sprite.Group, pos : tuple[int, int]) -> pygame.rect.Rect:
+    def generateRect(player_groups : list[pygame.sprite.Group], pos : tuple[int, int]) -> pygame.rect.Rect:
         rectWidth = rectHeight = 0
         for player_group in player_groups:
             for _part in player_group:

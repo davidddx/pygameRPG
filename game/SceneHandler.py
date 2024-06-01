@@ -22,21 +22,19 @@ class SceneHandler:
     @staticmethod
     def loadPlayer() -> Player:
         cwd = os.getcwd()
-        playerSpriteDir = cwd + "/images/test/PlrSpriteTest"
-        playerPartDirs = {
-                PlayerPart.hair: playerSpriteDir + "/PlrHair",
-                PlayerPart.eyes: playerSpriteDir + "/PlrEyes",
-                PlayerPart.eyebrows: playerSpriteDir + "/PlrEyebrows",
-                PlayerPart.head: playerSpriteDir + "/PlrHead",
-                PlayerPart.arms: playerSpriteDir + "/PlrArms", 
-                PlayerPart.shirt: playerSpriteDir + "/PlrShirt",
-                PlayerPart.pants: playerSpriteDir + "/PlrPants",
-                PlayerPart.shoes: playerSpriteDir + "/PlrShoes",
-
-        }
-        playerAnimDir = playerSpriteDir + "/AnimationTesting"
-        return Player(pos = SAVED_DATA.PLAYER_POSITION, 
-                      plr_sprite_path= playerSpriteDir, plr_parts_path = playerPartDirs, plr_anim_path = playerAnimDir) 
+        playerSpriteDir = cwd + "/images/test/PlrSpriteTest/AnimationTesting/Parts"
+        playerDirectionDirs = {
+            Player.FACING_FRONT_ID: playerSpriteDir + "/Front",
+            Player.FACING_FRONT_RIGHT_ID: playerSpriteDir + "/FrontRight",
+            Player.FACING_SIDE_RIGHT_ID: playerSpriteDir + "/Right",
+            Player.FACING_BACK_RIGHT_ID: playerSpriteDir + "/BackRight",
+            Player.FACING_BACK_ID: playerSpriteDir + "/Back",
+            Player.FACING_BACK_LEFT_ID: "/BackLeft",
+            Player.FACING_SIDE_LEFT_ID: "/Left",
+            Player.FACING_FRONT_LEFT_ID: "/FrontLeft"
+                }
+        return Player(pos = SAVED_DATA.PLAYER_POSITION, plr_parts_path = playerSpriteDir, plr_direction_path =
+                      playerDirectionDirs) 
 
     def loadTestArea(self, _player) -> list[Area]:
         logger.info(f"Loading Test Area....")
