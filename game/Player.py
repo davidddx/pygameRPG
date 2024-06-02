@@ -134,6 +134,7 @@ class Player:
                 #part.writeOutputPrint()
     @staticmethod
     def loadPlayerGroups(direction_path: dict[int, str]) -> list[pygame.sprite.Group]:
+        logger.debug(f"{direction_path=}")
         playerGroups = []
         def createPart(name: str, direction_path: str, group: pygame.sprite.Group, direction_id: int):
             direction_path += "/" + name
@@ -143,7 +144,6 @@ class Player:
             else:
             
                 direction_path +=  "/" + str(getattr(SAVED_DATA, "PLAYER_" + name.upper() + "_ID"))
-            logger.debug(f"{direction_path=}") 
             return PlayerPart(animation_path = direction_path, group= group, partName = name, direction_id = direction_id)
         for key in direction_path.keys():
             group = pygame.sprite.Group()
@@ -175,6 +175,7 @@ class Player:
             except Exception as e:
                 
                 logger.info(f"could not blit part {_part.name=} to screen, {e=}")
+                continue
 
     def updateAnimation(self):
         if self.movementState == PossiblePlayerMovementStates.NOT_MOVING:

@@ -29,9 +29,9 @@ class SceneHandler:
             Player.FACING_SIDE_RIGHT_ID: playerSpriteDir + "/Right",
             Player.FACING_BACK_RIGHT_ID: playerSpriteDir + "/BackRight",
             Player.FACING_BACK_ID: playerSpriteDir + "/Back",
-            Player.FACING_BACK_LEFT_ID: "/BackLeft",
-            Player.FACING_SIDE_LEFT_ID: "/Left",
-            Player.FACING_FRONT_LEFT_ID: "/FrontLeft"
+            Player.FACING_BACK_LEFT_ID: playerSpriteDir + "/BackLeft",
+            Player.FACING_SIDE_LEFT_ID: playerSpriteDir + "/Left",
+            Player.FACING_FRONT_LEFT_ID: playerSpriteDir + "/FrontLeft"
                 }
         return Player(pos = SAVED_DATA.PLAYER_POSITION, plr_parts_path = playerSpriteDir, plr_direction_path =
                       playerDirectionDirs) 
