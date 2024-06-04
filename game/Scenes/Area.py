@@ -5,12 +5,12 @@ from game.TileMap import TileMap
 import pygame
 from game.Scenes.BaseScene import Scene
 import os
-import importlib
 import globalVars.PathConstants as PATH_CONSTANTS
 import globalVars.SceneConstants as SCENE_CONSTANTS
 from game.Player import Player
-import pytmx.util_pygame as PyTMXpg
 from game.Door import Door, DoorEntryPointIDs
+from game.Tile import TileTypes
+
 
 class Area(Scene):
 
@@ -53,16 +53,17 @@ class Area(Scene):
             for layer in visibleLayers:
                 if not isinstance(layer, pytmx.TiledObjectGroup): continue
                 name = "name"
-
+                _type = "type"
                 for _object in layer:
                     properties = _object.properties
-                    if properties[name] == Door.strNAME:
-                        entryPoint = properties[Door.strENTRY_POINT]
+                    if not properties[_type] == TileTypes.DOOR:
+                        continue
+                    entryPoint = properties[Door.strENTRY_POINT]
 
-                        doorId = properties[Door.strDOOR_ID]
-                        doors.append(Door(DOOR_ID=doorId, image=_object.image,
-                                               id_current_map=mapId,
-                                               pos=(_object.x, _object.y), entry_point = entryPoint))
+                    doorId = properties[Door.strDOOR_ID]
+                    doors.append(Door(DOOR_ID=doorId, image=_object.image,
+                                           id_current_map=mapId,
+                                           pos=(_object.x, _object.y), entry_point = entryPoint))
             mapId+=1
 
         doorAreaInfoDict = dict()

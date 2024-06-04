@@ -88,6 +88,13 @@ class PossiblePlayerMovementStates:
     WALKING = "WALKING"
     NOT_MOVING = "NOT_MOVING"
 
+
+class PossiblePlayerInputStates:
+    NO_INPUT = "NO_INPUT"
+    MOVEMENT_INPUT = "MOVEMENT_INPUT"
+    SELECTION_INPUT = "SELECTION_INPUT"
+    PAUSE_INPUT = "PAUSE_INPUT"
+
 class PlayerRectCollisionIDs:
     UP = 0
     DOWN = 1
@@ -123,6 +130,7 @@ class Player:
         self.rect = Player.generateRect(player_groups = self.playerSprites, pos=pos)
         self.rectColor = (255,255,255)
         self.movementState = PossiblePlayerMovementStates.NOT_MOVING
+        self.inputState = PossiblePlayerInputStates.NO_INPUT
         self.movable = False
         logger.info(f"class {Player=} initialized.")
 
@@ -190,11 +198,6 @@ class Player:
             PlayerPart.walkAnimationIndex = 0
             return None
 
-        
-
-
-        
-
     @staticmethod
     def generateRect(player_groups : list[pygame.sprite.Group], pos : tuple[int, int]) -> pygame.rect.Rect:
         rectWidth = rectHeight = 0
@@ -208,6 +211,21 @@ class Player:
 
         return rect
 
+    def updatePlayerInputState(self, keys):
+        validInputRecieved = False
+        if self.movementState != PossiblePlayerMovementStates.NOT_MOVING:
+            validInputRecieved = True
+            self.inputState = PossiblePlayerInputStates.MOVEMENT_INPUT
+        if keys[SAVED_DATA.PLAYER_PAUSE_KEY_ID]:
+            validInputRecieved = True
+            self.inputState = PossiblePlayerInputStates.PAUSE_INPUT
+        if keys[SAVED_DATA.PLAYER_SELECTION_KEY_ID]:
+            validInputRecieved = True
+            self.inputState = PossiblePlayerInputStates.SELECTION_INPUT
+        
+        if not validInputRecieved:
+            self.inputState = PossiblePlayerInputStates.NO_INPUT
+        print(f"{self.inputState=}")
 
     def updatePlayerMovementState(self, keys):
         if keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID] or keys[SAVED_DATA.PLAYER_WALK_LEFT_KEY_ID] \
@@ -219,9 +237,7 @@ class Player:
             self.movementState = PossiblePlayerMovementStates.NOT_MOVING
        
     def handleInput(self, keys):
-        keys = pygame.key.get_pressed()
         self.handleWalkingInput(keys)
-
 
     def handleWalkingInput(self, keys):
         # logger.debug(f"{self.movementState=}")
@@ -288,6 +304,9 @@ class Player:
 
     def getPlayerPos(self) -> tuple[float, float]:
         return self.rect.x, self.rect.y
+    
+    def getInputState(self) -> str:
+        return self.inputState
 
     @staticmethod 
     def determineDirectionalIdx(directionFacing: list[int]) -> int:
@@ -320,6 +339,7 @@ class Player:
         self.render(player_sprite=self.playerSprites[self.currentDirectionalIdx], screen=screen, camera_offset=camera)
         keys = pygame.key.get_pressed()
         self.updatePlayerMovementState(keys)
+        self.updatePlayerInputState(keys)
         self.handleInput(keys)
         self.movePlayer(direction=self.movementDirection, velocity = self.velocity);
         self.currentDirectionalIdx = Player.determineDirectionalIdx(self.facingDirection)

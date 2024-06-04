@@ -4,19 +4,16 @@ import globalVars.SettingsConstants as globalVars
 import globalVars.TilemapConstants as mapVars
 import pytmx as pyTMX
 from game.Door import Door
+from game.Item import Item, ItemConstants
 import globalVars.SettingsConstants as SETTINGS
 import game.Player as Player
-class Tile(pygame.sprite.Sprite):
-    def __init__(self, pos: tuple[int, int], collidable: bool, image: pygame.Surface,
-                 collision_type=None):
-        pygame.sprite.Sprite.__init__(self)
+from game.Tile import Tile, TileTypes
 
-        self.collision = collidable
-        self.collisionType = collision_type
-        self.image = image
-        self.rect = image.get_rect(topleft=pos)
-        self.inRange = False
 
+class MapObjectNames:
+    ## Spawn related ##
+    SPAWN_DEFAULT = "SPAWN_DEFAULT"
+    DOOR = "Door"
 
 class TileMap:
     trueSpriteGroupID = 0
@@ -24,10 +21,9 @@ class TileMap:
     SPRITE_GROUP_COLLISION_ID = 2
     COLLISION_TYPE_WALL_ID = 0
     COLLISION_TYPE_DOOR_ID = 1
-    strSPAWN_DEFAULT = "SPAWN_DEFAULT"
 
     def __init__(self, tmx_data, map_id: int, _doors: list[Door],
-                 player: Player, player_pos=None, name=""):
+                 player: Player.Player, player_pos=None, name=""):
         logger.debug(f"Class {TileMap=} initializing....")
         self.timeMapInitialized = pygame.time.get_ticks()
         self.playerSpawnPos = player_pos
@@ -65,21 +61,22 @@ class TileMap:
     def clear(self):
         pass
 
-    def playerCollisionHandler(self, player : Player):
+    def playerCollisionHandler(self, player : Player.Player):
 
 
         COLLISION_TOLERANCE = 10
         collisionOccured = False
-        player.onCollision = False
         BLACK = (0,0,0)
         WHITE = (255,255,255)
-        for tile in self.spriteGroups[TileMap.SPRITE_GROUP_COLLISION_ID]:
+        group = self.spriteGroups[TileMap.SPRITE_GROUP_COLLISION_ID]
+        for tile in group:
             if not player.rect.colliderect(tile):
                 continue
             collisionOccured = True
             player.rectColor = BLACK
             onCollision = [False, False, False, False]
-
+            
+            ### checking for collision ###
             if abs(player.rect.right - tile.rect.left) < COLLISION_TOLERANCE and player.movementDirection[0] > 0:
                 onCollision[Player.PlayerRectCollisionIDs.RIGHT] = True
             if abs(player.rect.left - tile.rect.right) < COLLISION_TOLERANCE and player.movementDirection[0] < 0:
@@ -88,12 +85,11 @@ class TileMap:
                 onCollision[Player.PlayerRectCollisionIDs.DOWN] = True
             if abs(player.rect.top - tile.rect.bottom) < COLLISION_TOLERANCE and player.movementDirection[1] < 0:
                 onCollision[Player.PlayerRectCollisionIDs.UP] = True
-
             ### USING COLLISION INFO ###
-            if tile.collisionType == TileMap.COLLISION_TYPE_DOOR_ID:
+            if tile.tileType == TileTypes.DOOR:
                 self.collidedDoor = tile
                 return None
-            elif tile.collisionType == TileMap.COLLISION_TYPE_WALL_ID:
+            elif tile.tileType == TileTypes.WALL or tile.tileType == TileTypes.ITEM:
                 if onCollision[Player.PlayerRectCollisionIDs.RIGHT]:
                     player.rect.right = tile.rect.left
                 if onCollision[Player.PlayerRectCollisionIDs.LEFT]:
@@ -102,6 +98,10 @@ class TileMap:
                     player.rect.bottom = tile.rect.top
                 if onCollision[Player.PlayerRectCollisionIDs.UP]:
                     player.rect.top = tile.rect.bottom
+            if tile.tileType == TileTypes.ITEM:
+                if player.getInputState() == Player.PossiblePlayerInputStates.SELECTION_INPUT:
+                    self.removeTileFromMap(tile)
+                    continue
 
 
 
@@ -109,12 +109,20 @@ class TileMap:
             player.rectColor = WHITE
             return None
 
-        ## handling collision ##
+    def removeTileFromMap(self, tile: Tile):
+        for spritegroup in self.spriteGroups:
+            try:
+                spritegroup.remove(tile)
+            except:
+                continue
 
     def convertTMXToSpriteGroups(self, tmx_data : pyTMX.TiledMap, spawn_default=None) -> tuple[pygame.sprite.Group,pygame.sprite.Group,pygame.sprite.Group,pygame.sprite.Group]:
         spriteGroupCollision = pygame.sprite.Group()
+        spriteGroupCollisionList = []
         spriteGroupNonCollision = pygame.sprite.Group()
+        spriteGroupNonCollisionList = []
         trueSpriteGroup = pygame.sprite.Group()
+        items = []
         logger.info(f"Converting map tmx data to spritegroups...")
         visibleLayers = tmx_data.visible_layers
         logger.debug(f"{visibleLayers=}")
@@ -128,54 +136,53 @@ class TileMap:
                     collisionType = None
                     try:
                         collision = props["collision"]
-                        collisionType = props["collisionType"]
+                        tileType = props["type"]
                     except:
                         collision = False
-                        collisionType = None
-                    tile = Tile(pos= pos, collidable= collision, image= surface, collision_type=collisionType)
+                        tileType = None
+                    tile = Tile(pos= pos, collidable= collision, image= surface, _type=tileType)
                     if collision:
-                        spriteGroupCollision.add(tile)
+                        spriteGroupCollisionList.append(tile)
                     else:
-                        spriteGroupNonCollision.add(tile)
+                        spriteGroupNonCollisionList.append(tile)
 
-                trueSpriteGroup.add(spriteGroupNonCollision)
-                trueSpriteGroup.add(self.doors)
-                spriteGroupCollision.add(self.doors)
-                trueSpriteGroup.add(spriteGroupCollision)
             elif isinstance(layer, pyTMX.TiledObjectGroup):
-
                 name = "name"
+                objType = "type"
                 for _object in layer:
                     properties = _object.properties
-                    if properties[name] == Door.strNAME:
-                        pass
-                        # doorId = properties[Door.strDOOR_ID]
-                        # self.doors.append(Door(DOOR_ID=doorId, image=_object.image,
-                        #                        id_current_map= self.mapID, pos= (_object.x * _object.width, _object.y * _object.height)  ))
-                    elif properties[name] == TileMap.strSPAWN_DEFAULT and self.playerSpawnPos is None:
-                        self.playerSpawnPos = (_object.x, _object.y)
-
+                    
+                    match properties[objType]:
+                        case TileTypes.SPAWN:
+                            if self.playerSpawnPos is None: self.playerSpawnPos = (_object.x, _object.y)
+                        case TileTypes.ITEM:
+                            items.append(Item(sprite= _object.image, pos= (_object.x, _object.y), name= properties[name]))
 
             layerIndex += 1
-
-
+        spriteGroupCollision.add(items)
+        spriteGroupCollision.add(spriteGroupCollisionList)
+        spriteGroupCollision.add(self.doors)
+        spriteGroupNonCollision.add(spriteGroupNonCollisionList)
+        trueSpriteGroup.add(spriteGroupNonCollision)
+        trueSpriteGroup.add(spriteGroupCollision)
 
 
         logger.info(f"Converted map tmx data to spritegroups.")
         return (trueSpriteGroup, spriteGroupNonCollision, spriteGroupCollision)
 
-    def displayMap(self, screen, camera: tuple[float, float], player: Player):
+    def displayMap(self, screen, camera: tuple[float, float], player: Player.Player):
         renderAfterGroup = pygame.sprite.Group()
         for tile in self.spriteGroups[TileMap.trueSpriteGroupID]:
             if abs(self.player.rect.x - tile.rect.x) - SETTINGS.TILE_SIZE > SETTINGS.SCREEN_WIDTH/2 or abs(self.player.rect.y - tile.rect.y) - SETTINGS.TILE_SIZE > SETTINGS.SCREEN_HEIGHT/2:
                 continue
+            
             if self.player.rect.y < tile.rect.y:
-                try:
-                    if tile.collision:
-                        renderAfterGroup.add(tile)
-                        continue
-                except:
-                    pass
+                
+                if tile.collision:
+                    renderAfterGroup.add(tile)
+                    continue
+            
+                    
             # logger.debug(f"Blitting tile of type: {type(tile)=}")
             screen.blit(tile.image, (tile.rect.x - camera[0], tile.rect.y - camera[1]))
         player.update(screen= screen, camera= camera)
@@ -198,6 +205,5 @@ class TileMap:
     def update(self, screen):
         self.checkMapCooldownForPlayerMovement()
         self.displayMap(screen=screen, camera=self.camera, player= self.player)
-        #self.player.update(screen= screen, camera= self.camera)
         self.playerCollisionHandler(player= self.player)
         self.camera = TileMap.updateCameraPos(player_pos = self.player.getPlayerPos(), current_camera=self.camera, player_rect=self.player.rect)

@@ -3,8 +3,11 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "TestMaps/TestMap3.tmx",
+    "activeFile": "TestMaps/TestMap1.tmx",
     "expandedProjectPaths": [
+        ".",
+        "TileSets",
+        "TestMaps"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -43,10 +46,10 @@
                 6
             ],
             "scale": 1,
-            "selectedLayer": 1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 494,
-                "y": 311.5
+                "x": 514.5,
+                "y": 468.5
             }
         },
         "TestMaps/TestMap2.tmx": {
@@ -56,43 +59,50 @@
             "scale": 1.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 1646.6666666666665,
-                "y": 1662.3333333333333
+                "x": 1647.6666666666665,
+                "y": 1664
             }
         },
         "TestMaps/TestMap3.tmx": {
             "expandedObjectLayers": [
                 3
             ],
-            "scale": 1.5,
+            "scale": 0.75,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 1001.3333333333333,
-                "y": 270.33333333333337
+                "x": 1062,
+                "y": 438
             }
+        },
+        "TileSets/Items.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "TileSets/Test.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 1.5,
-            "scaleInEditor": 4
+            "scaleInEditor": 1.5
         }
     },
-    "last.imagePath": "C:/Users/david/Documents/GitHub/pygameRPG/pygameRPG/images/test",
+    "last.imagePath": "/home/davidlinux/Documents/projects/python/pygamerpg/pygameRPG/images/test/Items",
     "map.height": 104,
     "map.lastUsedFormat": "tmx",
     "map.width": 103,
     "openFiles": [
         "TestMaps/TestMap1.tmx",
         "TestMaps/TestMap2.tmx",
+        "TestMaps/TestMap3.tmx",
         "TileSets/Test.tsx",
-        "TestMaps/TestMap3.tmx"
+        "TileSets/Items.tsx"
     ],
     "project": "Maps.tiled-project",
     "property.type": "string",
     "recentFiles": [
-        "TestMaps/TestMap2.tmx",
+        "TileSets/Items.tsx",
         "TileSets/Test.tsx",
         "TestMaps/TestMap3.tmx",
+        "TestMaps/TestMap2.tmx",
         "TestMaps/TestMap1.tmx",
         "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Maps/testmap/level1.tmx",
         "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Tilesets/TestTileSet.tsx",

@@ -1,4 +1,5 @@
 import pygame
+from game.Tile import Tile, TileTypes
 from debug.logger import logger
 
 class DoorEntryPointIDs:
@@ -6,22 +7,18 @@ class DoorEntryPointIDs:
     DOWN = 1
     LEFT = 2
     RIGHT = 3
-class Door(pygame.sprite.Sprite):
+class Door(Tile):
     strNAME = "door"
     strDOOR_ID = "DOOR_ID"
     strENTRY_POINT = "entryPoint"
     intCOLLISION_TYPE = 1
 
     def __init__(self, DOOR_ID: int, image: pygame.surface.Surface, id_current_map : int, pos : tuple[int, int], entry_point: int):
-        pygame.sprite.Sprite.__init__(self)
+        super().__init__(pos= pos, collidable=True, image= image, _type = TileTypes.DOOR)
         self.idDestinationMap = None
         self.id = DOOR_ID
-        self.image = image
         self.idCurrentMap = id_current_map
-        self.rect = image.get_rect(topleft=pos)
         self.entryPoint = entry_point
-        self.inRange = False
-        self.collisionType = Door.intCOLLISION_TYPE
 
     def setIdDestinationMap(self, idDestinationMap: int):
         self.idDestinationMap = idDestinationMap
