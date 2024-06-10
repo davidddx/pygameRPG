@@ -1,5 +1,4 @@
 import pygame
-import globalVars.SettingsConstants as GLOBAL_VARS
 from debug.logger import logger
 
 
