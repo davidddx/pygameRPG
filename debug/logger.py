@@ -4,7 +4,7 @@ logfile = "projectDebug.log"
 with open(logfile, 'w'):  # truncates file if there is contents in it
     pass
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG
+logger.setLevel(logging.ERROR
                 )
 handler = logging.FileHandler(logfile)
 formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
