@@ -5,11 +5,12 @@ import pygame
 import importlib
 import gamedata.Save.SavedData as SAVED_DATA
 from game.Scenes.TitleScreen import TitleScreen
-import globalVars.SceneConstants as SCENE_CONSTANTS
 from game.Player import Player, PlayerPart
+from game.Scenes.BaseScene import SceneStates
+from debug.DebugMenu import DebugMenu
 
 class SceneHandler:
-    def __init__(self):
+    def __init__(self, DEBUG= False):
         self.scenes = ()
         self.timeLastChangedScene = pygame.time.get_ticks() 
         logger.debug(f"Class {SceneHandler=} initializing....")
@@ -17,6 +18,7 @@ class SceneHandler:
         self.Areas = self.loadTestArea(_player= self.player);
         self.TitleScreen = TitleScreen(background=pygame.image.load(os.getcwd() + '/images/test/titleScreenBackground.png'))
         self.currentScene = self.TitleScreen
+        self.debugMenu = DebugMenu(mode= DEBUG)
         logger.debug(f"Class {SceneHandler=} intialized.")
 
     @staticmethod
@@ -59,12 +61,17 @@ class SceneHandler:
         return self.Areas[idx];
 
     def checkSceneState(self, currentScene):
-        if not currentScene.state == SCENE_CONSTANTS.STATE_FINISHED:
+        if not currentScene.state == SceneStates.FINISHED or currentScene.state == 0 :
             return None
         del self.currentScene 
         logger.debug(f"{currentScene=}")
         self.currentScene = self.loadArea(SAVED_DATA.CURRENT_AREA_INDEX)
 
-    def run(self, screen):
+    def run(self, screen: pygame.Surface, scale: int):
         self.checkSceneState(currentScene=self.currentScene);
         self.currentScene.update(screen=screen)
+
+    def runDebug(self, screen: pygame.Surface, clock: pygame.time.Clock, scale: int):
+        self.checkSceneState(currentScene=self.currentScene);
+        self.currentScene.update(screen=screen)
+        self.debugMenu.run(screen=screen, clock= clock, scale= scale, currentScene= self.currentScene)

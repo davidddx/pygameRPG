@@ -225,7 +225,7 @@ class Player:
         
         if not validInputRecieved:
             self.inputState = PossiblePlayerInputStates.NO_INPUT
-        print(f"{self.inputState=}")
+        #print(f"{self.inputState=}")
 
     def updatePlayerMovementState(self, keys):
         if keys[SAVED_DATA.PLAYER_WALK_UP_KEY_ID] or keys[SAVED_DATA.PLAYER_WALK_LEFT_KEY_ID] \

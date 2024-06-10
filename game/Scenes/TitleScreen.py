@@ -1,18 +1,18 @@
-from game.Scenes.BaseScene import Scene
+from game.Scenes.BaseScene import Scene, SceneStates
 from game.utils.Button import ImagedButton
 from game.utils.Button import ImagedButton
-import globalVars.SettingsConstants as globalVars
-import globalVars.PathConstants as PATH_CONSTANTS
-import globalVars.SceneConstants as SCENE_CONSTANTS
+import globalVars.SettingsConstants as SETTINGS
 import pygame
 import os
 
 class TitleScreen(Scene):
     def __init__(self, background : pygame.Surface):
-        self.state = SCENE_CONSTANTS.STATE_INITIALIZING
+        self.playButtonName = playButtonName = "Play"
+        self.state = SceneStates.INITIALIZING
         self.background = background
         playButtonDir = os.getcwd() + "/images/test/playbutton.png"
-        playButton = ImagedButton(name=SCENE_CONSTANTS.PLAY_BUTTON_NAME, image=pygame.image.load(playButtonDir), x=globalVars.SCREEN_WIDTH/2, y= globalVars.SCREEN_HEIGHT/2)
+        playButton = ImagedButton(name=playButtonName, image=pygame.image.load(playButtonDir),
+                                  x=int(SETTINGS.SCREEN_WIDTH/2), y= int(SETTINGS.SCREEN_HEIGHT/2))
         self.currentButtons = [playButton]
         pass
 
@@ -28,13 +28,14 @@ class TitleScreen(Scene):
         self.checkFinished(buttons=self.currentButtons)
 
     def checkFinished(self, buttons : list[ImagedButton]):
-        state = SCENE_CONSTANTS.STATE_RUNNING
+        state = SceneStates.RUNNING
         for button in buttons:
-            if not button.name == SCENE_CONSTANTS.PLAY_BUTTON_NAME:
+            if not button.name == self.playButtonName:
+
                 continue
             if not button.pressed:
                 continue
-            state = SCENE_CONSTANTS.STATE_FINISHED
+            state = SceneStates.FINISHED
 
         return state
 

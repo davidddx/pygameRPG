@@ -3,14 +3,12 @@ import globalVars.SettingsConstants as SETTINGS
 from debug.logger import logger
 from game.TileMap import TileMap
 import pygame
-from game.Scenes.BaseScene import Scene
+from game.Scenes.BaseScene import Scene, SceneStates
 import os
 import globalVars.PathConstants as PATH_CONSTANTS
-import globalVars.SceneConstants as SCENE_CONSTANTS
 from game.Player import Player
 from game.Door import Door, DoorEntryPointIDs
 from game.Tile import TileTypes
-
 
 class Area(Scene):
 
@@ -18,7 +16,7 @@ class Area(Scene):
 
         logger.debug(f"Class {Area=} initializing....")
         super().__init__(name)
-        self.state = SCENE_CONSTANTS.STATE_INITIALIZING
+        self.state = SceneStates.INITIALIZING
         self.timeLastChangedMap = 0
         self.player = _player
         self.mapIdx = starting_map_idx
@@ -33,6 +31,7 @@ class Area(Scene):
         mapId = 0
         mapTmxData = []
         mapNames = []
+        fileName = ""
         for file in os.listdir(TestMapDir):
             fileName = os.path.join(TestMapDir, file)
             mapNames.append(fileName)
@@ -110,11 +109,6 @@ class Area(Scene):
                                spawn_pos= Area.generatePlrSpawnPos(map_id=destinationId,
                                                                    doors=self.doors,
                                                                    collided_door=self.currentMap.collidedDoor))
-        if SETTINGS.DEBUG_MODE:
-            if keys[pygame.K_e]:
-                self.changeMapByStep(time_now= timenow, step=1, positive=True)
-            elif keys[pygame.K_q]:
-                self.changeMapByStep(time_now= timenow, positive=False)
 
     @staticmethod
     def generatePlrSpawnPos(map_id: int, doors: list[Door], collided_door: Door):
@@ -173,7 +167,12 @@ class Area(Scene):
 
     AREA_SWITCH_COOLDOWN = 150
 
+    def checkPauseSignal(self, state): 
+        
+        if state == SceneStates.PAUSED:
+            pass
     def update(self, screen):
-
-        self.currentMap.update(screen=screen)
+         
+        self.currentMap.update(screen=screen) 
         self.checkChangeMapSignal(cool_down=Area.AREA_SWITCH_COOLDOWN)
+        self.checkPauseSignal(state= self.state) 

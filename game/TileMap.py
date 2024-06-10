@@ -23,7 +23,7 @@ class TileMap:
     COLLISION_TYPE_DOOR_ID = 1
 
     def __init__(self, tmx_data, map_id: int, _doors: list[Door],
-                 player: Player.Player, player_pos=None, name=""):
+                 player: Player.Player, player_pos= None, name=""):
         logger.debug(f"Class {TileMap=} initializing....")
         self.timeMapInitialized = pygame.time.get_ticks()
         self.playerSpawnPos = player_pos
@@ -59,7 +59,8 @@ class TileMap:
 
 
     def clear(self):
-        pass
+        for group in self.spriteGroups:
+            group.empty()
 
     def playerCollisionHandler(self, player : Player.Player):
 
@@ -176,7 +177,7 @@ class TileMap:
             if abs(self.player.rect.x - tile.rect.x) - SETTINGS.TILE_SIZE > SETTINGS.SCREEN_WIDTH/2 or abs(self.player.rect.y - tile.rect.y) - SETTINGS.TILE_SIZE > SETTINGS.SCREEN_HEIGHT/2:
                 continue
             
-            if self.player.rect.y < tile.rect.y:
+            if player.rect.y < tile.rect.y:
                 
                 if tile.collision:
                     renderAfterGroup.add(tile)
@@ -188,6 +189,8 @@ class TileMap:
         player.update(screen= screen, camera= camera)
         for tile in renderAfterGroup:
             screen.blit(tile.image, (tile.rect.x - camera[0], tile.rect.y - camera[1]))
+        renderAfterGroup.empty()
+        
 
     @staticmethod
     def updateCameraPos(player_pos : tuple[float, float], player_rect : pygame.Rect, current_camera : tuple[float,float]) -> tuple[float, float]:

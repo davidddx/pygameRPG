@@ -1,7 +1,6 @@
 GAME_DATA = "gamedata"
 GAME = "game"
 GAME_FILE = "Game"
-GAME_HANDLER = "GameHandler"
 SCENE_HANDLER = "SceneHandler"
 GLOBAL_VARS = "globalVars"
 DEBUG = "debug"
