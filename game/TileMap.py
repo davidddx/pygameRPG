@@ -62,6 +62,18 @@ class TileMap:
         for group in self.spriteGroups:
             group.empty()
 
+    @staticmethod
+    def collidePlayerWithTile(onCollision: list[bool], player: Player.Player, tile: Tile, offset= 0) -> None:
+        if onCollision[Player.PlayerRectCollisionIDs.RIGHT]:
+            player.rect.right = tile.rect.left + offset
+        if onCollision[Player.PlayerRectCollisionIDs.LEFT]:
+            player.rect.left = tile.rect.right - offset
+        if onCollision[Player.PlayerRectCollisionIDs.DOWN]:
+            player.rect.bottom = tile.rect.top + offset
+        if onCollision[Player.PlayerRectCollisionIDs.UP]:
+            player.rect.top = tile.rect.bottom - offset
+
+
     def playerCollisionHandler(self, player : Player.Player):
 
 
@@ -90,15 +102,11 @@ class TileMap:
             if tile.tileType == TileTypes.DOOR:
                 self.collidedDoor = tile
                 return None
-            elif tile.tileType == TileTypes.WALL or tile.tileType == TileTypes.ITEM:
-                if onCollision[Player.PlayerRectCollisionIDs.RIGHT]:
-                    player.rect.right = tile.rect.left
-                if onCollision[Player.PlayerRectCollisionIDs.LEFT]:
-                    player.rect.left = tile.rect.right
-                if onCollision[Player.PlayerRectCollisionIDs.DOWN]:
-                    player.rect.bottom = tile.rect.top
-                if onCollision[Player.PlayerRectCollisionIDs.UP]:
-                    player.rect.top = tile.rect.bottom
+            
+            elif tile.tileType == TileTypes.WALL:
+                TileMap.collidePlayerWithTile(onCollision= onCollision, player= player, tile= tile) 
+            elif tile.tileType == TileTypes.ITEM:
+                TileMap.collidePlayerWithTile(onCollision= onCollision, player= player, tile= tile, offset=1)
             if tile.tileType == TileTypes.ITEM:
                 if player.getInputState() == Player.PossiblePlayerInputStates.SELECTION_INPUT:
                     self.removeTileFromMap(tile)
@@ -109,7 +117,6 @@ class TileMap:
         if not collisionOccured:
             player.rectColor = WHITE
             return None
-
     def removeTileFromMap(self, tile: Tile):
         for spritegroup in self.spriteGroups:
             try:
