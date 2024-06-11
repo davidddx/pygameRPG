@@ -205,7 +205,7 @@ class TileMap:
             return None
         self.player.setPlayerMovability(True)
 
-    def update(self, screen):
+    def update(self, screen: pygame.Surface):
         self.checkMapCooldownForPlayerMovement()
         self.displayMap(screen=screen, camera=self.camera, player= self.player)
         self.playerCollisionHandler(player= self.player)

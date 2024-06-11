@@ -1,5 +1,4 @@
 import pytmx
-import globalVars.SettingsConstants as SETTINGS
 from debug.logger import logger
 from game.TileMap import TileMap
 import pygame
@@ -171,7 +170,14 @@ class Area(Scene):
         
         if state == SceneStates.PAUSED:
             pass
-    def update(self, screen):
+
+    def getCurrentMapId(self): return self.currentMap.mapID
+
+    def getState(self): return self.state
+
+    def getPlayer(self): return self.player
+
+    def update(self, screen: pygame.Surface):
          
         self.currentMap.update(screen=screen) 
         self.checkChangeMapSignal(cool_down=Area.AREA_SWITCH_COOLDOWN)

@@ -1,7 +1,6 @@
 import pygame
-import globalVars.SettingsConstants as GLOBAL_VARS
 from debug.logger import logger
-
+import globalVars.SettingsConstants as SETTINGS
 
 class ImagedButton:
     def __init__(self, name: str, image: pygame.Surface, x: int, y: int, toggle=False, starting_value=False):
@@ -9,14 +8,32 @@ class ImagedButton:
         self.pressed = starting_value;
         self.toggle = toggle;
         self.image = image
-        rect = self.image.get_rect()
-        self.width = rect.width;
-        self.height = rect.height
+        self.rect = self.image.get_rect(topleft= (x,y))
+        
+        self.width = self.rect.width
+        self.height = self.rect.height
         self.hover = False;
-        self.x = x - self.width / 2;
-        self.y = y - self.height / 2;
+        self.scaledRect = None
+        self.scale()
+        
+
+    def scale(self):
+        currentSurface = pygame.display.get_surface()
+        windowWidth = currentSurface.get_width()
+        windowHeight = currentSurface.get_height()
+        defaultWidth = SETTINGS.SCREEN_WIDTH
+        defaultHeight = SETTINGS.SCREEN_HEIGHT
+        scaleProportion = windowWidth/defaultWidth, windowHeight/defaultHeight
+        image = self.image.copy()
+        image = pygame.transform.scale_by(image, (scaleProportion))
+        self.scaledRect = image.get_rect(topleft= self.rect.topleft)
+        self.scaledRect.x*= scaleProportion[0]
+        self.scaledRect.y *= scaleProportion[1]
+
+    def getScaledRect(self) -> pygame.Rect: return self.scaledRect
 
     def checkMouseInRange(self, mouse_pos, button_x, button_y, button_width, button_height):
+        
         mousePosX = mouse_pos[0]
         mousePosY = mouse_pos[1]
         lowerXBound = button_x
@@ -37,8 +54,8 @@ class ImagedButton:
         return None
 
     def update(self, screen: pygame.Surface):
-        screen.blit(self.image, (self.x, self.y))
-        if not self.checkMouseInRange(mouse_pos=pygame.mouse.get_pos(), button_x=self.x, button_y=self.y,
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+        if not self.checkMouseInRange(mouse_pos=pygame.mouse.get_pos(), button_x=self.scaledRect.x, button_y=self.scaledRect.y,
                                       button_width=self.width, button_height=self.height):
             self.hover = False
             return None

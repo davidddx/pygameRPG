@@ -332,6 +332,11 @@ class Player:
             case _:
                 return 0
 
+    def getMovementState(self): return self.movementState
+
+    def getMovementDirection(self): return self.movementDirection
+
+    def getFacingDirection(self): return self.facingDirection
 
     def update(self, screen, camera : tuple[float, float]):
         # also handles animation in render function
