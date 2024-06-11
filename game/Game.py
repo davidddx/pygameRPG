@@ -5,7 +5,9 @@ import pygame
 import sys, os
 import globalVars.SettingsConstants as SETTINGS
 from debug.logger import logger
-def generateScreenFromResolution(width:int, height:int) -> pygame.Surface:
+
+def generateScreenFromResolution(width:int, height:int, fullscreen = False) -> pygame.Surface:
+    if fullscreen == True: return pygame.display.set_mode((0,0), pygame.FULLSCREEN)
     horizontalTileRatio = 11
     verticalTileRatio = 7
     tileSize = 48
@@ -16,14 +18,17 @@ def generateScreenFromResolution(width:int, height:int) -> pygame.Surface:
     print(f"{ratioMultiple=}")
     return pygame.display.set_mode((horizontalTileRatio * ratioMultiple, verticalTileRatio * ratioMultiple))
 
+def getIcon(cwd: str) -> pygame.Surface: 
+    return pygame.image.load(os.path.join(cwd, "icon", "icon.png"))
+
 def loop():
     pygame.init()
     running = True
     clock = pygame.time.Clock();
     pygame.init()
-    
+    cwd = os.getcwd()
+    pygame.display.set_icon(getIcon(cwd))
     displayInfo = pygame.display.Info()
-    print(displayInfo)
     displaySize = displayInfo.current_w, displayInfo.current_h
     screen = pygame.display.set_mode((SETTINGS.SCREEN_WIDTH, SETTINGS.SCREEN_HEIGHT))
     baseScreen = screen.copy()
@@ -51,16 +56,20 @@ def loop():
 
         
         screen.blit(pygame.transform.scale(baseScreen, screen.get_rect().size), (0, 0))
-
-#        if type(sceneHandler.currentScene) == TitleScreen:
-#            playButton = sceneHandler.getCurrentScene().getPlayButton()
-#            rect = playButton.getScaledRect()
-#            pygame.draw.rect(screen, (0,0,0), rect)
+        '''
+        if type(sceneHandler.currentScene) == TitleScreen:
+            playButton = sceneHandler.getCurrentScene().getPlayButton()
+            rect = playButton.getScaledRect()
+            pygame.draw.rect(screen, (0,0,0), rect)
+        '''
         pygame.display.flip()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
     pygame.quit()
 
 
