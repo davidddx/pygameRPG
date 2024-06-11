@@ -56,10 +56,8 @@ class ImagedButton:
     def update(self, screen: pygame.Surface):
         screen.blit(self.image, (self.rect.x, self.rect.y))
         if not self.checkMouseInRange(mouse_pos=pygame.mouse.get_pos(), button_x=self.scaledRect.x, button_y=self.scaledRect.y,
-                                      button_width=self.width, button_height=self.height):
-            self.hover = False
+                                      button_width=self.scaledRect.width, button_height=self.scaledRect.height):
             return None
-        self.hover = True
         if self.checkClicked(mouse_press=pygame.mouse.get_pressed()):
             if not self.toggle:
                 self.pressed = True;
