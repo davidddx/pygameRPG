@@ -8,8 +8,7 @@ from game.Item import Item, ItemConstants
 import globalVars.SettingsConstants as SETTINGS
 import game.Player as Player
 from game.Tile import Tile, TileTypes
-
-
+import gamedata.playerdata.Inventory as Inventory
 class MapObjectNames:
     ## Spawn related ##
     SPAWN_DEFAULT = "SPAWN_DEFAULT"
@@ -22,9 +21,9 @@ class TileMap:
     COLLISION_TYPE_WALL_ID = 0
     COLLISION_TYPE_DOOR_ID = 1
 
-    def __init__(self, tmx_data, map_id: int, _doors: list[Door],
-                 player: Player.Player, player_pos= None, name=""):
+    def __init__(self, tmx_data, map_id: int, _doors: list[Door], player: Player.Player, taken_items: list, player_pos= None, name=""):
         logger.debug(f"Class {TileMap=} initializing....")
+        
         self.timeMapInitialized = pygame.time.get_ticks()
         self.playerSpawnPos = player_pos
         self.spriteGroups = ()
@@ -34,11 +33,15 @@ class TileMap:
         self.writeCurrentDoorsOutput()
         self.name = name
         self.mapID = map_id
+        self.takenItems = taken_items
         self.spriteGroups = self.convertTMXToSpriteGroups(tmx_data= tmx_data)
         self.player.setPlayerPos(pos_x=self.playerSpawnPos[0], pos_y=self.playerSpawnPos[1])
         self.player.setPlayerMovability(False)
         self.camera = TileMap.initializeCamera(player_rect= player.rect)
+        print(f"tilemap taken items {self.takenItems=}")
+        print(f"{type(taken_items)=}")
         logger.debug(f"Class {TileMap=} initialized.")
+
 
     def writeCurrentDoorsOutput(self):
         logger.debug("Writing output for all doors in this map...")
@@ -75,8 +78,6 @@ class TileMap:
 
 
     def playerCollisionHandler(self, player : Player.Player):
-
-
         COLLISION_TOLERANCE = 10
         collisionOccured = False
         BLACK = (0,0,0)
@@ -109,7 +110,9 @@ class TileMap:
                 TileMap.collidePlayerWithTile(onCollision= onCollision, player= player, tile= tile, offset=1)
             if tile.tileType == TileTypes.ITEM:
                 if player.getInputState() == Player.PossiblePlayerInputStates.SELECTION_INPUT:
+                    self.takeItem(tile)
                     self.removeTileFromMap(tile)
+                    self.addItemToInventory(item= tile)
                     continue
 
 
@@ -164,6 +167,8 @@ class TileMap:
                         case TileTypes.SPAWN:
                             if self.playerSpawnPos is None: self.playerSpawnPos = (_object.x, _object.y)
                         case TileTypes.ITEM:
+                            if self.checkItemTaken(pos= (_object.x, _object.y), name = properties[name], takenItems= self.takenItems ):
+                                continue
                             items.append(Item(sprite= _object.image, pos= (_object.x, _object.y), name= properties[name]))
 
             layerIndex += 1
@@ -177,6 +182,17 @@ class TileMap:
 
         logger.info(f"Converted map tmx data to spritegroups.")
         return (trueSpriteGroup, spriteGroupNonCollision, spriteGroupCollision)
+   
+    def takeItem(self, item : Item):
+        self.takenItems.append({item.getName(), item.getPos()})
+    
+    def checkItemTaken(self, pos: tuple, name: str, takenItems):
+        try:
+            if {pos,name} in takenItems:
+                return True
+            return False
+        except:
+            return False
 
     def displayMap(self, screen, camera: tuple[float, float], player: Player.Player):
         renderAfterGroup = pygame.sprite.Group()
@@ -211,6 +227,16 @@ class TileMap:
         if timenow - self.timeMapInitialized < cooldown:
             return None
         self.player.setPlayerMovability(True)
+
+    @staticmethod
+    def addItemToInventory(item : Item):
+        if not Item.checkValidItem(item):
+            logger.error(f"could not add the following item to inventory: \n {item.getId()=} \n {item.getName()=}")
+        Inventory.addItemToInventory(item_id = item.getId(), item_category = ItemConstants.getCategoryById(item.getId())) 
+        
+    def getTakenItems(self): return self.takenItems
+   
+    def getId(self): return self.mapID
 
     def update(self, screen: pygame.Surface):
         self.checkMapCooldownForPlayerMovement()

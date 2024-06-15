@@ -5,6 +5,7 @@ import pygame
 import sys, os
 import globalVars.SettingsConstants as SETTINGS
 from debug.logger import logger
+import gamedata.playerdata.Inventory as Inventory
 
 def generateScreenFromResolution(width:int, height:int, fullscreen = False) -> pygame.Surface:
     if fullscreen == True: return pygame.display.set_mode((0,0), pygame.FULLSCREEN)
@@ -22,9 +23,10 @@ def getIcon(cwd: str) -> pygame.Surface:
     return pygame.image.load(os.path.join(cwd, "icon", "icon.png"))
 
 def loop():
+    logger.info("Initializing Game....")
+    ### Initializing Game ###
     pygame.init()
     running = True
-    clock = pygame.time.Clock();
     pygame.init()
     cwd = os.getcwd()
     pygame.display.set_icon(getIcon(cwd))
@@ -39,6 +41,9 @@ def loop():
     screenFillColor = "black"
     MAX_FPS = 45
     sceneHandler = SceneHandler.SceneHandler(DEBUG=True, display_size = displaySize)
+    Inventory.Inventory = Inventory.loadInventory()
+    ### Initialization Done ###
+    logger.info("Initializing Done.")
     windowResizeCooldown = 100
     upscaleWindowKeyId = pygame.K_PLUS
     downscaleWindowKeyId = pygame.K_MINUS

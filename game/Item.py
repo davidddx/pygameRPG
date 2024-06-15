@@ -4,37 +4,89 @@ from debug.logger import logger
 class ItemConstants:
     ITEM = "Item"
     WATER = "Water"
+
     HEART = "Heart"
     itemIds = {
             0: WATER,
             1: HEART,
             }
+    
     itemDescriptions = {
             WATER: "Give +1 base hp",
             HEART: "Give higher hp growth rate",
             }
+    
+    BOOSTS = "BOOSTS"
+    HEALING = "HEALING"
+    
+    itemCategories = {
+            WATER: BOOSTS,
+            HEART: HEALING,
+            }
+    
+    DEFAULT_ID = 0
+    DEFAULT_NAME = itemIds[DEFAULT_ID]
+    DEFAULT_DESCRIPTION = itemDescriptions[DEFAULT_NAME]
     @staticmethod
-    def getDescriptionByItemId(itemId: int):
+    def checkValidItemId(item_id: int):
         try:
-            return ItemConstants.itemDescriptions[ItemConstants.itemIds[itemId]]
-        except Exception as exception:
-            logger.debug(f"Could not get item description for {itemId=}, {exception=}")
-            return ""
+            ItemConstants.itemIds[item_id]
+            return True
+        except Exception as e:
+            logger.error(f"Invalid Item Id {item_id=}")
+            return False
+    
+    @staticmethod
+    def checkValidItemName(item_name: str):
+        try:
+            ItemConstants.itemDescriptions[item_name]
+            return True
+        except Exception as e:
+            logger.error(f"Invalid Item Name {item_name}")
+            return False
+    
+    @staticmethod
+    def checkValidItemDescription(item_description: str):
+        if item_description not in ItemConstants.itemDescriptions.values():
+            logger.error(f"Invalid Item Description {item_description}")
+            return False
+        return True
 
     @staticmethod
+    def getCategoryById(item_id: int):
+        if not ItemConstants.checkValidItemId(item_id): return ItemConstants.getCategoryByName(ItemConstants.DEFAULT_NAME)
+
+        return ItemConstants.getCategoryByName(ItemConstants.itemIds[item_id])
+    
+    @staticmethod
+    def getCategoryByName(item_name: str):
+        if not ItemConstants.checkValidItemName(item_name):
+            return ItemConstants.itemCategories[ItemConstants.DEFAULT_NAME]
+        return ItemConstants.itemCategories[item_name]
+
+    @staticmethod
+    def getDescriptionByItemId(item_id: int):
+        if not ItemConstants.checkValidItemId(item_id): return ItemConstants.itemDescriptions[ItemConstants.DEFAULT_NAME]  
+        return ItemConstants.itemDescriptions[ItemConstants.itemIds[item_id]]
+    
+    @staticmethod
     def getItemIdByName(name: str):
-        try:
-            ids = list(ItemConstants.itemIds.keys())
-            names = list(ItemConstants.itemIds.values())
-            
-            return ids[names.index(name)]
-        except Exception as e:
-            logger.error(f"Could not get item id by {name=}, {e}")
-            return 0
+        if not ItemConstants.checkValidItemName(name):
+            return ItemConstants.DEFAULT_ID
+        ids = list(ItemConstants.itemIds.keys())
+        names = list(ItemConstants.itemIds.values())       
+        return ids[names.index(name)]
 
 class Item(Tile):
     def __init__(self, sprite : pygame.Surface, pos: tuple[int, int], name: str):
         super().__init__(pos= pos, collidable= True, image=sprite, _type= ItemConstants.ITEM)
-        self.id = ItemConstants.getItemIdByName(name= name)
         self.name = name
 
+    @staticmethod
+    def checkValidItem(item) -> bool:
+        return (ItemConstants.checkValidItemId(item.getId()) and ItemConstants.checkValidItemName(item.getName()))
+        
+    def getId(self) -> int:
+        return ItemConstants.getItemIdByName(name= self.getName())    
+    def getName(self):
+        return self.name

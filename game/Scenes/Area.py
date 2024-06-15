@@ -8,6 +8,7 @@ import globalVars.PathConstants as PATH_CONSTANTS
 from game.Player import Player
 from game.Door import Door, DoorEntryPointIDs
 from game.Tile import TileTypes
+import gamedata.playerdata.Inventory as Inventory
 
 class Area(Scene):
 
@@ -21,8 +22,20 @@ class Area(Scene):
         self.mapIdx = starting_map_idx
         self.mapData = Area.loadMapTmxData()
         self.doors = Area.loadDoors(self.mapData)
-        self.currentMap = Area.loadMapById(tmx_data= self.mapData, id= starting_map_idx, _doors= self.doors, _player=self.player)
+        self.takenItems = Area.loadTakenItems(num_maps = len(self.mapData))
+        self.currentMap = Area.loadMapById(tmx_data= self.mapData, id= starting_map_idx, _doors= self.doors, _player=self.player, taken_items = self.takenItems[starting_map_idx])
+        
         logger.debug(f"Class {Area=} intialized.")
+
+    def updateTakenItems(self, current_map_idx: int):
+        self.takenItems[current_map_idx] = self.currentMap.getTakenItems()
+        print(f"{self.takenItems=}")
+
+    @staticmethod
+    def loadTakenItems(num_maps: int) -> list[set]: 
+        takenItems = []
+        for i in range(num_maps): takenItems.append([set()])
+        return takenItems
 
     @staticmethod
     def loadMapTmxData() -> list[list[pytmx.TiledMap, str]]:
@@ -78,7 +91,7 @@ class Area(Scene):
         return doors
 
     @staticmethod
-    def loadMapById(tmx_data: list[list[pytmx.TiledMap, str]], id: int, _doors: list[Door], _player: Player, spawn_pos = None) -> TileMap:
+    def loadMapById(tmx_data: list[list[pytmx.TiledMap, str]], id: int, _doors: list[Door], _player: Player, spawn_pos = None, taken_items= None) -> TileMap:
         dataIdx = 0
         nameIdx = 1
         tmxData = tmx_data[id][dataIdx]
@@ -89,8 +102,8 @@ class Area(Scene):
                 continue
             doors.append(door)
 
-        if spawn_pos is None: return TileMap(tmx_data= tmxData, map_id= id, name= fileName, _doors= doors, player=_player)
-        else: return TileMap(tmx_data= tmxData, map_id= id, name= fileName, _doors= doors, player=_player, player_pos= spawn_pos)
+        if spawn_pos is None: return TileMap(tmx_data= tmxData, map_id= id, name= fileName, _doors= doors, player=_player, taken_items= taken_items)
+        else: return TileMap(tmx_data= tmxData, map_id= id, name= fileName, _doors= doors, player=_player, player_pos= spawn_pos, taken_items= taken_items)
         # return TileMap(tmx_data= tmxData, map_id=mapId, name=fileName)
 
     def clear(self):
@@ -159,8 +172,9 @@ class Area(Scene):
         self.timeLastChangedMap = time_now
 
     def changeMapById(self, time_now: int, id: int, spawn_pos=None):
+        self.updateTakenItems(self.currentMap.getId())
         self.clear()
-        self.currentMap = Area.loadMapById(tmx_data = self.mapData, id= id, _doors = self.doors, _player=self.player, spawn_pos=spawn_pos)
+        self.currentMap = Area.loadMapById(tmx_data = self.mapData, id= id, _doors = self.doors, _player=self.player, spawn_pos=spawn_pos, taken_items= self.takenItems[id])
 
         self.timeLastChangedMap = time_now
 

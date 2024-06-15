@@ -48,8 +48,8 @@
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 514.5,
-                "y": 468.5
+                "x": 479.5,
+                "y": 319
             }
         },
         "TestMaps/TestMap2.tmx": {
@@ -70,8 +70,8 @@
             "scale": 0.75,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 1062,
-                "y": 438
+                "x": 1647.3333333333333,
+                "y": 1664
             }
         },
         "TileSets/Items.tsx": {

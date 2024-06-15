@@ -19,4 +19,6 @@ class Tile(pygame.sprite.Sprite):
         self.rect = image.get_rect(topleft=pos)
         self.inRange = False
 
+    def getPos(self) -> tuple:
+        return self.rect.x, self.rect.y
 
