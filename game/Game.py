@@ -14,9 +14,7 @@ def generateScreenFromResolution(width:int, height:int, fullscreen = False) -> p
     tileSize = 48
     tilesHorizontal = int(width/tileSize) 
     tilesVertical = int(height/tileSize)
-    print(f"{tilesHorizontal=}, {tilesVertical=}")
     ratioMultiple = int(min(tilesHorizontal / horizontalTileRatio, tilesVertical / verticalTileRatio) - 1) * 48 
-    print(f"{ratioMultiple=}")
     return pygame.display.set_mode((horizontalTileRatio * ratioMultiple, verticalTileRatio * ratioMultiple))
 
 def getIcon(cwd: str) -> pygame.Surface: 

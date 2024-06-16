@@ -38,8 +38,6 @@ class TileMap:
         self.player.setPlayerPos(pos_x=self.playerSpawnPos[0], pos_y=self.playerSpawnPos[1])
         self.player.setPlayerMovability(False)
         self.camera = TileMap.initializeCamera(player_rect= player.rect)
-        print(f"tilemap taken items {self.takenItems=}")
-        print(f"{type(taken_items)=}")
         logger.debug(f"Class {TileMap=} initialized.")
 
 

@@ -1,4 +1,4 @@
-from game.Scenes.BaseScene import Scene, SceneStates
+from game.Scenes.BaseScene import Scene, SceneStates, SceneTypes
 from game.utils.ImagedButton import ImagedButton
 import globalVars.SettingsConstants as SETTINGS
 import pygame
@@ -6,6 +6,7 @@ import os
 
 class TitleScreen(Scene):
     def __init__(self, background : pygame.Surface):
+        super().__init__(name= SceneTypes.TITLE_SCREEN)
         self.playButtonName = playButtonName = "Play"
         self.state = SceneStates.INITIALIZING
         self.background = background
@@ -35,7 +36,7 @@ class TitleScreen(Scene):
             if not button.pressed:
                 continue
             state = SceneStates.FINISHED
-
+            self.setPtrNextScene(SceneTypes.AREA)
         return state
 
     def clear(self):

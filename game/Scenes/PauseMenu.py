@@ -1,7 +1,7 @@
 import pygame
 import os
 #from game.utils.Button import Button
-from game.Scenes.BaseScene import Scene, SceneStates
+from game.Scenes.BaseScene import Scene, SceneStates, SceneTypes
 class PauseMenu(Scene):
     def __init__(self, name: str, last_world_frame: pygame.Surface, time_last_paused):
         self.name = name
@@ -29,5 +29,6 @@ class PauseMenu(Scene):
         if keys[pauseKey]:
             self.state = SceneStates.FINISHED
             self.timeLastPaused = timenow    
+            self.ptrNextScene = SceneTypes.AREA
     def clear(self):
         pass

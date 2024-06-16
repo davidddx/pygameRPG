@@ -2,7 +2,7 @@ import pytmx
 from debug.logger import logger
 from game.TileMap import TileMap
 import pygame
-from game.Scenes.BaseScene import Scene, SceneStates
+from game.Scenes.BaseScene import Scene, SceneStates, SceneTypes
 import os
 import globalVars.PathConstants as PATH_CONSTANTS
 from game.Player import Player
@@ -25,12 +25,12 @@ class Area(Scene):
         self.takenItems = Area.loadTakenItems(num_maps = len(self.mapData))
         self.currentMap = Area.loadMapById(tmx_data= self.mapData, id= starting_map_idx, _doors= self.doors, _player=self.player, taken_items = self.takenItems[starting_map_idx])
         self.timeLastPaused = 0        
+        self.state = SceneStates.RUNNING
         logger.debug(f"Class {Area=} intialized.")
 
     def updateTakenItems(self, current_map_idx: int):
         self.takenItems[current_map_idx] = self.currentMap.getTakenItems()
-        print(f"{self.takenItems=}")
-
+        
     @staticmethod
     def loadTakenItems(num_maps: int) -> list[set]: 
         takenItems = []
@@ -181,7 +181,6 @@ class Area(Scene):
     AREA_SWITCH_COOLDOWN = 150
 
     def checkPauseSignal(self, state): 
-        print(f"{self.state=}")
         pauseCooldown = 300
         timenow = pygame.time.get_ticks()
         if timenow - self.timeLastPaused < pauseCooldown:
@@ -192,6 +191,7 @@ class Area(Scene):
         keys = pygame.key.get_pressed()
         if keys[pauseKey]:
             self.state = SceneStates.PAUSED
+            self.setPtrNextScene(SceneTypes.PAUSE_MENU)
             self.timeLastPaused = timenow
 
     def setTimeLastPaused(self, timeLastPaused):
