@@ -25,6 +25,7 @@ class DebugMenu:
         self.currentScene = current_scene
         self.bottomYRight = 0
         self.bottomYLeft = 0
+        self.timeDebugLastToggled = 0
 
     def setCurrentScene(self, scene: Scene):
         self.currentScene = scene
@@ -33,10 +34,26 @@ class DebugMenu:
     def turnStringToFontSurf(string: str, font_fp: str, base_size=24,  color= (255,255,255)):        
         return pygame.font.Font(font_fp, base_size).render(string, False, color)
 
+
+    def checkModeChange(self):
+        timenow = pygame.time.get_ticks()
+        modeSwitchCooldown = 300
+        if timenow - self.timeDebugLastToggled < modeSwitchCooldown:
+            return None
+        toggleDebugKeyId = pygame.K_p
+        keys = pygame.key.get_pressed()
+        if not keys[toggleDebugKeyId]:
+            return None
+        self.timeDebugLastToggled = timenow
+        self.mode = not self.mode
+
+
+            
     def run(self, clock: pygame.time.Clock, screen: pygame.Surface, currentScene: Scene):
+   
+        self.checkModeChange()
         if not self.mode: return None
         self.renderCurrentSceneMenu(clock= clock,screen=screen, current_scene= currentScene)
-    
     
     def renderCurrentSceneMenu(self, clock: pygame.time.Clock, screen: pygame.Surface, current_scene: Scene):
         coolDown = 500
