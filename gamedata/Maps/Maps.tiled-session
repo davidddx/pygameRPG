@@ -3,11 +3,11 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "TestMaps/TestMap1.tmx",
+    "activeFile": "TileSets/Items.tsx",
     "expandedProjectPaths": [
-        ".",
         "TileSets",
-        "TestMaps"
+        "TestMaps",
+        "."
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -48,8 +48,8 @@
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 479.5,
-                "y": 319
+                "x": 513.5,
+                "y": 161.5
             }
         },
         "TestMaps/TestMap2.tmx": {
@@ -99,11 +99,11 @@
     "project": "Maps.tiled-project",
     "property.type": "string",
     "recentFiles": [
-        "TileSets/Items.tsx",
-        "TileSets/Test.tsx",
-        "TestMaps/TestMap3.tmx",
-        "TestMaps/TestMap2.tmx",
         "TestMaps/TestMap1.tmx",
+        "TestMaps/TestMap2.tmx",
+        "TestMaps/TestMap3.tmx",
+        "TileSets/Test.tsx",
+        "TileSets/Items.tsx",
         "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Maps/testmap/level1.tmx",
         "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Tilesets/TestTileSet.tsx",
         "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Maps/testmap/rulesloc/autotilingrules.tmx"

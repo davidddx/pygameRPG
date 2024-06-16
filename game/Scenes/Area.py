@@ -24,7 +24,7 @@ class Area(Scene):
         self.doors = Area.loadDoors(self.mapData)
         self.takenItems = Area.loadTakenItems(num_maps = len(self.mapData))
         self.currentMap = Area.loadMapById(tmx_data= self.mapData, id= starting_map_idx, _doors= self.doors, _player=self.player, taken_items = self.takenItems[starting_map_idx])
-        
+        self.timeLastPaused = 0        
         logger.debug(f"Class {Area=} intialized.")
 
     def updateTakenItems(self, current_map_idx: int):
@@ -181,13 +181,29 @@ class Area(Scene):
     AREA_SWITCH_COOLDOWN = 150
 
     def checkPauseSignal(self, state): 
-        
+        print(f"{self.state=}")
+        pauseCooldown = 300
+        timenow = pygame.time.get_ticks()
+        if timenow - self.timeLastPaused < pauseCooldown:
+            return None
         if state == SceneStates.PAUSED:
-            pass
+            return None
+        pauseKey = pygame.K_x 
+        keys = pygame.key.get_pressed()
+        if keys[pauseKey]:
+            self.state = SceneStates.PAUSED
+            self.timeLastPaused = timenow
+
+    def setTimeLastPaused(self, timeLastPaused):
+        self.timeLastPaused = timeLastPaused
+
+    def getTimeLastPaused(self): return self.timeLastPaused
 
     def getCurrentMapId(self): return self.currentMap.mapID
 
     def getState(self): return self.state
+
+    def setState(self, state: str): self.state = state
 
     def getPlayer(self): return self.player
 
