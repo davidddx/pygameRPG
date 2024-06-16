@@ -1,5 +1,5 @@
 from game.Scenes.BaseScene import Scene, SceneStates, SceneTypes
-from game.utils.ImagedButton import ImagedButton
+from game.utils.Button import ImagedButton, Button
 import globalVars.SettingsConstants as SETTINGS
 import pygame
 import os
@@ -14,6 +14,7 @@ class TitleScreen(Scene):
         playButton = ImagedButton(name=playButtonName, image= image,
                                   x=int(SETTINGS.SCREEN_WIDTH/2 - image.get_width()/2), y= int(SETTINGS.SCREEN_HEIGHT/2 - image.get_height()/2))
         self.currentButtons = [playButton]
+        
 
 
     def update(self, screen: pygame.Surface):

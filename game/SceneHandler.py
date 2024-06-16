@@ -109,7 +109,6 @@ class SceneHandler:
         self.timeSceneLastChanged = timenow
         nextScenePtr = current_scene.getPtrNextScene()
         nextScene = self.loadNextScene(current_scene= current_scene, next_scene_ptr= nextScenePtr, screen= screen, timenow= timenow)
-        print(f"{nextScene=}")
         # Case where pausing area
         if type(current_scene) == Area: 
             if nextScenePtr == SceneTypes.PAUSE_MENU:

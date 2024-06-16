@@ -8,7 +8,7 @@ class SceneStates:
     PAUSED = "PAUSED"
     FINISHED = "FINISHED"
     ON_ANIMATION = "ANIMATION"
-
+    NONE = "NONE"
 class SceneTypes:
     NONE = "NONE"
     AREA = "AREA"
@@ -20,7 +20,7 @@ class Scene(ABC):
 
     def __init__(self, name):
         self.name = name
-        self.state = ""
+        self.state = SceneStates.NONE
         self.ptrNextScene = SceneTypes.NONE
 
     @abstractmethod
@@ -32,6 +32,9 @@ class Scene(ABC):
     def setPtrNextScene(self, ptrNextScene: str):
         self.ptrNextScene = ptrNextScene 
 
+    def getState(self): return self.state
+    
+    def setState(self, state: str): self.state = state
 
     @abstractmethod
     def clear(self):

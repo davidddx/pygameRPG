@@ -56,15 +56,14 @@ def loop():
         baseScreen.fill(screenFillColor)
 
         sceneHandler.runDebug(screen=baseScreen, clock= clock)
-
-        
-        screen.blit(pygame.transform.scale(baseScreen, screen.get_rect().size), (0, 0))
         '''
         if type(sceneHandler.currentScene) == TitleScreen:
             playButton = sceneHandler.getCurrentScene().getPlayButton()
             rect = playButton.getScaledRect()
             pygame.draw.rect(screen, (0,0,0), rect)
         '''
+        screen.blit(pygame.transform.scale(baseScreen, screen.get_rect().size), (0, 0))
+
         pygame.display.flip()
 
         for event in pygame.event.get():
