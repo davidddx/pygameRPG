@@ -3,6 +3,11 @@ import globalVars.SettingsConstants as SETTINGS
 from debug.logger import logger
 import Font.FontPaths as FONT_PATHS
 
+class ButtonStates:
+    NEUTRAL = "NEUTRAL"
+    ON_ANIMATION = "ON_ANIMATION"
+    ALL_STATES = [NEUTRAL, ON_ANIMATION]
+
 class Button:
     def __init__(self, name: str, x: int, y: int, width, height, toggle=False, starting_value= False):
         self.name = name
@@ -11,6 +16,22 @@ class Button:
         self.rect = pygame.Rect(x, y, width, height)
         self.scaledRect = self.scaleRectToCurrentSurface(self.rect)
         self.hover = False 
+        self.mouseEnabled = True
+        self.state = ButtonStates.NEUTRAL
+
+    def getState(self): return self.state
+    def setState(self, state: str):
+        if state not in ButtonStates.ALL_STATES: 
+            return None
+        self.state = state
+    def getName(self): return self.name
+    def getPressed(self): return self.pressed
+    def getHover(self): return self.hover
+    def getMouseEnabled(self): return self.mouseEnabled
+    def disableMouse(self): self.mouseEnabled = False
+    def enableMouse(self): self.mouseEnabled = True
+    def setHover(self, hover: bool): self.hover = hover 
+
     def scaleRectToCurrentSurface(self, rect: pygame.Rect) -> pygame.Rect:
         currentSurface = pygame.display.get_surface()
         windowWidth = currentSurface.get_width()
@@ -53,6 +74,7 @@ class Button:
         return None
 
     def update(self, screen: pygame.Surface):
+        if not self.mouseEnabled: return None
         if not self.checkMouseInRange(mouse_pos=pygame.mouse.get_pos(), button_x=self.scaledRect.x, button_y=self.scaledRect.y, button_width=self.scaledRect.width, button_height=self.scaledRect.height):
             self.hover = False
             return None
@@ -92,17 +114,56 @@ class TextAlignments:
             TOP_LEFT, TOP_RIGHT, TOP_MIDDLE, CENTER_LEFT, CENTER_RIGHT, CENTER, BOTTOM_LEFT, BOTTOM_RIGHT, BOTTOM_MIDDLE
             ]
 
+class TextAnimationInfo:
+    def __init__(self, is_scaling = False, shrink=False, scale_step=1, size_on_scale_finished=30, outline= False, outline_color= (255, 255, 0), color_shifting= False, color_shifting_speed="slow", min_scaled_size=20):
+        self.maxScaledSize = size_on_scale_finished
+        self.minScaledSize = min_scaled_size
+        self.scaleStep = scale_step
+        self.scale = is_scaling
+        self.shrink= shrink
+        self.outlineColor = outline_color
+        self.outline = outline
+        self.colorShiftingSpeed = color_shifting_speed
+        self.colorShift = color_shifting
+
+    def setOutline(self, outline: bool): self.outlineEffect = outline
+    def getOutline(self): return self.outline
+    def setOutlineColor(self, outline_color: tuple[int, int, int]): self.outlineColor = outline_color
+    def getOutlineColor(self): return self.outlineColor
+    def setScale(self, scale: bool): self.scale= scale
+    def getScale(self): return self.scale
+    def setScaleStep(self, scale_step: int): self.scaleStep = scale_step
+    def getScaleStep(self): return self.scaleStep
+    def setMaxScaledSize(self, max_scaled_size: int): self.maxScaledSize = max_scaled_size
+    def getMaxScaledSize(self): return self.maxScaledSize
+    def setMinScaledSize(self, min_scaled_size: int): self.minScaledSize= min_scaled_size
+    def getMinScaledSize(self): return self.minScaledSize
+    def setShrink(self, shrink: bool): self.shrink= shrink
+    def getShrink(self): return self.shrink
+    def setColorShift(self, color_shift: bool): self.colorShift = color_shift
+    def getColorShift(self): return self.colorShift
+    def setColorShiftingSpeed(self, color_shifting_speed: str):
+        if not(color_shifting_speed == "slow" or color_shifting_speed == "medium" or color_shifting_speed == "fast"):
+            self.colorShiftingSpeed = color_shifting_speed = "slow"
+        else: self.colorShiftingSpeed = color_shifting_speed
+    def getColorShiftingSpeed(self): return self.colorShiftingSpeed
+
 class TextButton(Button):
-    def __init__(self, text: str, name: str, x, y, width, height, fit_to_text= False, toggle= False, starting_value= False, background = "NONE"):
+    def __init__(self, text: str, name: str, x, y, width, height, fit_to_text= False, toggle= False, starting_value= False, background = "NONE", mouseEnabled= True):
         super().__init__(name= name, x= x, y= y, width= width, height= height, toggle= toggle, starting_value= starting_value)
-        self.textAlignment = TextAlignments.CENTER
-        self.textSurface = TextButton.loadFontSurface(text) 
+        self.textAlignment = TextAlignments.TOP_LEFT
+        self.text = text
+        self.fontSize = self.originalFontSize = self.lastFontSize =  30
+        self.textColor = (255,255,255)
+        self.textSurface = TextButton.loadFontSurface(text, self.fontSize, self.textColor) 
         self.textPosition = TextButton.loadTextPosition(self.rect, self.textSurface, self.textAlignment)
         if fit_to_text:
             self.textAlignment = TextAlignments.CENTER_LEFT
             self.changeRect(self.textSurface.get_rect(topleft= self.textPosition))
+        if not mouseEnabled: self.disableMouse()
         self.backgroundColor = TextButton.loadBackgroundColor(background)
-        
+        self.textAnimationInfo = TextAnimationInfo()
+
     @staticmethod
     def loadBackgroundColor(background: str): 
         return (0, 0, 0)
@@ -147,12 +208,60 @@ class TextButton(Button):
         fontPath = FONT_PATHS.GOHU
         return TextButton.turnStringToFontSurf(text, fontPath, size, color)
         
+    def animateTextToSize(self, size: int, step: int, shrink: bool):
+        self.lastFontSize = self.fontSize
+        self.setState(ButtonStates.ON_ANIMATION)
+        if shrink:
+            self.textAnimationInfo.setMinScaledSize(size)
+        else:
+            self.textAnimationInfo.setMaxScaledSize(size)
+
+
+        self.textAnimationInfo.setScaleStep(step)
+        self.textAnimationInfo.setShrink(shrink)
+        self.textAnimationInfo.setScale(True)
+
+    def animateTextWithOutline(self, outline_color=(255, 255, 0)):
+        self.setState(ButtonStates.ON_ANIMATION)
+        self.textAnimationInfo.setOutline(True)
+        self.textAnimationInfo.setOutlineColor(outline_color)
+
+    def animateTextWithColorShifting(self, speed="slow"):
+        self.setState(ButtonStates.ON_ANIMATION)
+        self.textAnimationInfo.setColorShift(True)
+        self.textAnimationInfo.setColorShiftingSpeed(speed)
+
+    def animate(self, animationInfo, state):
+        if state != ButtonStates.ON_ANIMATION: return None
+        if not (animationInfo.getScale() or animationInfo.getColorShift() or animationInfo.getOutline()): return None 
+        ### Animation text size###
+        if animationInfo.shrink:
+            if self.fontSize <= animationInfo.getMinScaledSize():
+                self.fontSize = animationInfo.getMinScaledSize()
+                animationInfo.setScale(False)
+        else:
+            if self.fontSize >= animationInfo.getMaxScaledSize(): 
+                self.fontSize = animationInfo.getMaxScaledSize() 
+                animationInfo.setScale(False)
+        if animationInfo.getScale():
+            if animationInfo.shrink:
+                self.fontSize -= animationInfo.getScaleStep()
+            else:
+
+                self.fontSize += animationInfo.getScaleStep() 
+        if animationInfo.getColorShift():
+            pass
+
+        if animationInfo.getOutline():
+            pass
+        self.textSurface = TextButton.loadFontSurface(self.text, self.fontSize, self.textColor) 
+        if animationInfo.getScaleStep(): self.changeRect(self.textSurface.get_rect(topleft= self.textPosition))
 
     def update(self, screen: pygame.Surface):
-        if self.hover: self.backgroundColor = (255, 255, 255)
-        else: self.backgroundColor = (0, 0, 0)
-
-
+        #if self.hover: self.backgroundColor = (255, 255, 255)
+        #else: self.backgroundColor = (0, 0, 0)
+        self.animate(animationInfo = self.textAnimationInfo, state= self.state)
+        print(f"{self.name=} , {self.rect=}")
         pygame.draw.rect(screen, self.backgroundColor, self.rect)
         screen.blit(self.textSurface, self.textPosition)
         super().update(screen)
