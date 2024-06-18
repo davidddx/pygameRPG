@@ -115,7 +115,7 @@ class TextAlignments:
             ]
 
 class TextAnimationInfo:
-    def __init__(self, is_scaling = False, shrink=False, scale_step=1, size_on_scale_finished=30, outline= False, outline_color= (255, 255, 0), color_shifting= False, color_shifting_speed="slow", min_scaled_size=20):
+    def __init__(self, is_scaling = False, shrink=False, scale_step=1, size_on_scale_finished=30, outline= False, outline_color= (255, 255, 0), color_shifting= False, color_shifting_speed="slow", color= (0, 0, 0), min_scaled_size=20):
         self.maxScaledSize = size_on_scale_finished
         self.minScaledSize = min_scaled_size
         self.scaleStep = scale_step
@@ -125,7 +125,10 @@ class TextAnimationInfo:
         self.outline = outline
         self.colorShiftingSpeed = color_shifting_speed
         self.colorShift = color_shifting
-
+        self.colorShiftColor = color
+        self.lerpRGBStep = 0.1
+        self.lerpRGBValue = 0
+        self.validLerpSpeeds = ["very slow, slow, medium, fast, very fast"]
     def setOutline(self, outline: bool): self.outlineEffect = outline
     def getOutline(self): return self.outline
     def setOutlineColor(self, outline_color: tuple[int, int, int]): self.outlineColor = outline_color
@@ -142,11 +145,23 @@ class TextAnimationInfo:
     def getShrink(self): return self.shrink
     def setColorShift(self, color_shift: bool): self.colorShift = color_shift
     def getColorShift(self): return self.colorShift
+    def setColorShiftColor(self, color: tuple[int, int, int]): self.colorShiftColor = color
+    def getColorShiftColor(self): return self.colorShiftColor
     def setColorShiftingSpeed(self, color_shifting_speed: str):
-        if not(color_shifting_speed == "slow" or color_shifting_speed == "medium" or color_shifting_speed == "fast"):
-            self.colorShiftingSpeed = color_shifting_speed = "slow"
+        if not color_shifting_speed in self.validLerpSpeeds:
+            self.colorShiftingSpeed = color_shifting_speed = "medium"
         else: self.colorShiftingSpeed = color_shifting_speed
+        match color_shifting_speed:
+            case "very slow": self.lerpRGBStep = 0.05
+            case "slow": self.lerpRGBStep = 0.1
+            case "medium": self.lerpRGBStep = 0.25
+            case "fast":  self.lerpRGBStep = 0.5
+            case "very fast": self.lerpRGBStep = 1
     def getColorShiftingSpeed(self): return self.colorShiftingSpeed
+    def setLerpRGBValue(self, lerp_rgb_value: float): self.lerpRGBValue = lerp_rgb_value
+    def getLerpRGBValue(self): return self.lerpRGBValue
+    def setLerpRGBStep(self, lerp_rgb_step: float): self.lerpRGBStep = lerp_rgb_step
+    def getLerpRGBStep(self): return self.lerpRGBStep
 
 class TextButton(Button):
     def __init__(self, text: str, name: str, x, y, width, height, fit_to_text= False, toggle= False, starting_value= False, background = "NONE", mouseEnabled= True):
@@ -154,7 +169,7 @@ class TextButton(Button):
         self.textAlignment = TextAlignments.TOP_LEFT
         self.text = text
         self.fontSize = self.originalFontSize = self.lastFontSize =  30
-        self.textColor = (255,255,255)
+        self.textColor = self.originalTextColor = self.lastTextColor = (255,255,255)
         self.textSurface = TextButton.loadFontSurface(text, self.fontSize, self.textColor) 
         self.textPosition = TextButton.loadTextPosition(self.rect, self.textSurface, self.textAlignment)
         if fit_to_text:
@@ -165,8 +180,24 @@ class TextButton(Button):
         self.textAnimationInfo = TextAnimationInfo()
 
     @staticmethod
-    def loadBackgroundColor(background: str): 
-        return (0, 0, 0)
+    def loadBackgroundColor(background: str):
+        match background:
+            case "NONE":
+                return None
+            case "BLACK":
+                return (0,0,0)
+            case "WHITE":
+                return (255,255,255)
+            case "RED":
+                return (255, 0, 0)
+            case "GREEN":
+                return (0, 255, 0)
+            case "BLUE":
+                return (0, 0, 255)
+            case "PURPLE":
+                return (255, 0, 255)
+            case "YELLOW": return (255, 255, 0)
+            case "TEAL": return (0, 255, 255)
 
     @staticmethod
     def loadTextPosition(rect: pygame.Rect, text_surface: pygame.Surface, alignment: str):
@@ -226,10 +257,11 @@ class TextButton(Button):
         self.textAnimationInfo.setOutline(True)
         self.textAnimationInfo.setOutlineColor(outline_color)
 
-    def animateTextWithColorShifting(self, speed="slow"):
+    def animateTextToColor(self, speed="slow", color= (0,0,0)):
         self.setState(ButtonStates.ON_ANIMATION)
         self.textAnimationInfo.setColorShift(True)
         self.textAnimationInfo.setColorShiftingSpeed(speed)
+        self.textAnimationInfo.setColorShiftColor(color)
 
     def animate(self, animationInfo, state):
         if state != ButtonStates.ON_ANIMATION: return None
@@ -250,8 +282,17 @@ class TextButton(Button):
 
                 self.fontSize += animationInfo.getScaleStep() 
         if animationInfo.getColorShift():
-            pass
-
+            lerpRGBValue = animationInfo.getLerpRGBValue()
+            if not lerpRGBValue >= 1:
+                animationInfo.setLerpRGBValue(lerpRGBValue + animationInfo.getLerpRGBStep())
+                red = self.lastTextColor[0] + (animationInfo.getColorShiftColor()[0] - self.lastTextColor[0]) * lerpRGBValue 
+                green = self.lastTextColor[1] + (animationInfo.getColorShiftColor()[1] - self.lastTextColor[1]) * lerpRGBValue 
+                blue = self.lastTextColor[2] + (animationInfo.getColorShiftColor()[2] - self.lastTextColor[2]) * lerpRGBValue 
+                self.textColor = (red, green, blue)
+            else:
+                self.lastTextColor = animationInfo.getColorShiftColor()
+                animationInfo.setColorShift(False)
+                animationInfo.setLerpRGBValue(0)
         if animationInfo.getOutline():
             pass
         self.textSurface = TextButton.loadFontSurface(self.text, self.fontSize, self.textColor) 
@@ -261,8 +302,10 @@ class TextButton(Button):
         #if self.hover: self.backgroundColor = (255, 255, 255)
         #else: self.backgroundColor = (0, 0, 0)
         self.animate(animationInfo = self.textAnimationInfo, state= self.state)
-        print(f"{self.name=} , {self.rect=}")
-        pygame.draw.rect(screen, self.backgroundColor, self.rect)
+        try:
+            pygame.draw.rect(screen, self.backgroundColor, self.rect)
+        except:
+            pass
         screen.blit(self.textSurface, self.textPosition)
         super().update(screen)
 
