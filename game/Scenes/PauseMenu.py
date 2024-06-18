@@ -21,17 +21,31 @@ class PauseMenu(Scene):
 
     @staticmethod
     def generateButtons() -> list[TextButton]:
-        quitButton = TextButton("QUIT", "Quit Button", x= SETTINGS.TILE_SIZE,y=  3 * SETTINGS.SCREEN_HEIGHT / 4, width= 3* SETTINGS.TILE_SIZE, height = 2*SETTINGS.TILE_SIZE, fit_to_text=True)
+        quitButton = TextButton("QUIT", "Quit Button", x= SETTINGS.TILE_SIZE,y=  3 * SETTINGS.SCREEN_HEIGHT / 4, width= 3* SETTINGS.TILE_SIZE, height = 2*SETTINGS.TILE_SIZE, fit_to_text= True)
+        settingsButton = TextButton("SETTINGS", "Settings Button", x= SETTINGS.TILE_SIZE, y= 2*SETTINGS.SCREEN_HEIGHT / 4, width = 3*SETTINGS.TILE_SIZE, height = 2 * SETTINGS.TILE_SIZE, fit_to_text= True)
+        return [quitButton, settingsButton]
 
-        return [quitButton]
+    def disableMouseForButtons(self):
+        for button in self.buttons:
+            
+            button.disableMouse()
 
+    def enableMouseForButtons(self):
+        for button in self.buttons:
+            button.enableMouse()
 
     def render(self, screen):
         screen.blit(self.lastWorldFrame, (0,0))
         screen.blit(self.blackTransparentLayer, (0,0))
         screen.blit(self.pausedFont, self.pausedFontPos)
         for button in self.buttons:
+            if button.hover: button.animateTextToSize(size= 40, step= 2, shrink= False)
+            else:
+                if button.fontSize != button.originalFontSize:
+                    button.animateTextToSize(size= button.originalFontSize, step= 2, shrink= True)
             button.update(screen)
+            
+
     @staticmethod
     def turnStringToFontSurf(string: str, font_fp: str, base_size=24,  color= (255,255,255), anti_aliasing = False):        
         return pygame.font.Font(font_fp, base_size).render(string, anti_aliasing, color)
