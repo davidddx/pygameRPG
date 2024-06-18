@@ -39,10 +39,13 @@ class PauseMenu(Scene):
         screen.blit(self.blackTransparentLayer, (0,0))
         screen.blit(self.pausedFont, self.pausedFontPos)
         for button in self.buttons:
-            if button.hover: button.animateTextToSize(size= 40, step= 2, shrink= False)
+            if button.hover: 
+                button.animateTextToSize(size= 40, step= 2, shrink= False)
+                button.animateTextToColor(color = (200, 200, 200), speed = "medium")
             else:
                 if button.fontSize != button.originalFontSize:
-                    button.animateTextToSize(size= button.originalFontSize, step= 2, shrink= True)
+                    button.animateTextToSize(size= button.originalFontSize, step= 10, shrink= True)
+                if button.textColor != button.originalTextColor: button.animateTextToColor(color = button.originalTextColor, speed = "medium")
             button.update(screen)
             
 
