@@ -42,10 +42,12 @@ class PauseMenu(Scene):
             if button.hover: 
                 button.animateTextToSize(size= 40, step= 2, shrink= False)
                 button.animateTextToColor(color = (200, 200, 200), speed = "medium")
+                button.animateTextWithOutline()
             else:
                 if button.fontSize != button.originalFontSize:
                     button.animateTextToSize(size= button.originalFontSize, step= 10, shrink= True)
                 if button.textColor != button.originalTextColor: button.animateTextToColor(color = button.originalTextColor, speed = "medium")
+                button.removeTextOutline()
             button.update(screen)
             
 

@@ -115,7 +115,7 @@ class TextAlignments:
             ]
 
 class TextAnimationInfo:
-    def __init__(self, is_scaling = False, shrink=False, scale_step=1, size_on_scale_finished=30, outline= False, outline_color= (255, 255, 0), color_shifting= False, color_shifting_speed="slow", color= (0, 0, 0), min_scaled_size=20):
+    def __init__(self, is_scaling = False, shrink=False, scale_step=1, size_on_scale_finished=30, outline= False, outline_size = "small", outline_color= (255, 255, 0), color_shifting= False, color_shifting_speed="slow", color= (0, 0, 0), min_scaled_size=20):
         self.maxScaledSize = size_on_scale_finished
         self.minScaledSize = min_scaled_size
         self.scaleStep = scale_step
@@ -123,16 +123,21 @@ class TextAnimationInfo:
         self.shrink= shrink
         self.outlineColor = outline_color
         self.outline = outline
+        self.outlineSize = outline_size
         self.colorShiftingSpeed = color_shifting_speed
         self.colorShift = color_shifting
         self.colorShiftColor = color
         self.lerpRGBStep = 0.1
         self.lerpRGBValue = 0
         self.validLerpSpeeds = ["very slow, slow, medium, fast, very fast"]
-    def setOutline(self, outline: bool): self.outlineEffect = outline
+    def setOutline(self, outline: bool): self.outline = outline
     def getOutline(self): return self.outline
     def setOutlineColor(self, outline_color: tuple[int, int, int]): self.outlineColor = outline_color
     def getOutlineColor(self): return self.outlineColor
+    def setOutlineSize(self, size: str):
+        validOutlineSizes = ["small", "big", "large"]
+        if size in validOutlineSizes: self.outlineSize = size
+    def getOutlineSize(self): return self.outlineSize
     def setScale(self, scale: bool): self.scale= scale
     def getScale(self): return self.scale
     def setScaleStep(self, scale_step: int): self.scaleStep = scale_step
@@ -163,6 +168,8 @@ class TextAnimationInfo:
     def setLerpRGBStep(self, lerp_rgb_step: float): self.lerpRGBStep = lerp_rgb_step
     def getLerpRGBStep(self): return self.lerpRGBStep
 
+
+
 class TextButton(Button):
     def __init__(self, text: str, name: str, x, y, width, height, fit_to_text= False, toggle= False, starting_value= False, background = "NONE", mouseEnabled= True):
         super().__init__(name= name, x= x, y= y, width= width, height= height, toggle= toggle, starting_value= starting_value)
@@ -171,7 +178,9 @@ class TextButton(Button):
         self.fontSize = self.originalFontSize = self.lastFontSize =  30
         self.textColor = self.originalTextColor = self.lastTextColor = (255,255,255)
         self.textSurface = TextButton.loadFontSurface(text, self.fontSize, self.textColor) 
+        self.textSurfaceOutline = None 
         self.textPosition = TextButton.loadTextPosition(self.rect, self.textSurface, self.textAlignment)
+        self.textPositionOutline = self.textPosition
         if fit_to_text:
             self.textAlignment = TextAlignments.CENTER_LEFT
             self.changeRect(self.textSurface.get_rect(topleft= self.textPosition))
@@ -230,14 +239,16 @@ class TextButton(Button):
         self.textAlignment = alignment
         self.textPosition = TextButton.loadTextPosition(self.rect, self.textSurface, alignment) 
     @staticmethod
-    def turnStringToFontSurf(string: str, font_fp: str, base_size=24,  color= (255,255,255)):        
-        return pygame.font.Font(font_fp, base_size).render(string, False, color)
+    def turnStringToFontSurf(string: str, font_fp: str, base_size=24,  color= (255,255,255), bold= False):        
+        font = pygame.font.Font(font_fp, base_size)
+        font.bold = bold
+        return font.render(string, False, color)
 
 
     @staticmethod
-    def loadFontSurface(text: str, size = 30, color = (255,255,255)):
+    def loadFontSurface(text: str, size = 30, color = (255,255,255), bold= False):
         fontPath = FONT_PATHS.GOHU
-        return TextButton.turnStringToFontSurf(text, fontPath, size, color)
+        return TextButton.turnStringToFontSurf(text, fontPath, size, color, bold)
         
     def animateTextToSize(self, size: int, step: int, shrink: bool):
         self.lastFontSize = self.fontSize
@@ -252,10 +263,14 @@ class TextButton(Button):
         self.textAnimationInfo.setShrink(shrink)
         self.textAnimationInfo.setScale(True)
 
-    def animateTextWithOutline(self, outline_color=(255, 255, 0)):
+    def animateTextWithOutline(self, color=(255, 255, 0)):
         self.setState(ButtonStates.ON_ANIMATION)
         self.textAnimationInfo.setOutline(True)
-        self.textAnimationInfo.setOutlineColor(outline_color)
+        self.textAnimationInfo.setOutlineColor(color)
+
+    def removeTextOutline(self): 
+        self.textAnimationInfo.setOutline(False)
+        self.textSurfaceOutline = None
 
     def animateTextToColor(self, speed="slow", color= (0,0,0)):
         self.setState(ButtonStates.ON_ANIMATION)
@@ -294,7 +309,12 @@ class TextButton(Button):
                 animationInfo.setColorShift(False)
                 animationInfo.setLerpRGBValue(0)
         if animationInfo.getOutline():
-            pass
+            if self.textSurfaceOutline is None:
+                self.textSurfaceOutline = TextButton.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
+                self.textPositionOutline = self.textPosition
+            if animationInfo.getScale():
+                self.textPositionOutline = self.textPosition
+                self.textSurfaceOutline = TextButton.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
         self.textSurface = TextButton.loadFontSurface(self.text, self.fontSize, self.textColor) 
         if animationInfo.getScaleStep(): self.changeRect(self.textSurface.get_rect(topleft= self.textPosition))
 
@@ -302,10 +322,13 @@ class TextButton(Button):
         #if self.hover: self.backgroundColor = (255, 255, 255)
         #else: self.backgroundColor = (0, 0, 0)
         self.animate(animationInfo = self.textAnimationInfo, state= self.state)
-        try:
-            pygame.draw.rect(screen, self.backgroundColor, self.rect)
-        except:
-            pass
+        if self.backgroundColor: pygame.draw.rect(screen, self.backgroundColor, self.rect)
+
+        if self.textSurfaceOutline: 
+            screen.blit(self.textSurfaceOutline, (self.textPosition[0], self.textPosition[1] + 2))
+            screen.blit(self.textSurfaceOutline, (self.textPosition[0], self.textPosition[1] - 2))
+            screen.blit(self.textSurfaceOutline, (self.textPosition[0]+ 2, self.textPosition[1] ))
+            screen.blit(self.textSurfaceOutline, (self.textPosition[0] - 2, self.textPosition[1] ))
         screen.blit(self.textSurface, self.textPosition)
         super().update(screen)
 
