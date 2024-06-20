@@ -14,15 +14,19 @@ class PauseMenu(Scene):
         self.transparentLayerOpacity = 0
         self.timeLastAnimated = 0 
         self.state = SceneStates.ON_ANIMATION
-        self.pausedFont = PauseMenu.turnStringToFontSurf(string = "PAUSE MENU", font_fp = FONT_PATHS.GOHU, base_size = SETTINGS.TILE_SIZE, anti_aliasing = True) 
+        self.pausedFont = PauseMenu.turnStringToFontSurf(string = "PAUSE MENU", font_fp = FONT_PATHS.GOHU, base_size = SETTINGS.TILE_SIZE, anti_aliasing = True, color= (75, 0, 130)) 
         self.pausedFontPos = (SETTINGS.SCREEN_WIDTH/2 - self.pausedFont.get_width() / 2, 0)
+        self.pausedFontOutline = PauseMenu.turnStringToFontSurf(string= "PAUSE MENU", font_fp = FONT_PATHS.GOHU, base_size = SETTINGS.TILE_SIZE, anti_aliasing= True, color=(186, 85, 211))
 
+        self.lastMousePos = self.mousePos = pygame.mouse.get_pos()
         self.buttons = PauseMenu.generateButtons()
 
     @staticmethod
     def generateButtons() -> list[TextButton]:
-        quitButton = TextButton("QUIT", "Quit Button", x= SETTINGS.TILE_SIZE,y=  3 * SETTINGS.SCREEN_HEIGHT / 4, width= 3* SETTINGS.TILE_SIZE, height = 2*SETTINGS.TILE_SIZE, fit_to_text= True)
-        settingsButton = TextButton("SETTINGS", "Settings Button", x= SETTINGS.TILE_SIZE, y= 2*SETTINGS.SCREEN_HEIGHT / 4, width = 3*SETTINGS.TILE_SIZE, height = 2 * SETTINGS.TILE_SIZE, fit_to_text= True)
+        quitButton = TextButton("QUIT", "Quit Button", x= SETTINGS.TILE_SIZE,y=  3 * SETTINGS.SCREEN_HEIGHT / 4, width= 3* SETTINGS.TILE_SIZE, height = 2*SETTINGS.TILE_SIZE, fit_to_text= True, color= (136,8,8))
+        settingsButton = TextButton("SETTINGS", "Settings Button", x= SETTINGS.TILE_SIZE, y= 2*SETTINGS.SCREEN_HEIGHT / 4, width = 3*SETTINGS.TILE_SIZE, height = 2 * SETTINGS.TILE_SIZE, fit_to_text= True, color= (20,52,164))
+        settingsButton.animateTextWithOutline(color=(0, 150, 255))
+        quitButton.animateTextWithOutline(color=(255, 0, 0))
         return [quitButton, settingsButton]
 
     def disableMouseForButtons(self):
@@ -37,17 +41,22 @@ class PauseMenu(Scene):
     def render(self, screen):
         screen.blit(self.lastWorldFrame, (0,0))
         screen.blit(self.blackTransparentLayer, (0,0))
+        screen.blit(self.pausedFontOutline, (self.pausedFontPos[0] - 2, self.pausedFontPos[1])) 
+        screen.blit(self.pausedFontOutline, (self.pausedFontPos[0] + 2, self.pausedFontPos[1])) 
+        screen.blit(self.pausedFontOutline, (self.pausedFontPos[0], self.pausedFontPos[1] - 2))
+        screen.blit(self.pausedFontOutline, (self.pausedFontPos[0], self.pausedFontPos[1] + 2)) 
         screen.blit(self.pausedFont, self.pausedFontPos)
         for button in self.buttons:
             if button.hover: 
-                button.animateTextToSize(size= 40, step= 2, shrink= False)
+                button.animateTextToSize(size= 40, step= 3, shrink= False)
                 button.animateTextToColor(color = (200, 200, 200), speed = "medium")
                 button.animateTextWithOutline()
             else:
                 if button.fontSize != button.originalFontSize:
+
                     button.animateTextToSize(size= button.originalFontSize, step= 10, shrink= True)
                 if button.textColor != button.originalTextColor: button.animateTextToColor(color = button.originalTextColor, speed = "medium")
-                button.removeTextOutline()
+                if button.outlineColor != button.originalOutlineColor: button.animateTextWithOutline(color=button.originalOutlineColor)                
             button.update(screen)
             
 
