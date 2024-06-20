@@ -123,6 +123,7 @@ class TextAnimationInfo:
         self.shrink= shrink
         self.outlineColor = outline_color
         self.outline = outline
+        self.outlineFactor = 0
         self.outlineSize = outline_size
         self.colorShiftingSpeed = color_shifting_speed
         self.colorShift = color_shifting
@@ -135,8 +136,18 @@ class TextAnimationInfo:
     def setOutlineColor(self, outline_color: tuple[int, int, int]): self.outlineColor = outline_color
     def getOutlineColor(self): return self.outlineColor
     def setOutlineSize(self, size: str):
-        validOutlineSizes = ["small", "big", "large"]
-        if size in validOutlineSizes: self.outlineSize = size
+        validOutlineSizes = ["small", "medium", "large"]
+        if size not in validOutlineSizes: 
+            return None
+        self.outlineSize = size
+        match size:
+            case "small":
+                self.outlineFactor = 1
+            case "medium":
+                self.outlineFactor = 2
+            case "big":
+                self.outlineFactor = 3
+    def getOutlineFactor(self): return self.outlineFactor
     def getOutlineSize(self): return self.outlineSize
     def setScale(self, scale: bool): self.scale= scale
     def getScale(self): return self.scale
@@ -171,14 +182,16 @@ class TextAnimationInfo:
 
 
 class TextButton(Button):
-    def __init__(self, text: str, name: str, x, y, width, height, fit_to_text= False, toggle= False, starting_value= False, background = "NONE", mouseEnabled= True):
+    def __init__(self, text: str, name: str, x, y, width, height, fit_to_text= False, toggle= False, starting_value= False, background = "NONE", mouseEnabled= True, color = (255,255,255)):
         super().__init__(name= name, x= x, y= y, width= width, height= height, toggle= toggle, starting_value= starting_value)
         self.textAlignment = TextAlignments.TOP_LEFT
         self.text = text
         self.fontSize = self.originalFontSize = self.lastFontSize =  30
-        self.textColor = self.originalTextColor = self.lastTextColor = (255,255,255)
+        self.textColor = self.originalTextColor = self.lastTextColor = color
         self.textSurface = TextButton.loadFontSurface(text, self.fontSize, self.textColor) 
-        self.textSurfaceOutline = None 
+        self.textSurfaceOutline = None
+        self.originalOutlineColor = None
+        self.outlineColor = None
         self.textPosition = TextButton.loadTextPosition(self.rect, self.textSurface, self.textAlignment)
         self.textPositionOutline = self.textPosition
         if fit_to_text:
@@ -238,6 +251,7 @@ class TextButton(Button):
             return None
         self.textAlignment = alignment
         self.textPosition = TextButton.loadTextPosition(self.rect, self.textSurface, alignment) 
+   
     @staticmethod
     def turnStringToFontSurf(string: str, font_fp: str, base_size=24,  color= (255,255,255), bold= False):        
         font = pygame.font.Font(font_fp, base_size)
@@ -263,10 +277,17 @@ class TextButton(Button):
         self.textAnimationInfo.setShrink(shrink)
         self.textAnimationInfo.setScale(True)
 
-    def animateTextWithOutline(self, color=(255, 255, 0)):
+
+    def animateTextWithOutline(self, color=(255, 255, 0), size= "medium"):
+        if self.originalOutlineColor is None: self.originalOutlineColor = color
+        self.outlineColor = color
         self.setState(ButtonStates.ON_ANIMATION)
         self.textAnimationInfo.setOutline(True)
         self.textAnimationInfo.setOutlineColor(color)
+        self.textAnimationInfo.setOutlineSize(size)
+
+    def animateTextToOutline(self, color= (0, 255, 255), size= "medium", speed= "slow"):
+        self.setState(ButtonStates.ON_ANIMATION)
 
     def removeTextOutline(self): 
         self.textAnimationInfo.setOutline(False)
@@ -286,10 +307,14 @@ class TextButton(Button):
             if self.fontSize <= animationInfo.getMinScaledSize():
                 self.fontSize = animationInfo.getMinScaledSize()
                 animationInfo.setScale(False)
+                if animationInfo.getOutline():
+                    self.textSurfaceOutline = TextButton.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
         else:
             if self.fontSize >= animationInfo.getMaxScaledSize(): 
                 self.fontSize = animationInfo.getMaxScaledSize() 
                 animationInfo.setScale(False)
+                if animationInfo.getOutline():
+                    self.textSurfaceOutline = TextButton.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
         if animationInfo.getScale():
             if animationInfo.shrink:
                 self.fontSize -= animationInfo.getScaleStep()
@@ -322,13 +347,14 @@ class TextButton(Button):
         #if self.hover: self.backgroundColor = (255, 255, 255)
         #else: self.backgroundColor = (0, 0, 0)
         self.animate(animationInfo = self.textAnimationInfo, state= self.state)
+        
         if self.backgroundColor: pygame.draw.rect(screen, self.backgroundColor, self.rect)
-
-        if self.textSurfaceOutline: 
-            screen.blit(self.textSurfaceOutline, (self.textPosition[0], self.textPosition[1] + 2))
-            screen.blit(self.textSurfaceOutline, (self.textPosition[0], self.textPosition[1] - 2))
-            screen.blit(self.textSurfaceOutline, (self.textPosition[0]+ 2, self.textPosition[1] ))
-            screen.blit(self.textSurfaceOutline, (self.textPosition[0] - 2, self.textPosition[1] ))
+        if self.textSurfaceOutline is not None:
+            outlineFactor = self.textAnimationInfo.getOutlineFactor()
+            screen.blit(self.textSurfaceOutline, (self.textPosition[0], self.textPosition[1] + outlineFactor))
+            screen.blit(self.textSurfaceOutline, (self.textPosition[0], self.textPosition[1] - outlineFactor))
+            screen.blit(self.textSurfaceOutline, (self.textPosition[0]+ outlineFactor, self.textPosition[1] ))
+            screen.blit(self.textSurfaceOutline, (self.textPosition[0] - outlineFactor, self.textPosition[1] ))
         screen.blit(self.textSurface, self.textPosition)
         super().update(screen)
 
