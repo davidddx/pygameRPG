@@ -12,6 +12,7 @@ class Button:
     def __init__(self, name: str, x: int, y: int, width, height, toggle=False, starting_value= False):
         self.name = name
         self.pressed = starting_value
+        self.selected = False
         self.toggle = toggle
         self.rect = pygame.Rect(x, y, width, height)
         self.scaledRect = self.scaleRectToCurrentSurface(self.rect)
@@ -26,6 +27,8 @@ class Button:
         self.state = state
     def getName(self): return self.name
     def getPressed(self): return self.pressed
+    def setPressed(self, pressed: bool): self.pressed = pressed
+    def setSelected(self, selected: bool): self.selected = selected
     def getHover(self): return self.hover
     def getMouseEnabled(self): return self.mouseEnabled
     def disableMouse(self): self.mouseEnabled = False
@@ -294,6 +297,14 @@ class TextButton(Button):
         self.textSurfaceOutline = None
 
     def animateTextToColor(self, speed="slow", color= (0,0,0)):
+        color = list(color)
+        for i in range(len(color)):
+            if not (color[i] > 255 or color[i] < 0): continue
+            if color[i] > 255: 
+                color[i] = 255
+            elif color[i] < 0:
+                color[i] = 0
+        color = tuple(color)
         self.setState(ButtonStates.ON_ANIMATION)
         self.textAnimationInfo.setColorShift(True)
         self.textAnimationInfo.setColorShiftingSpeed(speed)
