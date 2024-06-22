@@ -7,11 +7,13 @@ from game.Scenes.TitleScreen import TitleScreen
 from game.Player import Player
 from game.Scenes.BaseScene import SceneStates, Scene, SceneTypes
 from game.Scenes.PauseMenu import PauseMenu
+from game.Scenes.Settings import Settings
 from debug.DebugMenu import DebugMenu
 
 class SceneHandler:
     def __init__(self, DEBUG= False, display_size=None):
         self.scenes = ()
+        self.finished = False
         self.timeSceneLastChanged = pygame.time.get_ticks() 
         logger.debug(f"Class {SceneHandler=} initializing....")
         self.player = SceneHandler.loadPlayer()
@@ -21,8 +23,9 @@ class SceneHandler:
         self.currentArea = None
         self.sceneLastChanged = 0
         self.debugMenu = DebugMenu(mode= DEBUG, current_scene = self.currentScene, display_size= display_size)
-
+        self.lastWorldFrame = None
         logger.debug(f"Class {SceneHandler=} intialized.")
+
 
     def getCurrentScene(self): return self.currentScene
 
@@ -67,6 +70,9 @@ class SceneHandler:
 
     def checkSceneState(self, currentScene: Scene, debug: bool, screen):
         if not (currentScene.state == SceneStates.FINISHED or currentScene.state == SceneStates.PAUSED) or currentScene.state == 0 :
+            if not currentScene.state == SceneStates.QUIT_GAME:
+                return None
+            self.finished = True
             return None
         timenow = pygame.time.get_ticks()
         sceneChangeCooldown = 200
@@ -102,22 +108,30 @@ class SceneHandler:
     def checkSceneStateTest(self, current_scene : Scene, screen, debug=False):
         if current_scene.state == SceneStates.INITIALIZING or current_scene.state == SceneStates.RUNNING or current_scene.state == SceneStates.ON_ANIMATION:
             return None
+        if current_scene.state == SceneStates.QUIT_GAME:
+            self.finished = True
+            logger.info("Game Process Finished. Closing....")
+            return None
+
         timenow = pygame.time.get_ticks()
         sceneChangeCooldown = 200
         if timenow - self.timeSceneLastChanged < sceneChangeCooldown:
             return None
         self.timeSceneLastChanged = timenow
         nextScenePtr = current_scene.getPtrNextScene()
+
+        if type(current_scene) == Area: self.lastAreaFrame = screen.copy()
         nextScene = self.loadNextScene(current_scene= current_scene, next_scene_ptr= nextScenePtr, screen= screen, timenow= timenow)
         # Case where pausing area
         if type(current_scene) == Area: 
             if nextScenePtr == SceneTypes.PAUSE_MENU:
                 self.currentArea = self.currentScene
+                
                 self.currentScene = nextScene 
                 return None               
 
-        # Case where pause menu finished running 
-        if type(current_scene) == PauseMenu:
+        # Case where pause menu switches to area  
+        if type(current_scene) == PauseMenu and nextScenePtr == SceneTypes.AREA:
             pauseCooldown = self.currentScene.getTimeLastPaused()
             self.currentArea.setTimeLastPaused(pauseCooldown)
             self.currentScene = self.currentArea
@@ -135,10 +149,18 @@ class SceneHandler:
 
     def loadNextScene(self, current_scene: Scene, next_scene_ptr: str, screen, timenow):
         match next_scene_ptr:
-            case SceneTypes.PAUSE_MENU: return self.loadPauseMenu(screen, timenow)
+            case SceneTypes.PAUSE_MENU: 
+                if type(current_scene) == Area:
+                    return self.loadPauseMenu(screen, timenow, fade_in= True)
+                return self.loadPauseMenu(screen, timenow)
+            case SceneTypes.SETTINGS: return self.loadSettings(timenow)
             case SceneTypes.AREA: return self.loadArea(SAVED_DATA.CURRENT_AREA_INDEX) 
-    def loadPauseMenu(self, screen: pygame.Surface, time_last_paused) -> PauseMenu:
-        return PauseMenu(name = "PauseMenu",last_world_frame= screen.copy(), time_last_paused= time_last_paused)
+
+    def loadSettings(self, timenow):
+        return Settings()
+
+    def loadPauseMenu(self, screen: pygame.Surface, time_last_paused, fade_in=False) -> PauseMenu:
+        return PauseMenu(name = "PauseMenu",last_world_frame= self.lastAreaFrame, time_last_paused= time_last_paused, fade_in= fade_in)
         
         
     def run(self, screen: pygame.Surface):
