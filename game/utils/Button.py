@@ -193,7 +193,10 @@ class TextButton(Button):
         self.textColor = self.originalTextColor = self.lastTextColor = color
         self.textSurface = TextButton.loadFontSurface(text, self.fontSize, self.textColor) 
         self.textSurfaceOutline = None
+        self.textSurfaceAlpha = 255
+        self.textSurfaceOutlineAlpha = 255
         self.originalOutlineColor = None
+
         self.outlineColor = None
         self.textPosition = TextButton.loadTextPosition(self.rect, self.textSurface, self.textAlignment)
         self.textPositionOutline = self.textPosition
@@ -247,6 +250,15 @@ class TextButton(Button):
                 return rect.midbottom[0] - text_surface.get_width()/2, rect.midbottom[1] - text_surface.get_height() / 2
             case TextAlignments.BOTTOM_RIGHT:
                 return rect.bottomright[0] - text_surface.get_width(), rect.bottomright[1]- text_surface.get_height()
+
+    def setTextSurfaceAlpha(self, opacity: int):
+        if opacity<0 or opacity > 255: opacity = 255
+        self.textSurfaceAlpha = opacity
+
+    def setTextSurfaceOutlineAlpha(self, opacity: int):
+        if opacity < 0 or opacity > 255: opacity = 255
+        if self.textSurfaceOutline is None: return None
+        self.textSurfaceOutlineAlpha = opacity
 
     def setTextAlignment(self, alignment: str):
         if alignment not in TextAlignments.LIST:
@@ -358,9 +370,10 @@ class TextButton(Button):
         #if self.hover: self.backgroundColor = (255, 255, 255)
         #else: self.backgroundColor = (0, 0, 0)
         self.animate(animationInfo = self.textAnimationInfo, state= self.state)
-        
+        self.textSurface.set_alpha(self.textSurfaceAlpha)
         if self.backgroundColor: pygame.draw.rect(screen, self.backgroundColor, self.rect)
         if self.textSurfaceOutline is not None:
+            self.textSurfaceOutline.set_alpha(self.textSurfaceOutlineAlpha)
             outlineFactor = self.textAnimationInfo.getOutlineFactor()
             screen.blit(self.textSurfaceOutline, (self.textPosition[0], self.textPosition[1] + outlineFactor))
             screen.blit(self.textSurfaceOutline, (self.textPosition[0], self.textPosition[1] - outlineFactor))
