@@ -7,14 +7,17 @@ class SceneStates:
     RUNNING = "RUNNING"
     PAUSED = "PAUSED"
     FINISHED = "FINISHED"
+    QUIT_GAME = "QUIT_GAME"
     ON_ANIMATION = "ANIMATION"
     NONE = "NONE"
+
 class SceneTypes:
     NONE = "NONE"
     AREA = "AREA"
     INVENTORY = "INVENTORY"
     PAUSE_MENU = "PAUSE_MENU"
     TITLE_SCREEN = "TITLE_SCREEN"
+    SETTINGS = "SETTINGS"
 
 class Scene(ABC):
 
