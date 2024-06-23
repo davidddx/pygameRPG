@@ -106,7 +106,7 @@ class SceneHandler:
    
 
     def checkSceneStateTest(self, current_scene : Scene, screen, debug=False):
-        if current_scene.state == SceneStates.INITIALIZING or current_scene.state == SceneStates.RUNNING or current_scene.state == SceneStates.ON_ANIMATION:
+        if current_scene.state == SceneStates.INITIALIZING or current_scene.state == SceneStates.RUNNING or current_scene.state == SceneStates.ON_ANIMATION or current_scene.state == SceneStates.FINISHING:
             return None
         if current_scene.state == SceneStates.QUIT_GAME:
             self.finished = True
@@ -128,6 +128,8 @@ class SceneHandler:
                 self.currentArea = self.currentScene
                 
                 self.currentScene = nextScene 
+                if debug: self.debugMenu.setCurrentScene(self.currentScene)
+
                 return None               
 
         # Case where pause menu switches to area  
@@ -137,6 +139,7 @@ class SceneHandler:
             self.currentScene = self.currentArea
             self.currentScene.setState(SceneStates.RUNNING)
             self.currentArea = None
+            if debug: self.debugMenu.setCurrentScene(self.currentScene)
             return None
 
         ## Finished edge cases
@@ -150,6 +153,18 @@ class SceneHandler:
     def loadNextScene(self, current_scene: Scene, next_scene_ptr: str, screen, timenow):
         match next_scene_ptr:
             case SceneTypes.PAUSE_MENU: 
+
+
+
+
+
+
+
+
+
+
+
+
                 if type(current_scene) == Area:
                     return self.loadPauseMenu(screen, timenow, fade_in= True)
                 return self.loadPauseMenu(screen, timenow)
