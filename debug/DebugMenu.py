@@ -3,6 +3,7 @@ import pygame
 from game.Scenes.BaseScene import Scene
 from game.Scenes.TitleScreen import TitleScreen
 from game.Scenes.Area import Area
+from game.Scenes.PauseMenu import PauseMenu
 import Font.FontPaths as FontPaths
 import psutil
 import os
@@ -146,7 +147,8 @@ class DebugMenu:
             surfaceList.append(f"PLAYER INPUT STTE: {player.getInputState()}")
         elif type(currentScene) == TitleScreen:
             surfaceList.append(sceneType + "TITLESCREEN")
-            
+        elif type(currentScene) == PauseMenu:
+            surfaceList.append(sceneType + "PAUSE MENU")
         for surface in surfaceList:
             surface = DebugMenu.turnStringToFontSurf(string= surface, font_fp = fontFp)
             screen.blit(surface, (startingPoint[0], startingPoint[1]))
