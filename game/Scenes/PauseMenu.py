@@ -17,6 +17,7 @@ class PauseMenu(Scene):
         self.transparentLayerOpacity = 0
         self.timeLastAnimated = 0
         self.fadeIn = fade_in
+        self.fadeOut = False
         self.state = SceneStates.ON_ANIMATION
         self.pausedFont = PauseMenu.turnStringToFontSurf(string = "PAUSE MENU", font_fp = FONT_PATHS.GOHU, base_size = SETTINGS.TILE_SIZE, anti_aliasing = True, color= (75, 0, 130)) 
         self.pausedFontPos = (SETTINGS.SCREEN_WIDTH/2 - self.pausedFont.get_width() / 2, 0)
@@ -68,6 +69,9 @@ class PauseMenu(Scene):
         timenow = pygame.time.get_ticks()
         if keys[SAVED_DATA.UI_MOVE_UP] or keys[SAVED_DATA.UI_MOVE_DOWN] or keys[SAVED_DATA.UI_MOVE_LEFT] or keys[SAVED_DATA.UI_MOVE_RIGHT]:
             self.selectionMode = "KEYBOARD"
+
+        if self.state == SceneStates.FINISHING:
+            self.selectionMode = "NONE"
 
         for index, button in enumerate(buttons):
             if not button.hover:
@@ -144,6 +148,7 @@ class PauseMenu(Scene):
             self.setState(SceneStates.RUNNING)
             self.setSurfaceAlphas(255)
             self.blackTransparentLayer = PauseMenu.loadBlackTransparentLayer(size= self.blackTransparentLayer.get_size(), opacity= maxOpacity)
+            self.transparentLayerOpacity = maxOpacity
             return None
         cooldown = 10  # MILISECONDS 
         opacityStep = 5
@@ -180,9 +185,11 @@ class PauseMenu(Scene):
     def update(self, screen):
         if self.state == SceneStates.ON_ANIMATION:
             self.animate()
-        self.checkUnpauseSignal()
+        self.checkUnpauseSignal(screen)
         self.render(screen)
         self.checkButtonPressed(self.buttonPressedName)
+        if self.fadeOut:
+            self.fadeOutSceneAndFinish(screen= screen,opacity = self.transparentLayerOpacity)
 
     @staticmethod
     def loadBlackTransparentLayer(size: tuple, opacity: int):
@@ -192,16 +199,33 @@ class PauseMenu(Scene):
 
     def getTimeLastPaused(self): return self.timeLastPaused
 
-    def checkUnpauseSignal(self):
+    def fadeOutSceneAndFinish(self, opacity, screen: pygame.Surface):
+        self.buttonPressedName = "NONE"
+        self.setSurfaceAlphas(opacity)
+        self.blackTransparentLayer = self.loadBlackTransparentLayer(size= screen.get_size(), opacity= opacity)
+        minOpacity = 0
+        self.transparentLayerOpacity -= 5
+        
+        if self.transparentLayerOpacity < minOpacity:
+            self.state = SceneStates.FINISHED
+             
+
+    def checkUnpauseSignal(self, screen):
+        if self.state != SceneStates.RUNNING: return None 
         timenow = pygame.time.get_ticks()
         pauseCooldown = 300
         if timenow - self.timeLastPaused < pauseCooldown:
             return None
-
         pauseKey = pygame.K_x
         keys = pygame.key.get_pressed()
         if keys[pauseKey]:
-            self.state = SceneStates.FINISHED
+            self.fadeOut = True
+            self.blackTransparentLayer = PauseMenu.loadBlackTransparentLayer(screen.get_size(), opacity=255)
+            for button in self.buttons: 
+                button.setSelected(False)
+                button.setPressed(False)
+                button.disableMouse()
+            self.state = SceneStates.FINISHING
             self.timeLastPaused = timenow    
             self.ptrNextScene = SceneTypes.AREA
 
