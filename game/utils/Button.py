@@ -19,7 +19,6 @@ class Button:
         self.hover = False 
         self.mouseEnabled = True
         self.state = ButtonStates.NEUTRAL
-
     def getState(self): return self.state
     def setState(self, state: str):
         if state not in ButtonStates.ALL_STATES: 
@@ -185,13 +184,14 @@ class TextAnimationInfo:
 
 
 class TextButton(Button):
-    def __init__(self, text: str, name: str, x, y, width, height, fit_to_text= False, toggle= False, starting_value= False, background = "NONE", mouseEnabled= True, color = (255,255,255)):
+    def __init__(self, text: str, name: str, x, y, width, height, fit_to_text= False, toggle= False, starting_value= False, background = "NONE", mouseEnabled= True, color = (255,255,255), font_path = FONT_PATHS.GOHU):
         super().__init__(name= name, x= x, y= y, width= width, height= height, toggle= toggle, starting_value= starting_value)
+        self.fontPath = font_path
         self.textAlignment = TextAlignments.TOP_LEFT
         self.text = text
         self.fontSize = self.originalFontSize = self.lastFontSize =  30
         self.textColor = self.originalTextColor = self.lastTextColor = color
-        self.textSurface = TextButton.loadFontSurface(text, self.fontSize, self.textColor) 
+        self.textSurface = self.loadFontSurface(text, self.fontSize, self.textColor) 
         self.textSurfaceOutline = None
         self.textSurfaceAlpha = 255
         self.textSurfaceOutlineAlpha = 255
@@ -206,6 +206,27 @@ class TextButton(Button):
         if not mouseEnabled: self.disableMouse()
         self.backgroundColor = TextButton.loadBackgroundColor(background)
         self.textAnimationInfo = TextAnimationInfo()
+
+    def setFontPath(self, font_path: str):
+        match font_path:
+            case FONT_PATHS.GOHU:
+                self.fontPath = FONT_PATHS.GOHU
+
+            case FONT_PATHS.FIRA_CODE:
+                self.fontPath = FONT_PATHS.FIRA_CODE
+
+            case FONT_PATHS.MONOFUR:
+                self.fontPath = FONT_PATHS.MONOFUR
+            case FONT_PATHS.CASKAYDIA:
+                self.fontPath = FONT_PATHS.CASKAYDIA
+            case FONT_PATHS.AGAVE:
+                self.fontPath = FONT_PATHS.AGAVE
+
+            case FONT_PATHS.ANONYMICE_PRO:
+                self.fontPath = FONT_PATHS.ANONYMICE_PRO
+
+            case _:
+                self.fontPath = FONT_PATHS.GOHU
 
     @staticmethod
     def loadBackgroundColor(background: str):
@@ -274,10 +295,8 @@ class TextButton(Button):
         return font.render(string, False, color)
 
 
-    @staticmethod
-    def loadFontSurface(text: str, size = 30, color = (255,255,255), bold= False):
-        fontPath = FONT_PATHS.GOHU
-        return TextButton.turnStringToFontSurf(text, fontPath, size, color, bold)
+    def loadFontSurface(self, text: str, size = 30, color = (255,255,255), bold= False):
+        return TextButton.turnStringToFontSurf(text, self.fontPath, size, color, bold)
         
     def animateTextToSize(self, size: int, step: int, shrink: bool):
         self.lastFontSize = self.fontSize
@@ -331,13 +350,13 @@ class TextButton(Button):
                 self.fontSize = animationInfo.getMinScaledSize()
                 animationInfo.setScale(False)
                 if animationInfo.getOutline():
-                    self.textSurfaceOutline = TextButton.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
+                    self.textSurfaceOutline = self.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
         else:
             if self.fontSize >= animationInfo.getMaxScaledSize(): 
                 self.fontSize = animationInfo.getMaxScaledSize() 
                 animationInfo.setScale(False)
                 if animationInfo.getOutline():
-                    self.textSurfaceOutline = TextButton.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
+                    self.textSurfaceOutline = self.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
         if animationInfo.getScale():
             if animationInfo.shrink:
                 self.fontSize -= animationInfo.getScaleStep()
@@ -358,12 +377,12 @@ class TextButton(Button):
                 animationInfo.setLerpRGBValue(0)
         if animationInfo.getOutline():
             if self.textSurfaceOutline is None:
-                self.textSurfaceOutline = TextButton.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
+                self.textSurfaceOutline = self.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
                 self.textPositionOutline = self.textPosition
             if animationInfo.getScale():
                 self.textPositionOutline = self.textPosition
-                self.textSurfaceOutline = TextButton.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
-        self.textSurface = TextButton.loadFontSurface(self.text, self.fontSize, self.textColor) 
+                self.textSurfaceOutline = self.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
+        self.textSurface = self.loadFontSurface(self.text, self.fontSize, self.textColor) 
         if animationInfo.getScaleStep(): self.changeRect(self.textSurface.get_rect(topleft= self.textPosition))
 
     def update(self, screen: pygame.Surface):
