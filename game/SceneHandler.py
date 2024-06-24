@@ -23,7 +23,8 @@ class SceneHandler:
         self.currentArea = None
         self.sceneLastChanged = 0
         self.debugMenu = DebugMenu(mode= DEBUG, current_scene = self.currentScene, display_size= display_size)
-        self.lastWorldFrame = None
+        self.lastAreaFrame = None
+        self.lastSceneFrame = None
         logger.debug(f"Class {SceneHandler=} intialized.")
 
 
@@ -67,7 +68,7 @@ class SceneHandler:
 
     def loadArea(self, idx : int) -> Area:
         return self.Areas[idx]
-
+    '''
     def checkSceneState(self, currentScene: Scene, debug: bool, screen):
         if not (currentScene.state == SceneStates.FINISHED or currentScene.state == SceneStates.PAUSED) or currentScene.state == 0 :
             if not currentScene.state == SceneStates.QUIT_GAME:
@@ -103,7 +104,7 @@ class SceneHandler:
         self.currentScene = self.loadArea(SAVED_DATA.CURRENT_AREA_INDEX)
         if debug:
             self.debugMenu.setCurrentScene(self.currentScene)
-   
+    ''' 
 
     def checkSceneStateTest(self, current_scene : Scene, screen, debug=False):
         if current_scene.state == SceneStates.INITIALIZING or current_scene.state == SceneStates.RUNNING or current_scene.state == SceneStates.ON_ANIMATION or current_scene.state == SceneStates.FINISHING:
@@ -119,7 +120,10 @@ class SceneHandler:
             return None
         self.timeSceneLastChanged = timenow
         nextScenePtr = current_scene.getPtrNextScene()
+        # self.lastSceneFrame = pygame.Surface(screen.get_size(), pygame.SRCALPHA, screen.copy())
 
+        self.lastSceneFrame = pygame.Surface(screen.get_size(), pygame.SRCALPHA) 
+        self.lastSceneFrame.blit(screen.copy(), (0,0))
         if type(current_scene) == Area: self.lastAreaFrame = screen.copy()
         nextScene = self.loadNextScene(current_scene= current_scene, next_scene_ptr= nextScenePtr, screen= screen, timenow= timenow)
         # Case where pausing area
@@ -153,29 +157,19 @@ class SceneHandler:
     def loadNextScene(self, current_scene: Scene, next_scene_ptr: str, screen, timenow):
         match next_scene_ptr:
             case SceneTypes.PAUSE_MENU: 
-
-
-
-
-
-
-
-
-
-
-
-
                 if type(current_scene) == Area:
                     return self.loadPauseMenu(screen, timenow, fade_in= True)
+                elif type(current_scene) == Settings:
+                    return self.loadPauseMenu(screen, timenow, fade_in = False, selected_button_idx = 0, selection_mode = "KEYBOARD")
                 return self.loadPauseMenu(screen, timenow)
-            case SceneTypes.SETTINGS: return self.loadSettings(timenow)
+            case SceneTypes.SETTINGS: return self.loadSettings(screen.get_size(), self.lastSceneFrame)
             case SceneTypes.AREA: return self.loadArea(SAVED_DATA.CURRENT_AREA_INDEX) 
 
-    def loadSettings(self, timenow):
-        return Settings()
+    def loadSettings(self, screen_size, last_pause_menu_frame: pygame.Surface):
+        return Settings(self.lastSceneFrame, self.lastAreaFrame, screen_size)
 
-    def loadPauseMenu(self, screen: pygame.Surface, time_last_paused, fade_in=False) -> PauseMenu:
-        return PauseMenu(name = "PauseMenu",last_world_frame= self.lastAreaFrame, time_last_paused= time_last_paused, fade_in= fade_in)
+    def loadPauseMenu(self, screen: pygame.Surface, time_last_paused, fade_in=False, selected_button_idx = -1, selection_mode = "NONE") -> PauseMenu:
+        return PauseMenu(name = "PauseMenu",last_world_frame= self.lastAreaFrame, time_last_paused= time_last_paused, fade_in= fade_in, selected_button_idx = selected_button_idx, selection_mode = selection_mode)
         
         
     def run(self, screen: pygame.Surface):
