@@ -1,6 +1,11 @@
 import globalVars.PathConstants as PATH_CONSTANTS
 import pygame
+import Font.FontPaths as FONT_PATHS
 
+'''
+The following file contains defaults for saved data. These variables are updated on game initialization.
+
+'''
 #### SAVED AREA ####
 CURRENT_AREA_INDEX = 0
 CURRENT_MAP_INDEX = 0
@@ -37,3 +42,9 @@ UI_MOVE_RIGHT = pygame.K_RIGHT
 UI_MOVE_DOWN = pygame.K_DOWN
 UI_MOVE_UP = pygame.K_UP
 UI_SELECT = pygame.K_RETURN
+
+
+##SETTINGS##
+SCREEN_SIZE = "LARGE"
+FONT = "GOHU"
+FONT_PATH = FONT_PATHS.GOHU
