@@ -18,6 +18,7 @@ class Button:
         self.scaledRect = self.scaleRectToCurrentSurface(self.rect)
         self.hover = False 
         self.mouseEnabled = True
+        self.clickEnabled = True
         self.state = ButtonStates.NEUTRAL
     def getState(self): return self.state
     def setState(self, state: str):
@@ -26,6 +27,8 @@ class Button:
         self.state = state
     def getName(self): return self.name
     def getPressed(self): return self.pressed
+    def getClickEnabled(self): return self.clickEnabled
+    def setClickEnabled(self, click_enabled: bool): self.clickEnabled = click_enabled
     def setPressed(self, pressed: bool): self.pressed = pressed
     def setSelected(self, selected: bool): self.selected = selected
     def getHover(self): return self.hover
@@ -71,7 +74,6 @@ class Button:
     def checkClicked(self, mouse_press):
         if mouse_press[0] and self.hover:  # element 0 is left click
             logger.debug(f"Button {self.name=}")
-
             return True;
         return None
 
@@ -81,6 +83,7 @@ class Button:
             self.hover = False
             return None
         self.hover = True
+        if not self.clickEnabled: return None
         if self.checkClicked(mouse_press=pygame.mouse.get_pressed()):
             if not self.toggle:
                 self.pressed = True;
