@@ -5,11 +5,74 @@ import globalVars.SettingsConstants as SETTINGS
 import gamedata.Save.SavedData as SAVED_DATA
 from game.utils.Button import Button, TextButton, TextAlignments
 from game.Scenes.BaseScene import Scene, SceneStates, SceneTypes
-class PauseMenu(Scene):
+from game.Scenes.Menu import Menu
+
+class PauseMenu(Menu):
+    def __init__(self, name: str, last_world_frame: pygame.Surface, time_last_paused, fade_in=True, selected_button_idx=-1, selection_mode = "NONE"):
+        super().__init__(name, last_world_frame, PauseMenu.loadButtons(), fade_in, 0, selected_button_idx = selected_button_idx, selection_mode = selection_mode)
+        self.timeLastPaused = time_last_paused
+        self.maxSelectedButtonIdx = 1
+        self.pausedFontOutline = self.turnStringToFontSurf(string= "PAUSE MENU", font_fp = SAVED_DATA.FONT_PATH, base_size = SETTINGS.TILE_SIZE, anti_aliasing= True, color=(186, 85, 211))
+        self.pausedFont = self.turnStringToFontSurf(string = "PAUSE MENU", font_fp = SAVED_DATA.FONT_PATH, base_size = SETTINGS.TILE_SIZE, anti_aliasing = True, color= (75, 0, 130)) 
+        self.pausedFontPos = (SETTINGS.SCREEN_WIDTH/2 - self.pausedFont.get_width() / 2, 0)
+        pausedFontPos = (SETTINGS.SCREEN_WIDTH/2 - self.pausedFont.get_width()/2, 0)
+        self.addSurface(self.pausedFontOutline, (pausedFontPos[0], pausedFontPos[1] + 2))
+        self.addSurface(self.pausedFontOutline, (pausedFontPos[0] - 2, pausedFontPos[1]))
+        self.addSurface(self.pausedFontOutline, (pausedFontPos[0] + 2, pausedFontPos[1]))
+        self.addSurface(self.pausedFontOutline, (pausedFontPos[0], pausedFontPos[1] - 2))
+        self.addSurface(self.pausedFont, pausedFontPos)
+
+    @staticmethod
+    def loadButtons() -> list[TextButton]:
+        quitButton = TextButton("QUIT", "QUIT", x= SETTINGS.TILE_SIZE,y=  3 * SETTINGS.SCREEN_HEIGHT / 4, width= 3* SETTINGS.TILE_SIZE, height = 2*SETTINGS.TILE_SIZE, fit_to_text= True, color= (136,8,8))
+        settingsButton = TextButton("SETTINGS", SceneTypes.SETTINGS, x= SETTINGS.TILE_SIZE, y= 2*SETTINGS.SCREEN_HEIGHT / 4, width = 3*SETTINGS.TILE_SIZE, height = 2 * SETTINGS.TILE_SIZE, fit_to_text= True, color= (20,52,164))
+        settingsButton.animateTextWithOutline(color=(0, 150, 255))
+        quitButton.animateTextWithOutline(color=(255, 0, 0))
+        return [settingsButton,quitButton]
+
+    def getTimeLastPaused(self): return self.timeLastPaused
+
+    def checkUnpauseSignal(self):
+        if self.state != SceneStates.RUNNING: return None 
+        timenow = pygame.time.get_ticks()
+        pauseCooldown = 300
+        if timenow - self.timeLastPaused <= pauseCooldown:
+            return None
+        pauseKey = pygame.K_x
+        keys = pygame.key.get_pressed()
+        if keys[pauseKey]:
+            self.fadeOut = True
+            for button in self.mainButtons: 
+                button.setSelected(False)
+                button.setPressed(False)
+                button.disableMouse()
+            self.state = SceneStates.FINISHING
+            self.timeLastPaused = timenow    
+            self.ptrNextScene = SceneTypes.AREA
+            self.animation = Menu.animations[2]
+
+    def checkButtonPressed(self, name: str):
+        if name == "NONE": return None
+        match name:
+            case SceneTypes.SETTINGS:
+                self.state=SceneStates.FINISHED
+                self.ptrNextScene = SceneTypes.SETTINGS
+            case "QUIT":
+                self.state=SceneStates.QUIT_GAME
+           
+    def update(self, screen: pygame.Surface):
+        print(f"{self.state=}")
+        print(f"{self.animation=}")
+        super().update(screen)
+        self.checkButtonPressed(self.buttonPressedName)
+        self.checkUnpauseSignal()
+
+'''
+class PauseMenu0(Scene):
     availableSelectionModes = ("NONE", "MOUSE", "KEYBOARD" )
-    MAX_SELECTED_BUTTON_IDX = 1
     def __init__(self, name: str, last_world_frame: pygame.Surface, time_last_paused, fade_in=True, selected_button_idx=-1, selection_mode= "NONE"):
         super().__init__(name)
+        self.maxSelectedButtonIdx = 1
         self.state = SceneStates.INITIALIZING
         self.lastWorldFrame = last_world_frame
         self.blackTransparentLayer = PauseMenu.loadBlackTransparentLayer(size= last_world_frame.get_size(), opacity=0)
@@ -19,12 +82,12 @@ class PauseMenu(Scene):
         self.fadeIn = fade_in
         self.fadeOut = False
         self.state = SceneStates.ON_ANIMATION
-        self.pausedFont = PauseMenu.turnStringToFontSurf(string = "PAUSE MENU", font_fp = SAVED_DATA.FONT_PATH, base_size = SETTINGS.TILE_SIZE, anti_aliasing = True, color= (75, 0, 130)) 
+        self.pausedFont = self.turnStringToFontSurf(string = "PAUSE MENU", font_fp = SAVED_DATA.FONT_PATH, base_size = SETTINGS.TILE_SIZE, anti_aliasing = True, color= (75, 0, 130)) 
         self.pausedFontPos = (SETTINGS.SCREEN_WIDTH/2 - self.pausedFont.get_width() / 2, 0)
-        self.pausedFontOutline = PauseMenu.turnStringToFontSurf(string= "PAUSE MENU", font_fp = SAVED_DATA.FONT_PATH, base_size = SETTINGS.TILE_SIZE, anti_aliasing= True, color=(186, 85, 211))
+        self.pausedFontOutline = self.turnStringToFontSurf(string= "PAUSE MENU", font_fp = SAVED_DATA.FONT_PATH, base_size = SETTINGS.TILE_SIZE, anti_aliasing= True, color=(186, 85, 211))
         self.timeLastUIKeystroke = 0
         self.lastMousePosition = self.mousePos = pygame.mouse.get_pos()
-        self.buttons = PauseMenu.generateButtons()
+        self.buttons = self.generateButtons()
         self.selectedButtonIdx = selected_button_idx
         self.selectionMode = selection_mode
         self.buttonPressedName = "NONE"
@@ -36,6 +99,8 @@ class PauseMenu(Scene):
         settingsButton.animateTextWithOutline(color=(0, 150, 255))
         quitButton.animateTextWithOutline(color=(255, 0, 0))
         return [settingsButton,quitButton]
+
+
 
     def disableMouseForButtons(self):
         for button in self.buttons:
@@ -59,31 +124,27 @@ class PauseMenu(Scene):
         self.renderButtons(self.buttons, screen)
            
     def renderButtons(self, buttons, screen):
-        
+        mouseMoved = False 
         hoveringOnButton = False
-        mousePosition = pygame.mouse.get_pos()
-        if self.lastMousePosition != mousePosition:
-            self.selectionMode = "MOUSE"
-            self.lastMousePosition = mousePosition
         keys = pygame.key.get_pressed()
         timenow = pygame.time.get_ticks()
         if keys[SAVED_DATA.UI_MOVE_UP] or keys[SAVED_DATA.UI_MOVE_DOWN] or keys[SAVED_DATA.UI_MOVE_LEFT] or keys[SAVED_DATA.UI_MOVE_RIGHT]:
             self.selectionMode = "KEYBOARD"
-
+        mousePos = pygame.mouse.get_pos()
+        if self.lastMousePosition != mousePos:
+            self.lastMousePosition = mousePos
+            self.selectionMode = "MOUSE"
+            mouseMoved = True
         if self.state == SceneStates.FINISHING:
             self.selectionMode = "NONE"
 
         for index, button in enumerate(buttons):
             if not button.hover:
-                button.setSelected(False)
                 continue
             hoveringOnButton = True
-            if self.selectionMode == "MOUSE":
-                self.selectedButtonIdx = index
-                buttons[self.selectedButtonIdx].setSelected(True)
-
+            self.selectedButtonIdx = index
+        if not hoveringOnButton and self.selectionMode == "MOUSE": self.selectionMode = "NONE"
         if self.selectionMode == "KEYBOARD":
-            buttons[self.selectedButtonIdx].setSelected(False)
             selectStep = 0
             cooldown = 150
             if timenow - self.timeLastUIKeystroke >= cooldown:
@@ -99,18 +160,20 @@ class PauseMenu(Scene):
                     self.timeLastUIKeystroke = timenow        
                 elif keys[SAVED_DATA.UI_MOVE_LEFT]:
                     selectStep = -1
-                
                     self.timeLastUIKeystroke = timenow        
                 if self.selectedButtonIdx + selectStep < 0:
-                    self.selectedButtonIdx = PauseMenu.MAX_SELECTED_BUTTON_IDX
-                elif self.selectedButtonIdx + selectStep > PauseMenu.MAX_SELECTED_BUTTON_IDX:
+                    self.selectedButtonIdx = self.maxSelectedButtonIdx
+                elif self.selectedButtonIdx + selectStep > self.maxSelectedButtonIdx:
                     self.selectedButtonIdx = 0
                 else:
                     self.selectedButtonIdx += selectStep
-                
-            buttons[self.selectedButtonIdx].setSelected(True)
 
 
+        for i in range(len(buttons)):
+            if i != self.selectedButtonIdx:
+                buttons[i].setSelected(False)
+                continue
+            buttons[i].setSelected(True)
         for button in buttons:
             if button.selected:
                 button.animateTextToSize(size= 40, step= 3, shrink= False)
@@ -129,14 +192,11 @@ class PauseMenu(Scene):
                 if button.outlineColor != button.originalOutlineColor: button.animateTextWithOutline(color=button.originalOutlineColor)                
             button.update(screen)
             if self.buttonPressedName == "NONE" and button.getPressed(): self.buttonPressedName = button.getName()
-
+        
         mousePressed = pygame.mouse.get_pressed()
         if not hoveringOnButton and (mousePressed[0] or mousePressed[1] or mousePressed[2]):
-            self.selectionMode = "NONE"
-        if not hoveringOnButton and self.selectionMode == "MOUSE": self.selectedButtonIdx = -1
-
-    @staticmethod
-    def turnStringToFontSurf(string: str, font_fp: str, base_size=24,  color= (255,255,255), anti_aliasing = False):        
+            self.selectedButtonIdx = -1 
+    def turnStringToFontSurf(self,string: str, font_fp: str, base_size=24,  color= (255,255,255), anti_aliasing = False):        
         return pygame.font.Font(font_fp, base_size).render(string, anti_aliasing, color)
 
     def animate(self):
@@ -231,3 +291,4 @@ class PauseMenu(Scene):
 
     def clear(self):
         pass
+'''
