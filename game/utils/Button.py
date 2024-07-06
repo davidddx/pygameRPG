@@ -38,7 +38,24 @@ class Button:
     def disableMouse(self): self.mouseEnabled = False
     def enableMouse(self): self.mouseEnabled = True
     def setHover(self, hover: bool): self.hover = hover 
-
+    def getWidth(self): return self.rect.width
+    def getHeight(self): return self.rect.height
+    def setY(self, yvalue):
+        lastyValue = self.rect.y
+        try:
+            self.rect.y = yvalue
+            self.scaleRectToCurrentSurface(self.rect)
+        except Exception as e: 
+            self.rect.y = lastyValue
+            logger.error(f"could not set x value for button {self.name}, error: {e}")
+    def setX(self, xvalue):
+        lastxValue = self.rect.x
+        try:
+            self.rect.x = xvalue
+            self.scaleRectToCurrentSurface(self.rect)
+        except Exception as e: 
+            self.rect.x = lastxValue
+            logger.error(f"could not set x value for button {self.name}, error: {e}")
     def scaleRectToCurrentSurface(self, rect: pygame.Rect) -> pygame.Rect:
         currentSurface = pygame.display.get_surface()
         windowWidth = currentSurface.get_width()
@@ -77,6 +94,7 @@ class Button:
         if mouse_press[0] and self.hover:  # element 0 is left click
             logger.debug(f"Button {self.name=}")
             return True;
+
         return None
 
     def update(self, screen: pygame.Surface):
@@ -187,7 +205,6 @@ class TextAnimationInfo:
     def getLerpRGBStep(self): return self.lerpRGBStep
 
 
-
 class TextButton(Button):
     def __init__(self, text: str, name: str, x, y, width, height, fit_to_text= False, toggle= False, starting_value= False, background = "NONE", mouseEnabled= True, color = (255,255,255), font_path = FONT_PATHS.GOHU):
         super().__init__(name= name, x= x, y= y, width= width, height= height, toggle= toggle, starting_value= starting_value)
@@ -201,7 +218,7 @@ class TextButton(Button):
         self.textSurfaceAlpha = 255
         self.textSurfaceOutlineAlpha = 255
         self.originalOutlineColor = None
-
+        self.visible = True
         self.outlineColor = None
         self.textPosition = TextButton.loadTextPosition(self.rect, self.textSurface, self.textAlignment)
         self.textPositionOutline = self.textPosition
@@ -211,6 +228,19 @@ class TextButton(Button):
         if not mouseEnabled: self.disableMouse()
         self.backgroundColor = TextButton.loadBackgroundColor(background)
         self.textAnimationInfo = TextAnimationInfo()
+
+    def setX(self, xvalue):
+        super().setX(xvalue)
+        self.textPosition = TextButton.loadTextPosition(self.rect, self.textSurface, self.textAlignment)
+        self.textPositionOutline = self.textPosition
+    def setY(self, yvalue):
+        super().setY(yvalue)
+        self.textPosition = TextButton.loadTextPosition(self.rect, self.textSurface, self.textAlignment)
+        self.textPositionOutline = self.textPosition
+
+    def getVisible(self): return self.visible
+    def setVisible(self): self.visible = True
+    def setInvisible(self): self.visible = False
 
     def setFont(self, font: str):
         match font:
@@ -248,7 +278,6 @@ class TextButton(Button):
 
             case FONT_PATHS.ANONYMICE_PRO:
                 self.fontPath = FONT_PATHS.ANONYMICE_PRO
-
             case _:
                 self.fontPath = FONT_PATHS.GOHU
 
@@ -418,16 +447,17 @@ class TextButton(Button):
     def update(self, screen: pygame.Surface):
         #if self.hover: self.backgroundColor = (255, 255, 255)
         #else: self.backgroundColor = (0, 0, 0)
-        self.animate(animationInfo = self.textAnimationInfo, state= self.state)
-        self.textSurface.set_alpha(self.textSurfaceAlpha)
-        if self.backgroundColor: pygame.draw.rect(screen, self.backgroundColor, self.rect)
-        if self.textSurfaceOutline is not None:
-            self.textSurfaceOutline.set_alpha(self.textSurfaceOutlineAlpha)
-            outlineFactor = self.textAnimationInfo.getOutlineFactor()
-            screen.blit(self.textSurfaceOutline, (self.textPosition[0], self.textPosition[1] + outlineFactor))
-            screen.blit(self.textSurfaceOutline, (self.textPosition[0], self.textPosition[1] - outlineFactor))
-            screen.blit(self.textSurfaceOutline, (self.textPosition[0]+ outlineFactor, self.textPosition[1] ))
-            screen.blit(self.textSurfaceOutline, (self.textPosition[0] - outlineFactor, self.textPosition[1] ))
-        screen.blit(self.textSurface, self.textPosition)
+        if self.visible:
+            self.animate(animationInfo = self.textAnimationInfo, state= self.state)
+            self.textSurface.set_alpha(self.textSurfaceAlpha)
+            if self.backgroundColor: pygame.draw.rect(screen, self.backgroundColor, self.rect)
+            if self.textSurfaceOutline is not None:
+                self.textSurfaceOutline.set_alpha(self.textSurfaceOutlineAlpha)
+                outlineFactor = self.textAnimationInfo.getOutlineFactor()
+                screen.blit(self.textSurfaceOutline, (self.textPosition[0], self.textPosition[1] + outlineFactor))
+                screen.blit(self.textSurfaceOutline, (self.textPosition[0], self.textPosition[1] - outlineFactor))
+                screen.blit(self.textSurfaceOutline, (self.textPosition[0]+ outlineFactor, self.textPosition[1] ))
+                screen.blit(self.textSurfaceOutline, (self.textPosition[0] - outlineFactor, self.textPosition[1] ))
+            screen.blit(self.textSurface, self.textPosition)
         super().update(screen)
 
