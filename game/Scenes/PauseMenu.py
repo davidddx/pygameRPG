@@ -41,11 +41,11 @@ class PauseMenu(Menu):
         pauseKey = pygame.K_x
         keys = pygame.key.get_pressed()
         if keys[pauseKey]:
-            self.fadeOut = True
             for button in self.mainButtons: 
                 button.setSelected(False)
                 button.setPressed(False)
                 button.disableMouse()
+            self.uiLock = True
             self.state = SceneStates.FINISHING
             self.timeLastPaused = timenow    
             self.ptrNextScene = SceneTypes.AREA
