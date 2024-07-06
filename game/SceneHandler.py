@@ -113,15 +113,12 @@ class SceneHandler:
             self.finished = True
             logger.info("Game Process Finished. Closing....")
             return None
-
         timenow = pygame.time.get_ticks()
         sceneChangeCooldown = 200
         if timenow - self.timeSceneLastChanged < sceneChangeCooldown:
             return None
         self.timeSceneLastChanged = timenow
         nextScenePtr = current_scene.getPtrNextScene()
-        # self.lastSceneFrame = pygame.Surface(screen.get_size(), pygame.SRCALPHA, screen.copy())
-
         self.lastSceneFrame = pygame.Surface(screen.get_size(), pygame.SRCALPHA) 
         self.lastSceneFrame.blit(screen.copy(), (0,0))
         if type(current_scene) == Area: self.lastAreaFrame = screen.copy()
