@@ -3,6 +3,7 @@ import pygame
 import gamedata.Save.SavedData as SAVED_DATA
 from game.utils.Button import TextButton
 from game.Scenes.BaseScene import Scene, SceneStates
+from debug.logger import logger
 
 class Menu(Scene):
     selectionModes = ("NONE", "MOUSE", "KEYBOARD")
@@ -16,9 +17,11 @@ class Menu(Scene):
 
     def __init__(self, name: str, last_area_frame: pygame.Surface, main_buttons: list[TextButton], fade_in = True, opacity=0, last_scene_frame = None, other_buttons=None, selected_button_idx = -1, selection_mode = "NONE", on_main_buttons= True):
         super().__init__(name)
+        self.timeButtonLastPressed = 0
         self.state = SceneStates.INITIALIZING
         self.uiLock = True
         self.mainButtons = main_buttons
+        self.mainButtonListIdx = 0
         self.otherButtons = other_buttons
         self.currentButtons = self.mainButtons
         self.selectedMainButtonIdx = -1
@@ -56,6 +59,8 @@ class Menu(Scene):
         self.surfaces = []
         self.positiveUIKeys = [pygame.K_s, pygame.K_DOWN]
         self.negativeUIKeys = [pygame.K_w, pygame.K_UP]
+        self.positiveListJumpKeys = [pygame.K_RIGHT, pygame.K_d]
+        self.negativeListJumpKeys = [pygame.K_LEFT, pygame.K_a]
         self.surfacePositions = [] 
         self.timeLastUIKeystroke = 0
         if fade_in: self.state = SceneStates.ON_ANIMATION
@@ -71,8 +76,19 @@ class Menu(Scene):
         self.selectedOtherButtonIdx = 0
         self.maxSelectedOtherButtonIdx = len(other_buttons) - 1
 
+    def clearSurfaces(self): 
+        self.surfaces.clear()
+        self.surfacePositions.clear()
+    
+
     def setPositiveUiKeys(self, positive_ui_keys: list[int]):
         self.positiveUIKeys = positive_ui_keys
+
+    def setPositiveListJumpKeys(self, positive_list_jump_keys: list[int]):
+        self.positiveButtonListJumpKeys = positive_list_jump_keys
+
+    def setNegativeListJumpKeys(self, negative_list_jump_keys: list[int]):
+        self.negativeButtonListJumpKeys = negative_list_jump_keys
 
     def setNegativeUIKeys(self, negative_ui_keys: list[int]):
         self.negativeUIKeys = negative_ui_keys
@@ -98,7 +114,6 @@ class Menu(Scene):
         screen.blit(dummyScreen, (0,0))
     
     def addSurface(self, surface: pygame.Surface, position: tuple):
-
         self.surfaces.append(surface)
         self.surfacePositions.append(position)
 
@@ -120,39 +135,51 @@ class Menu(Scene):
         print(f"{self.buttonPressedName=}")
         print(f"{self.selectionMode=}")
         print(f"{self.selectedButtonIdx=}")
-        print(f"{self.uiLock=}")
+        print(f"{self.selectedMainButtonIdx=}")
+        print(f"{self.selectedOtherButtonIdx=}")
         print(f"{self.state=}")
-        print(f"{type(self)=}")
         print(f"{self.opacity=}")
         self.updateSelectionMode(self.currentButtons, self.positiveUIKeys, self.negativeUIKeys)
+        self.checkUILock(self.timeButtonLastPressed)
         self.animateButtons(self.currentButtons)
         if self.animation != Menu.animations[Menu.noneAnimationId]:
             self.animate()
         self.render(screen)
 
+    def checkUILock(self, time_button_last_pressed):
+        timenow = pygame.time.get_ticks()
+        buttonPressCooldown = 200
+        if timenow -  time_button_last_pressed <= buttonPressCooldown:
+            self.uiLock = True
+            return None
+        self.uiLock = False
+
     def animateButtons(self, current_buttons: list[TextButton]):
         keys = pygame.key.get_pressed()
-
+        timenow = pygame.time.get_ticks()
         for index, button in enumerate(current_buttons):
             if index == self.selectedButtonIdx:
                 button.animateTextToSize(size= 40, step= 3, shrink= False)
                 button.animateTextToColor(color = (button.originalTextColor[0] - 20, button.originalTextColor[1] - 20, button.originalTextColor[2] - 20), speed = "medium")
-                button.animateTextWithOutline()
-                
-                if keys[SAVED_DATA.PLAYER_SELECTION_KEY_ID] and not self.uiLock: 
-                    if self.buttonPressedName == "NONE":
+                if self.onSubMenu:
+                    button.animateTextWithOutline(color=(255, 255, 190))
+                else:
+                    button.animateTextWithOutline()
+                for key in SAVED_DATA.PLAYER_SELECTION_KEYS:
+
+                    if keys[key] and not self.uiLock: 
+                        self.timeButtonLastPressed = timenow
                         button.setPressed(True)
                         self.buttonPressedName = button.getName()
                 if pygame.mouse.get_pressed()[0] and button.hover and not self.uiLock:
-                    if self.buttonPressedName == "NONE":
-                        button.setPressed(True)
-                        self.buttonPressedName = button.getName()
+                    self.timeButtonLastPressed = timenow
+                    button.setPressed(True)
+                    self.buttonPressedName = button.getName()
                 continue
             if button.fontSize != button.originalFontSize:
-
                 button.animateTextToSize(size= button.originalFontSize, step= 10, shrink= True)
             if button.textColor != button.originalTextColor: button.animateTextToColor(color = button.originalTextColor, speed = "medium")
-            if button.outlineColor != button.originalOutlineColor: button.animateTextWithOutline(color=button.originalOutlineColor)                
+            if button.outlineColor != button.originalOutlineColor: button.animateTextWithOutline(color=button.originalOutlineColor)
 
     def updateSelectionMode(self, current_buttons: list[TextButton], positive_ui_keys, negative_ui_keys):
         if self.uiLock: return None
@@ -220,9 +247,13 @@ class Menu(Scene):
         self.opacity = opacity
 
     def fadeOutUnselectedButtons(self,selected_button_idx: int, resulting_opacity = 100):
-
         for index, button in enumerate(self.currentButtons):
             if index == selected_button_idx: continue
+            button.setTextSurfaceAlpha(resulting_opacity)
+            button.setTextSurfaceOutlineAlpha(resulting_opacity)
+           
+    def fadeAllButtons(self, resulting_opacity = 255):
+        for button in self.currentButtons:
             button.setTextSurfaceAlpha(resulting_opacity)
             button.setTextSurfaceOutlineAlpha(resulting_opacity)
            
@@ -256,12 +287,20 @@ class Menu(Scene):
 
     def focusOnSubMenu(self, buttons: list):
         if not self.onSubMenu:
-
             self.setOtherButtons(buttons)
             self.currentButtons = self.otherButtons 
+            self.selectedMainButtonIdx = self.selectedButtonIdx
             self.selectedButtonIdx = self.selectedOtherButtonIdx
             self.maxSelectedCurrentButtonIdx = self.maxSelectedOtherButtonIdx
             self.onSubMenu = True
+
+    def focusOffSubMenu(self):
+        if self.onSubMenu:
+            self.otherButtons.clear()
+            self.currentButtons = self.mainButtons
+            self.selectedButtonIdx = self.selectedMainButtonIdx
+            self.maxSelectedCurrentButtonIdx = self.maxSelectedMainButtonIdx
+            self.onSubMenu = False
 
     def turnStringToFontSurf(self, string: str, font_fp: str, base_size=24, anti_aliasing= False, color = (0,0,0)):
         return pygame.font.Font(font_fp, base_size).render(string, anti_aliasing, color)

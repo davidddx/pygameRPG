@@ -34,17 +34,16 @@ PLAYER_WALK_UP_KEY_ID = pygame.K_w
 PLAYER_RUN_KEY_ID = pygame.K_LSHIFT
 PLAYER_PAUSE_KEY_ID = pygame.K_x
 PLAYER_SELECTION_KEY_ID = pygame.K_RETURN
-
+PLAYER_SELECTION_KEYS = pygame.K_RETURN, pygame.K_SPACE
 
 ##UI##
-UI_MOVE_LEFT = pygame.K_LEFT
-UI_MOVE_RIGHT = pygame.K_RIGHT
-UI_MOVE_DOWN = pygame.K_DOWN
-UI_MOVE_UP = pygame.K_UP
-UI_SELECT = pygame.K_RETURN
-
+UI_MOVE_LEFT = pygame.K_LEFT, pygame.K_a
+UI_MOVE_RIGHT = pygame.K_RIGHT, pygame.K_d
+UI_MOVE_DOWN = pygame.K_DOWN, pygame.K_s
+UI_MOVE_UP = pygame.K_UP, pygame.K_w
+UI_SELECT = pygame.K_RETURN, pygame.K_SPACE
 
 ##SETTINGS##
-SCREEN_SIZE = "LARGE"
+SCREEN_SIZE = "FULLSCREEN"
 FONT = "GOHU"
 FONT_PATH = FONT_PATHS.GOHU

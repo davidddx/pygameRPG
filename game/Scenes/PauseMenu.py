@@ -24,8 +24,8 @@ class PauseMenu(Menu):
 
     @staticmethod
     def loadButtons() -> list[TextButton]:
-        quitButton = TextButton("QUIT", "QUIT", x= SETTINGS.TILE_SIZE,y=  3 * SETTINGS.SCREEN_HEIGHT / 4, width= 3* SETTINGS.TILE_SIZE, height = 2*SETTINGS.TILE_SIZE, fit_to_text= True, color= (136,8,8))
-        settingsButton = TextButton("SETTINGS", SceneTypes.SETTINGS, x= SETTINGS.TILE_SIZE, y= 2*SETTINGS.SCREEN_HEIGHT / 4, width = 3*SETTINGS.TILE_SIZE, height = 2 * SETTINGS.TILE_SIZE, fit_to_text= True, color= (20,52,164))
+        quitButton = TextButton("QUIT", "QUIT", x= SETTINGS.TILE_SIZE,y=  3 * SETTINGS.SCREEN_HEIGHT / 4, width= 3* SETTINGS.TILE_SIZE, height = 2*SETTINGS.TILE_SIZE, fit_to_text= True, color= (136,8,8), font_path = SAVED_DATA.FONT_PATH)
+        settingsButton = TextButton("SETTINGS", SceneTypes.SETTINGS, x= SETTINGS.TILE_SIZE, y= 2*SETTINGS.SCREEN_HEIGHT / 4, width = 3*SETTINGS.TILE_SIZE, height = 2 * SETTINGS.TILE_SIZE, fit_to_text= True, color= (20,52,164), font_path = SAVED_DATA.FONT_PATH)
         settingsButton.animateTextWithOutline(color=(0, 150, 255))
         quitButton.animateTextWithOutline(color=(255, 0, 0))
         return [settingsButton,quitButton]

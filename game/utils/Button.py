@@ -19,7 +19,13 @@ class Button:
         self.hover = False 
         self.mouseEnabled = True
         self.clickEnabled = True
+        self.description = ""
         self.state = ButtonStates.NEUTRAL
+
+    def setDescription(self, description: str):
+        self.description = description
+    def getDescription(self):
+        return self.description
     def getState(self): return self.state
     def setState(self, state: str):
         if state not in ButtonStates.ALL_STATES: 
@@ -56,6 +62,7 @@ class Button:
         except Exception as e: 
             self.rect.x = lastxValue
             logger.error(f"could not set x value for button {self.name}, error: {e}")
+
     def scaleRectToCurrentSurface(self, rect: pygame.Rect) -> pygame.Rect:
         currentSurface = pygame.display.get_surface()
         windowWidth = currentSurface.get_width()
