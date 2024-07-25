@@ -1,4 +1,5 @@
 import pygame
+
 import os
 import Font.FontPaths as FONT_PATHS
 import globalVars.SettingsConstants as SETTINGS
@@ -8,10 +9,10 @@ from game.Scenes.BaseScene import Scene, SceneStates, SceneTypes
 from game.Scenes.Menu import Menu
 
 class PauseMenu(Menu):
-    def __init__(self, name: str, last_world_frame: pygame.Surface, time_last_paused, fade_in=True, selected_button_idx=-1, selection_mode = "NONE"):
+    def __init__(self, name: str, last_world_frame: pygame.Surface, time_last_paused, fade_in=True, selected_button_idx=(0,0), selection_mode = "NONE"):
         super().__init__(name, last_world_frame, PauseMenu.loadButtons(), fade_in, 0, selected_button_idx = selected_button_idx, selection_mode = selection_mode)
         self.timeLastPaused = time_last_paused
-        self.maxSelectedButtonIdx = 1
+        self.maxSelectedButtonIdx = [0,1]
         self.pausedFontOutline = self.turnStringToFontSurf(string= "PAUSE MENU", font_fp = SAVED_DATA.FONT_PATH, base_size = SETTINGS.TILE_SIZE, anti_aliasing= True, color=(186, 85, 211))
         self.pausedFont = self.turnStringToFontSurf(string = "PAUSE MENU", font_fp = SAVED_DATA.FONT_PATH, base_size = SETTINGS.TILE_SIZE, anti_aliasing = True, color= (75, 0, 130)) 
         self.pausedFontPos = (SETTINGS.SCREEN_WIDTH/2 - self.pausedFont.get_width() / 2, 0)
@@ -23,12 +24,12 @@ class PauseMenu(Menu):
         self.addSurface(self.pausedFont, pausedFontPos)
 
     @staticmethod
-    def loadButtons() -> list[TextButton]:
+    def loadButtons() -> list[list[TextButton]]:
         quitButton = TextButton("QUIT", "QUIT", x= SETTINGS.TILE_SIZE,y=  3 * SETTINGS.SCREEN_HEIGHT / 4, width= 3* SETTINGS.TILE_SIZE, height = 2*SETTINGS.TILE_SIZE, fit_to_text= True, color= (136,8,8), font_path = SAVED_DATA.FONT_PATH)
         settingsButton = TextButton("SETTINGS", SceneTypes.SETTINGS, x= SETTINGS.TILE_SIZE, y= 2*SETTINGS.SCREEN_HEIGHT / 4, width = 3*SETTINGS.TILE_SIZE, height = 2 * SETTINGS.TILE_SIZE, fit_to_text= True, color= (20,52,164), font_path = SAVED_DATA.FONT_PATH)
         settingsButton.animateTextWithOutline(color=(0, 150, 255))
         quitButton.animateTextWithOutline(color=(255, 0, 0))
-        return [settingsButton,quitButton]
+        return [[settingsButton,quitButton]]
 
     def getTimeLastPaused(self): return self.timeLastPaused
 
@@ -41,10 +42,11 @@ class PauseMenu(Menu):
         pauseKey = pygame.K_x
         keys = pygame.key.get_pressed()
         if keys[pauseKey]:
-            for button in self.mainButtons: 
-                button.setSelected(False)
-                button.setPressed(False)
-                button.disableMouse()
+            for column in self.mainButtons:
+                for button in column:
+                    button.setSelected(False)
+                    button.setPressed(False)
+                    button.disableMouse()
             self.uiLock = True
             self.state = SceneStates.FINISHING
             self.timeLastPaused = timenow    

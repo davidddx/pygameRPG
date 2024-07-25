@@ -40,10 +40,11 @@ class Settings(Menu):
         exitKey = pygame.K_f
         keys = pygame.key.get_pressed()
         if keys[exitKey]:
-            for button in self.mainButtons: 
-                button.setSelected(False)
-                button.setPressed(False)
-                button.disableMouse()
+            for column in self.mainButtons: 
+                for button in column:
+                    button.setSelected(False)
+                    button.setPressed(False)
+                    button.disableMouse()
             self.uiLock = True
             self.state = SceneStates.FINISHING
             self.ptrNextScene = SceneTypes.PAUSE_MENU
@@ -60,20 +61,23 @@ class Settings(Menu):
         self.addSurface(self.settingsFontOutline, (fontPos[0] + 2, fontPos[1]))
         self.addSurface(self.settingsFontOutline, (fontPos[0], fontPos[1] - 2))
         self.addSurface(self.settingsFont, fontPos)
-        for button in self.mainButtons:
-            button.textSurface = button.loadFontSurface(button.text, button.fontSize, button.textColor) 
-            button.fontPath = SAVED_DATA.FONT_PATH
-        pass
+        for column in self.mainButtons:
+            for button in column:
+                button.textSurface = button.loadFontSurface(button.text, button.fontSize, button.textColor) 
+                button.fontPath = SAVED_DATA.FONT_PATH
 
     def checkButtonPressed(self, name: str, screen: pygame.Surface):
         if name == "NONE": return None
         saveDataSignal = False
+        parentButton = self.getSelectedButton()
         match name:
             case "BACK_TO_MENU":
-                for button in self.mainButtons: 
-                    button.setSelected(False)
-                    button.setPressed(False)
-                    button.disableMouse()
+                for col in self.mainButtons: 
+
+                    for button in col: 
+                        button.setSelected(False)
+                        button.setPressed(False)
+                        button.disableMouse()
                 self.uiLock = True
                 self.state = SceneStates.FINISHING
                 self.ptrNextScene = SceneTypes.PAUSE_MENU
@@ -81,12 +85,12 @@ class Settings(Menu):
                 self.buttonPressedName = "NONE"
             case "FONT":
                 self.fadeOutUnselectedButtons(self.selectedButtonIdx)
-                self.focusOnSubMenu(Settings.generateSubButtons(parent_button = self.mainButtons[self.fontButtonId], screen_size= screen.get_size()))
+                self.focusOnSubMenu(Settings.generateSubButtons(parent_button = parentButton, screen_size= screen.get_size()))
                 self.buttonPressedName = "NONE"
 
             case "SCREEN_SIZE":
                 self.fadeOutUnselectedButtons(self.selectedButtonIdx)
-                self.focusOnSubMenu(Settings.generateSubButtons(parent_button = self.mainButtons[self.screenSizeButtonId], screen_size= screen.get_size()))
+                self.focusOnSubMenu(Settings.generateSubButtons(parent_button = parentButton, screen_size= screen.get_size()))
                 self.buttonPressedName = "NONE"
             case "FONT.1":
                 SAVED_DATA.FONT = "GOHU"
@@ -169,29 +173,33 @@ class Settings(Menu):
         backButtonColor = (215, 43, 23)
 
 
-        def setButtonsPos(buttons: list[TextButton], starting_x, x_step, starting_y, y_step, rect_y_at_center= False, rect_x_at_center=False, screen_height=0, screen_width = 0):
+        def setButtonsPos(buttons: list[list[TextButton]], starting_x, x_step, starting_y, y_step, rect_y_at_center= False, rect_x_at_center=False, screen_height=0, screen_width = 0):
             if rect_y_at_center: 
                 subMenuHeight = 0
                 rectWidth = 0
                 sumButtonHeights = 0
-                for button in buttons: sumButtonHeights += button.getHeight() + y_step/2
-                for button in buttons: 
-                    subMenuHeight += button.getHeight() + y_step/2 
-                    rectWidth = max(rectWidth, button.getWidth())
-                subMenuHeight -= y_step/2
-                starting_y = screen_height/2 - subMenuHeight/2
-            for button in buttons:
-                button.setY(starting_y)
-                button.setX(starting_x - button.getWidth()/2)
-                starting_y += y_step
-                starting_x += x_step
+                for column in buttons: 
+                    for button in column: sumButtonHeights += button.getHeight() + y_step/2
+                for column in buttons: 
+                    for button in column:
+                        subMenuHeight += button.getHeight() + y_step/2 
+                        rectWidth = max(rectWidth, button.getWidth())
+                    subMenuHeight -= y_step/2
+                    starting_y = screen_height/2 - subMenuHeight/2
+            for column in buttons:
+                for button in column:
+                    button.setY(starting_y)
+                    button.setX(starting_x - button.getWidth()/2)
+                    starting_y += y_step
+                    starting_x += x_step
 
-        def setButtonsOutline(buttons: list[TextButton], color: tuple[int,int,int], name):
-            for button in buttons: 
-                if button.getName() != name + ".BACK": 
-                    button.animateTextWithOutline(color= color)
-                    continue
-                button.animateTextWithOutline(color = (250, 128, 114))
+        def setButtonsOutline(buttons: list[list[TextButton]], color: tuple[int,int,int], name):
+            for column in buttons:
+                for button in column:
+                    if button.getName() != name + ".BACK": 
+                        button.animateTextWithOutline(color= color)
+                        continue
+                    button.animateTextWithOutline(color = (250, 128, 114))
         match name:
             case "SCREEN_SIZE":
                 smallButton = TextButton("SMALL", name + ".SMALL", xValue, yValue, 0, 0, fit_to_text = True, color= subButtonColor, font_path = SAVED_DATA.FONT_PATH)
@@ -199,8 +207,8 @@ class Settings(Menu):
                 largeButton = TextButton("LARGE", name + ".LARGE", xValue, yValue, 0, 0, fit_to_text = True, color = subButtonColor, font_path = SAVED_DATA.FONT_PATH)
                 fullscreenButton = TextButton("FULLSCREEN", name + ".FULLSCREEN", xValue, yValue, 0, 0, fit_to_text = True, color= subButtonColor, font_path = SAVED_DATA.FONT_PATH)
                 backButton = TextButton("BACK", name + ".BACK", xValue, yValue, 0, 0, fit_to_text=True, color= backButtonColor, font_path = SAVED_DATA.FONT_PATH)
-                buttons = [smallButton, mediumButton, largeButton, fullscreenButton, backButton]
-                setButtonsPos(buttons, starting_x = xValue , x_step = 0, starting_y = 0, rect_y_at_center = True, y_step = 2 * buttons[0].getHeight(), screen_height = screen_size[1])
+                buttons = [[smallButton, mediumButton, largeButton, fullscreenButton, backButton]]
+                setButtonsPos(buttons, starting_x = xValue , x_step = 0, starting_y = 0, rect_y_at_center = True, y_step = 2 * buttons[0][0].getHeight(), screen_height = screen_size[1])
                 setButtonsOutline(buttons, subButtonOutlineColor, name)
 
                 return buttons 
@@ -223,8 +231,9 @@ class Settings(Menu):
                 font6Button = TextButton("FONT 6", name + ".6", xValue, yValue, 0, 0, fit_to_text = True, color= subButtonColor, font_path = FONT_PATHS.MONOFUR)
                 font6Button.setX(xValue - font6Button.getWidth()/2)
                 backButton = TextButton("BACK", name + ".BACK", xValue, yValue, 0, 0, fit_to_text=True, color= backButtonColor)
-                buttons = [font1Button, font2Button, font3Button, font4Button, font5Button, font6Button, backButton]
-                setButtonsPos(buttons, starting_x = xValue , x_step = 0, starting_y = 0, rect_y_at_center = True, y_step = 2 * buttons[0].getHeight(), screen_height = screen_size[1])
+                buttons = [[font1Button, font2Button, font3Button, font4Button, font5Button, font6Button, backButton]]
+
+                setButtonsPos(buttons, starting_x = xValue , x_step = 0, starting_y = 0, rect_y_at_center = True, y_step = 2 * buttons[0][0].getHeight(), screen_height = screen_size[1])
                 setButtonsOutline(buttons, subButtonOutlineColor, name)
 
                 return buttons 
@@ -244,5 +253,5 @@ class Settings(Menu):
         self.fontButtonId = 0
         self.screenSizeButtonId = 1
         self.backToMenuButtonId = 2
-        return [fontButton, screenSizeButton, backToMenuButton]
+        return [[fontButton, screenSizeButton, backToMenuButton]]
 
