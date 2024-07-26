@@ -99,7 +99,7 @@ class DebugMenu:
         try:
             DebugMenu.renderCurrentSceneDebug(screen= screen, currentScene = self.currentScene, startingPoint = [0, self.bottomYRight])
         except Exception as e:
-            print({e})
+            logger.error({e})
             return None
     @staticmethod
     def blitErrorMsg(error_msg: str, screen: pygame.Surface):

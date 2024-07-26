@@ -131,15 +131,6 @@ class Menu(Scene):
                 return None
 
     def update(self, screen):
-        print(f"{self.buttonPressedName=}")
-        print(f"{self.selectionMode=}")
-        print(f"{self.selectedButtonIdx=}")
-        print(f"{self.selectedMainButtonIdx=}")
-        print(f"{self.selectedOtherButtonIdx=}")
-        print(f"{self.state=}")
-        print(f"{self.opacity=}")
-        print(f"{self.uiLock=}")
-        print(f"{self.animation=}")
         self.updateSelectionMode(self.currentButtons, self.positiveUIKeys, self.negativeUIKeys,  self.positiveUIKeysRow, self.negativeUIKeysRow)
         self.checkUILock(self.timeButtonLastPressed)
         self.animateButtons(self.currentButtons)
@@ -158,7 +149,7 @@ class Menu(Scene):
             return None
         self.uiLock = False
 
-    def animateButtons(self, current_buttons: list[list[Button]]):
+    def animateButtons(self, current_buttons: list[list[TextButton]]):
         keys = pygame.key.get_pressed()
         timenow = pygame.time.get_ticks()
         for indexColumn, column in enumerate(current_buttons):
@@ -237,12 +228,6 @@ class Menu(Scene):
                         selectStepX = -1
                         self.timeLastUIKeystroke = timenow
 
-                print(f"{[selectStepX, selectStepY]=}")
-                print(f"{len(current_buttons)=}")
-                print(f"{current_buttons=}")
-                print(f"{current_buttons[self.selectedButtonIdx[0]]=}")
-                print(f"{len(current_buttons)=}")
-                print(f"{len(current_buttons[self.selectedButtonIdx[0]])=}")
                 if self.selectedButtonIdx[0] + selectStepX < 0:
                     self.selectedButtonIdx[0] = len(current_buttons) - 1 
                 elif self.selectedButtonIdx[0] + selectStepX > len(current_buttons) - 1:
