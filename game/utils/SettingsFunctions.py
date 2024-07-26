@@ -61,7 +61,6 @@ def backupJsonFile(file_path: str, file_content: dict):
     if not dataDirPath.exists() or not dataDirPath.is_dir(): dataDirPath.mkdir() 
     if not backupDirPath.exists() or not backupDirPath.is_dir(): backupDirPath.mkdir() 
     if not backupFilePath.exists() or not backupFilePath.is_file(): backupFilePath.touch() 
-    print(f"{stemName=} || {backupFilePath=}") 
     backupFile = open(backupFilePath, 'w')
     json.dump(file_content, backupFile)
     backupFile.close()
