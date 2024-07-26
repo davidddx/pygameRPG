@@ -163,6 +163,10 @@ class TextAnimationInfo:
         self.lerpRGBStep = 0.1
         self.lerpRGBValue = 0
         self.validLerpSpeeds = ["very slow, slow, medium, fast, very fast"]
+        self.finished = False
+
+    def setFinished(self, finished): self.finished = finished
+    def getFinished(self): return self.finished
     def setOutline(self, outline: bool): self.outline = outline
     def getOutline(self): return self.outline
     def setOutlineColor(self, outline_color: tuple[int, int, int]): self.outlineColor = outline_color
@@ -235,6 +239,9 @@ class TextButton(Button):
         if not mouseEnabled: self.disableMouse()
         self.backgroundColor = TextButton.loadBackgroundColor(background)
         self.textAnimationInfo = TextAnimationInfo()
+
+    def updateAnimationToFinished(self):
+        self.textAnimationInfo.setFinished(True)
 
     def setX(self, xvalue):
         super().setX(xvalue)
