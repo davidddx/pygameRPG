@@ -182,7 +182,7 @@ class Player:
                                           self.rect.y - camera_offset[1] - self.rect.height/2))
             except Exception as e:
                 
-                logger.info(f"could not blit part {_part.name=} to screen, {e=}")
+                #logger.info(f"could not blit part {_part.name=} to screen, {e=}")
                 continue
 
     def updateAnimation(self):
@@ -283,7 +283,7 @@ class Player:
         self.setPlayerPos(self.rect.x + (step_x * velocity[0]), self.rect.y + (step_y * velocity[1]))
 
     def setPlayerPos(self, pos_x : float, pos_y : float):
-        logger.debug(f"setting player rect pos to: {self.rect.x}, {self.rect.y}")
+        #logger.debug(f"setting player rect pos to: {self.rect.x}, {self.rect.y}")
         self.rect.x = pos_x
         self.rect.y = pos_y
 

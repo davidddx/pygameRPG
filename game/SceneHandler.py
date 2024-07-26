@@ -169,6 +169,11 @@ class SceneHandler:
         return PauseMenu(name = "PauseMenu",last_world_frame= self.lastAreaFrame, time_last_paused= time_last_paused, fade_in= fade_in, selected_button_idx = selected_button_idx, selection_mode = selection_mode)
         
         
+    def logSceneInfo(self, current_scene : Scene):
+        logger.debug(f"Current Scene State: {current_scene.state=}")
+        logger.debug(f"Current Scene Name: {current_scene.name=}")
+        logger.debug(f"Current Scene PtrNextScene: {current_scene.ptrNextScene=}")
+
     def run(self, screen: pygame.Surface):
         self.currentScene.update(screen=screen)
         self.checkSceneState(currentScene=self.currentScene, debug=True, screen= screen)
@@ -177,4 +182,4 @@ class SceneHandler:
         self.currentScene.update(screen=screen)
         self.debugMenu.run(screen=screen, clock= clock, currentScene= self.currentScene)
         self.checkSceneStateTest(current_scene=self.currentScene, debug=True, screen= screen)
-
+        self.logSceneInfo(self.currentScene)
