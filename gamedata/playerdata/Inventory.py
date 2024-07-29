@@ -1,6 +1,5 @@
 import json
 import os
-from debug.logger import logger
 
 '''
 INVENTORY FORMAT
@@ -20,19 +19,17 @@ INVENTORY FORMAT
 
 '''
 
-Inventory = {}
 
 def getInventoryPath():
-    return os.path.join(os.getcwd(), "gamedata", "playerdata", "Inventory.json")
+    return os.path.join(os.getcwd(), "main.json")
 
 def loadInventory() -> dict:
-    logger.info("Loading saved inventory data...")
+    print("loading saved inventory data...")
     fileObj = open(getInventoryPath(), "r")
     return json.load(fileObj)
 
 def saveInventoryData(inventory: dict):
-
-    logger.info("saving inventory data....")
+    print("saving inventory data...")
     #### checking if valid formatted inventory ####
     path = getInventoryPath()
     previousInventoryFile = open(path, "r")
@@ -57,48 +54,49 @@ def saveInventoryData(inventory: dict):
    
     invalidValTypeErrorMsg = "error, value type of inventory is dict"
     for val in inventory.values():
-        if type(val) != dict[str, int] and invalidValTypeErrorMsg not in errorMsgs:
+        print(val)
+        if type(val) != dict and invalidValTypeErrorMsg not in errorMsgs:
             inventoryValid = False
             errorMsgs.append(invalidValTypeErrorMsg)
 
     for error in errorMsgs:
-        logger.error(error)
         print(error)
+
 
     if not inventoryValid: return None
 
     inventoryFile = open(path, "w")
     json.dump(inventory, inventoryFile) 
 
-def checkItemInInventory(item_id: int, item_category: str):
-    global Inventory
-    inventory = Inventory[item_category]
-    if item_id in inventory.keys():
+def checkItemInInventory(item_id: int, item_category: str, inventory: dict):
+    categoryInventory = inventory[item_category]
+    strItemId = f"{item_id}"
+    if strItemId in categoryInventory.keys():
         return True
     return False
 
-def addItemToInventory(item_id: int, item_category: str):
-    global Inventory
-    logger.debug(f"previous inventory before add {Inventory=}")
-    inventory = Inventory[item_category]
-    if not checkItemInInventory(item_id, item_category):
-        inventory[item_id] = 1
-    else:
-        inventory[item_id]+=1
-    Inventory[item_category] = inventory
-    logger.debug(f"inventory after add {Inventory=}")
+def addItemToInventory(item_id: int, item_category: str, inventory: dict, amount=1):
+    #print(f"previous inventory before add: {inventory=}")
+    categoryInventory = inventory[item_category]
 
-def removeItemFromInventory(item_id: int, item_category: str):
-    global Inventory
-    logger.debug(f"previous inventory before removal {Inventory=}")
-    inventory = Inventory[item_category]
-    if not checkItemInInventory(item_id, item_category):
-        logger.debug(f"error: {item_id=} not in {inventory.keys()=}")
+    strItemId = f"{item_id}"
+    if not checkItemInInventory(item_id, item_category, inventory):
+        categoryInventory[strItemId] = 0
+    categoryInventory[strItemId]+= amount
+    inventory[item_category] = categoryInventory
+    #print(f"inventory after add: \n{inventory=}")
+
+def removeItemFromInventory(item_id: int, item_category: str, inventory):
+    categoryInventory = inventory[item_category]
+    print(f"inventory before item removal:\n{inventory}")
+    strItemId = f"{item_id}"
+    if not checkItemInInventory(item_id, item_category, inventory):
+        print(f"error: {item_id=} not in {inventory.keys()=}")
         return None
-    if inventory[item_id] == 1:
-        del inventory[item_id]
+    if categoryInventory[strItemId] == 1:
+        del categoryInventory[strItemId]
     else:
-        inventory[item_id] -= 1
-    Inventory[item_category] = inventory
-    logger.debug(f"inventory after item removal {Inventory=}")
+        categoryInventory[strItemId] -= 1
+    inventory[item_category] = categoryInventory
+    print(f"inventory after item removal:\n{inventory}")
 
