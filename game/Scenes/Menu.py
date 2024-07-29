@@ -185,11 +185,17 @@ class Menu(Scene):
         keys = pygame.key.get_pressed()
         timenow = pygame.time.get_ticks()
         for key in positive_ui_keys:
-            if keys[key]:
-                self.selectionMode = "KEYBOARD"
+            if not keys[key]: continue
+            self.selectionMode = "KEYBOARD"
         for key in negative_ui_keys:
-            if keys[key]:
-                self.selectionMode = "KEYBOARD"
+            if not keys[key]: continue
+            self.selectionMode = "KEYBOARD"
+        for key in row_positive_ui_keys: 
+            if not keys[key]: continue
+            self.selectionMode = "KEYBOARD"
+        for key in row_negative_ui_keys:
+            if not keys[key]: continue
+            self.selectionMode = "KEYBOARD"
         mousePos = pygame.mouse.get_pos()
         if self.lastMousePosition != mousePos:
             self.selectionMode = "MOUSE"
@@ -227,7 +233,9 @@ class Menu(Scene):
                     if keys[key]:
                         selectStepX = -1
                         self.timeLastUIKeystroke = timenow
-
+                logger.debug(f"{selectStepX=}, {selectStepY=}")
+                prevIndices = [self.selectedButtonIdx[0], self.selectedButtonIdx[1]]
+                logger.debug(f"{prevIndices=}")
                 if self.selectedButtonIdx[0] + selectStepX < 0:
                     self.selectedButtonIdx[0] = len(current_buttons) - 1 
                 elif self.selectedButtonIdx[0] + selectStepX > len(current_buttons) - 1:
@@ -241,7 +249,28 @@ class Menu(Scene):
                     self.selectedButtonIdx[1] = 0 
                 else:
                     self.selectedButtonIdx[1] += selectStepY
+                selectedButtonDestination = self.selectedButtonIdx
 
+                logger.debug(f"{selectedButtonDestination=}")
+                try:
+                    current_buttons[self.selectedButtonIdx[0]][self.selectedButtonIdx[1]] 
+                except:
+                    self.selectedButtonIdx = prevIndices
+                '''
+                if self.selectedButtonIdx[0] + selectStepX < 0:
+                    self.selectedButtonIdx[0] = len(current_buttons) - 1 
+                elif self.selectedButtonIdx[0] + selectStepX > len(current_buttons) - 1:
+                    self.selectedButtonIdx[0] = 0
+                else:
+                    self.selectedButtonIdx[0] += selectStepX
+                
+                if self.selectedButtonIdx[1] + selectStepY < 0:
+                    self.selectedButtonIdx[1] = len(current_buttons[self.selectedButtonIdx[0]])-1
+                elif self.selectedButtonIdx[1] + selectStepY > len(current_buttons[self.selectedButtonIdx[0]]) - 1:
+                    self.selectedButtonIdx[1] = 0 
+                else:
+                    self.selectedButtonIdx[1] += selectStepY
+                '''
 
 
     def fadeScene(self, opacity, opacityStep):
