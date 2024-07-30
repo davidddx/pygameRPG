@@ -44,6 +44,19 @@ class Button:
     def disableMouse(self): self.mouseEnabled = False
     def enableMouse(self): self.mouseEnabled = True
     def setHover(self, hover: bool): self.hover = hover 
+    def setWidth(self, width): 
+        rect = self.rect.copy()
+        rect.width = width
+        self.changeRect(rect)
+    def setHeight(self, height):
+        rect = self.rect.copy()
+        rect.height = height
+        self.changeRect(rect)
+    def setDimensions(self, width, height):
+        rect = self.rect.copy()
+        rect.height = height
+        rect.width = width
+        self.changeRect(rect)
     def getWidth(self): return self.rect.width
     def getHeight(self): return self.rect.height
     def setY(self, yvalue):
