@@ -358,6 +358,9 @@ class Menu(Scene):
     def turnStringToFontSurf(self, string: str, font_fp: str, base_size=24, anti_aliasing= False, color = (0,0,0)):
         return pygame.font.Font(font_fp, base_size).render(string, anti_aliasing, color)
 
+    def loadFontSurf(self, string: str, base_size=24, anti_aliasing=False, color=(0,0,0)):
+        return self.turnStringToFontSurf(string, SAVED_DATA.FONT_PATH, base_size, anti_aliasing, color)
+
     def clear(self): pass
 
 
