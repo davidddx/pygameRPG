@@ -22,17 +22,14 @@ def loop():
     displayInfo = pygame.display.Info()
     displaySize = displayInfo.current_w, displayInfo.current_h
     SETTINGS.SCREEN_RESOLUTION = displaySize
-    #screen = pygame.display.set_mode((SETTINGS.SCREEN_WIDTH, SETTINGS.SCREEN_HEIGHT))
-    #baseScreen = screen.copy()
     baseScreen = pygame.Surface((SETTINGS.SCREEN_WIDTH, SETTINGS.SCREEN_HEIGHT))
-    #del screen
     SETTINGS.SCREEN = SETTINGS_FUNCTIONS.generateScreenFromResolution(displaySize[0], displaySize[1], SAVED_DATA.SCREEN_SIZE)
     clock = pygame.time.Clock()
     running = True
     screenFillColor = "black"
     MAX_FPS = 45
     sceneHandler = SceneHandler.SceneHandler(DEBUG=True, display_size = displaySize)
-    Inventory.Inventory = Inventory.loadInventory()
+
     ### Initialization Done ###
     logger.info("Initializing Done.")
     windowResizeCooldown = 100
@@ -54,6 +51,8 @@ def loop():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+
+    #game loop has finished
     pygame.quit()
 
 
