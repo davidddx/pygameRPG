@@ -5,7 +5,7 @@ import os
 INVENTORY FORMAT
 (if player has no occurences of an item it will be taken out of the dict then they wont be seen in the dict)
 (each item is in one category only)
-
+(ITEM_X_ID is a num in string format)
 
 {
     "CATEGORY_1": {ITEM_1_ID: NUM_OCCURENCES, ... , ITEM_N_ID: NUM_OCCURENCES},
@@ -13,7 +13,7 @@ INVENTORY FORMAT
     ..... ,
     ..... ,
     ..... ,
-    "CATEGORY_N": {ITEM_3_ID: NUM_OCCURENCES, ... , ITEM_L_ID: NUM_OCCURENCES}
+    "CATEGORY_N": {ITEM_X_ID: NUM_OCCURENCES, ... , ITEM_L_ID: NUM_OCCURENCES}
 }
 
 
@@ -21,7 +21,7 @@ INVENTORY FORMAT
 
 
 def getInventoryPath():
-    return os.path.join(os.getcwd(), "main.json")
+    return os.path.join(os.getcwd(), "gamedata", "playerdata", "Inventory.json")
 
 def loadInventory() -> dict:
     print("loading saved inventory data...")
