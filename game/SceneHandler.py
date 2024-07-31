@@ -4,6 +4,7 @@ import os
 import pygame
 import gamedata.Save.SavedData as SAVED_DATA
 from game.Scenes.TitleScreen import TitleScreen
+from game.Scenes.Inventory import Inventory
 from game.Player import Player
 from game.Scenes.BaseScene import SceneStates, Scene, SceneTypes
 from game.Scenes.PauseMenu import PauseMenu
@@ -160,6 +161,7 @@ class SceneHandler:
                     return self.loadPauseMenu(screen, timenow, fade_in = False, selected_button_idx = [0,0], selection_mode = "KEYBOARD")
                 return self.loadPauseMenu(screen, timenow)
             case SceneTypes.SETTINGS: return self.loadSettings(screen.get_size(), self.lastSceneFrame)
+            case SceneTypes.INVENTORY: return Inventory(self.lastAreaFrame, self.lastSceneFrame)
             case SceneTypes.AREA: return self.loadArea(SAVED_DATA.CURRENT_AREA_INDEX) 
 
     def loadSettings(self, screen_size, last_pause_menu_frame: pygame.Surface):
