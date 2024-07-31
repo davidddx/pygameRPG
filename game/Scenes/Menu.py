@@ -272,6 +272,13 @@ class Menu(Scene):
                     self.selectedButtonIdx[1] += selectStepY
                 '''
 
+    def blitSurfaceAndOutline(self, screen: pygame.Surface, surface: pygame.Surface, surface_outline: pygame.Surface, surface_position):
+        screen.blit(surface_outline, (surface_position[0] + 2, surface_position[1]))
+        screen.blit(surface_outline, (surface_position[0] - 2, surface_position[1]))
+        screen.blit(surface_outline, (surface_position[0], surface_position[1] + 2))
+        screen.blit(surface_outline, (surface_position[0], surface_position[1] - 2))
+        screen.blit(surface, surface_position)
+
 
     def fadeScene(self, opacity, opacityStep):
         opacity += opacityStep
