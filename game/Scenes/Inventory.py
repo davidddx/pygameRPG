@@ -15,7 +15,7 @@ class Inventory(Menu):
         self.state = SceneStates.INITIALIZING
         self.heading = self.loadFontSurf("INVENTORY", SETTINGS.TILE_SIZE, True, color = (8,100,10)) 
 
-        self.headingFontPos = (SETTINGS.SCREEN_WIDTH/2 - self.heading.get_width()/2, 0)
+        self.headingPosition = (SETTINGS.SCREEN_WIDTH/2 - self.heading.get_width()/2, 0)
         self.headingOutline = self.loadFontSurf("INVENTORY", SETTINGS.TILE_SIZE, True, color = (0, 200,0)) 
         self.inventory = self.loadInventoryData()
         mainButtons = self.generateMainButtons(inventory_data = self.inventory, screen_width = last_scene_frame.get_width())
@@ -48,13 +48,19 @@ class Inventory(Menu):
             xValue += button.getWidth() + paddingSpaceWidth
 
     def generateMainButtons(self, inventory_data: dict, screen_width) -> list[list[Button]]:
+        mainButtons = []
         categoryButtons = []
+        categoryButtonColor = (8,120,10)
+        categoryButtonOutlineColor = (0, 150,0)
         ## loading category buttons
         for key in inventory_data:
-            categoryButtons.append(TextButton(key, key, 0, 3 * SETTINGS.TILE_SIZE, 0, 0, fit_to_text=True, color = (0,0,0), font_path = SAVED_DATA.FONT_PATH))
+            button = TextButton(key, key, 0, 3 * SETTINGS.TILE_SIZE, 0, 0, fit_to_text = True, color = categoryButtonColor, font_path = SAVED_DATA.FONT_PATH)
+            button.animateTextWithOutline(color= categoryButtonOutlineColor)
+            categoryButtons.append(button)
+            mainButtons.append([button])
         ## centering category buttons
         Inventory.centerButtonsHorizontal(categoryButtons, screen_width)
-        return [categoryButtons]
+        return mainButtons
 
 
     def loadInventoryData(self) -> dict:
@@ -88,6 +94,9 @@ class Inventory(Menu):
                 if button.textColor != button.originalTextColor: button.animateTextToColor(color = button.originalTextColor, speed = "medium")
                 if button.outlineColor != button.originalOutlineColor: button.animateTextWithOutline(color=button.originalOutlineColor)
 
+    def render(self, screen):
+        super().render(screen)
+        self.blitSurfaceAndOutline(screen, self.heading, self.headingOutline, self.headingPosition)
     
     def update(self, screen):
         super().update(screen)
