@@ -67,6 +67,10 @@ class PauseMenu(Menu):
             case SceneTypes.SETTINGS:
                 self.state=SceneStates.FINISHED
                 self.ptrNextScene = SceneTypes.SETTINGS
+            case SceneTypes.INVENTORY:
+                self.state = SceneStates.FINISHED
+                self.ptrNextScene = SceneTypes.INVENTORY
+
             case "UNPAUSE":
                 timenow = pygame.time.get_ticks()
                 pauseCooldown = 300
