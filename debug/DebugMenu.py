@@ -5,6 +5,7 @@ from game.Scenes.TitleScreen import TitleScreen
 from game.Scenes.Area import Area
 from game.Scenes.Menu import Menu
 from game.Scenes.PauseMenu import PauseMenu
+from game.Scenes.Inventory import Inventory
 import Font.FontPaths as FontPaths
 import psutil
 import os
@@ -153,6 +154,8 @@ class DebugMenu:
             logger.debug(f"{currentScene.selectedButtonIdx=}")
             surfaceList.append(f"SELECTION MODE: {currentScene.selectionMode}")
             surfaceList.append(f"SELECTED BUTTON IDX: {currentScene.selectedButtonIdx}")
+            if type(currentScene) == Inventory:
+                surfaceList.append(f"LAST SELECTED BUTTON IDX: {currentScene.lastSelectedButtonIdx}")
         for surface in surfaceList:
             surface = DebugMenu.turnStringToFontSurf(string= surface, font_fp = fontFp)
             screen.blit(surface, (startingPoint[0], startingPoint[1]))

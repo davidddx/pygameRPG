@@ -158,7 +158,7 @@ class SceneHandler:
                 if type(current_scene) == Area:
                     return self.loadPauseMenu(screen, timenow, fade_in= True, selected_button_idx= [0,0])
                 elif type(current_scene) == Settings:
-                    return self.loadPauseMenu(screen, timenow, fade_in = False, selected_button_idx = [0,0], selection_mode = "KEYBOARD")
+                    return self.loadPauseMenu(screen, timenow, fade_in = False, selected_button_idx = [0,1], selection_mode = "KEYBOARD")
                 return self.loadPauseMenu(screen, timenow)
             case SceneTypes.SETTINGS: return self.loadSettings(screen.get_size(), self.lastSceneFrame)
             case SceneTypes.INVENTORY: return Inventory(self.lastAreaFrame, self.lastSceneFrame)

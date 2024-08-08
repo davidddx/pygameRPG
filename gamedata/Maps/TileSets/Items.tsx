@@ -3,15 +3,15 @@
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <properties>
-   <property name="name" value="Heart"/>
-   <property name="type" value="Item"/>
+   <property name="NAME" value="HEART"/>
+   <property name="TYPE" value="ITEM"/>
   </properties>
   <image width="48" height="48" source="../../../images/test/Items/heart.png"/>
  </tile>
  <tile id="1">
   <properties>
-   <property name="name" value="Water"/>
-   <property name="type" value="Item"/>
+   <property name="NAME" value="WATER"/>
+   <property name="TYPE" value="ITEM"/>
   </properties>
   <image width="48" height="48" source="../../../images/test/Items/water.png"/>
  </tile>

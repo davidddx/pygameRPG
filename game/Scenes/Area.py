@@ -8,37 +8,100 @@ import globalVars.PathConstants as PATH_CONSTANTS
 from game.Player import Player
 from game.Door import Door, DoorEntryPointIDs
 from game.Tile import TileTypes
-import gamedata.playerdata.Inventory as Inventory
+#import gamedata.playerdata.Inventory as Inventory
+import json
 
 class Area(Scene):
 
-    def __init__(self, name, starting_map_idx : int, _player : Player):
+    def __init__(self, name, starting_map_idx : int, _player : Player, area_id = 0):
 
         logger.debug(f"Class {Area=} initializing....")
         super().__init__(name)
+        self.areaID = area_id
         self.state = SceneStates.INITIALIZING
         self.timeLastChangedMap = 0
         self.player = _player
         self.mapIdx = starting_map_idx
         self.mapData = Area.loadMapTmxData()
         self.doors = Area.loadDoors(self.mapData)
-        self.takenItems = Area.loadTakenItems(num_maps = len(self.mapData))
-        self.currentMap = Area.loadMapById(tmx_data= self.mapData, id= starting_map_idx, _doors= self.doors, _player=self.player, taken_items = self.takenItems[starting_map_idx])
+        self.takenItems = Area.loadTakenItems(self.mapIdx, len(self.mapData))
+        self.currentMap = self.loadMapById(tmx_data= self.mapData, id= starting_map_idx, _doors= self.doors, _player=self.player, area_id = self.areaID)
         self.timeLastPaused = 0        
         self.state = SceneStates.RUNNING
         logger.debug(f"Class {Area=} intialized.")
 
     def updateTakenItems(self, current_map_idx: int):
-        self.takenItems[current_map_idx] = self.currentMap.getTakenItems()
+        pass
+        ''' TAKEN ITEM FORMAT 
+        {
+            AREA_ID0: {
+                MAP_ID0 : [ [item0name, item0pos],
+                            [item1name, item1pos],
+                            ...
+                            [itemNname, itemNpos]
+                        ]
+                MAP_ID1 : [ [item0name, item0pos],
+                            [item1name, item1pos],
+                            ...
+                            [itemNname, itemNpos]
+                        ]
+                ...,
+
+                MAP_IDN : [ [item0name, item0pos],
+                            [item1name, item1pos],
+                            ...
+                            [itemNname, itemNpos]
+                        ]
+            },
+            AREA_ID1: {
+                ...
+            },
+            ...
+            ,
+            AREA_IDN : {
+                ...
+            }
+
+        }
+
+        '''
+        #self.takenItems[str(current_map_idx)] = self.currentMap.getTakenItems()
         
     @staticmethod
-    def loadTakenItems(num_maps: int) -> list[set]: 
-        takenItems = []
-        for i in range(num_maps): takenItems.append([set()])
-        return takenItems
+    def loadTakenItems(area_id: int, map_len: int) -> dict: 
+        takenItems = {}
+        strPath = os.path.join(os.getcwd(), "gamedata", "Maps", "TakenItems.json")
+        file = open(strPath, "r")
+        takenItems = json.load(file)
+        try:
+            areaTakenItems = takenItems[str(area_id)]
+        except:
+            logger.info("No base list detected for {area_id=}. Creating now....")
+            takenItems[str(area_id)] = {} 
+            areaTakenItems = takenItems[str(area_id)]
+        return areaTakenItems 
+
+    def getTakenItemsPath(self): return os.path.join(os.getcwd(), "gamedata", "Maps", "TakenItems.json")
+
+    def getTakenItemsDict(self):
+        file = open(self.getTakenItemsPath(), 'r')
+        dictionary = json.load(file)
+        file.close()
+        return dictionary
+
+    def saveTakenItems(self, area_id: int, taken_items):
+        logger.debug("SAVING TAKEN ITEMS...")
+        allTakenItems = self.getTakenItemsDict()
+        logger.debug(f"{taken_items=}, {allTakenItems=}")
+        allTakenItems[str(area_id)] = taken_items
+        logger.debug(f"{allTakenItems=}")
+        file = open(self.getTakenItemsPath(), 'w')
+        json.dump(allTakenItems, file)
+        file.close()
+        logger.debug("TAKEN ITEMS SAVED...")
 
     @staticmethod
-    def loadMapTmxData() -> list[list[pytmx.TiledMap, str]]:
+    def loadMapTmxData() -> list[list]:
         TestMapDir = os.path.join(os.getcwd(),PATH_CONSTANTS.GAME_DATA, PATH_CONSTANTS.MAPS,PATH_CONSTANTS.TEST_MAPS)
         mapId = 0
         mapTmxData = []
@@ -63,8 +126,8 @@ class Area(Scene):
             visibleLayers = data.visible_layers
             for layer in visibleLayers:
                 if not isinstance(layer, pytmx.TiledObjectGroup): continue
-                name = "name"
-                _type = "type"
+                name = "NAME"
+                _type = "TYPE"
                 for _object in layer:
                     properties = _object.properties
                     if not properties[_type] == TileTypes.DOOR:
@@ -90,25 +153,38 @@ class Area(Scene):
             door.writeOutput()
         return doors
 
-    @staticmethod
-    def loadMapById(tmx_data: list[list[pytmx.TiledMap, str]], id: int, _doors: list[Door], _player: Player, spawn_pos = None, taken_items= None) -> TileMap:
+    
+    def loadMapById(self, tmx_data: list[list[pytmx.TiledMap, str]], id: int, _doors: list[Door], _player: Player, spawn_pos = None, area_id=0) -> TileMap:
         dataIdx = 0
         nameIdx = 1
         tmxData = tmx_data[id][dataIdx]
         fileName = tmx_data[id][nameIdx]
         doors = []
         for door in _doors:
-            if not door.idCurrentMap == id:
+            if door.idCurrentMap != id:
                 continue
             doors.append(door)
+        takenItems = self.checkTakenItemsForMap(map_id = id, area_id = self.areaID)
+        logger.debug(f"{takenItems=}")
+        if spawn_pos is None: return TileMap(tmx_data= tmxData, map_id= id,  _doors= doors, player=_player, taken_items= takenItems, name= fileName,area_id= area_id)
+        else: return TileMap(tmx_data= tmxData, map_id= id, name= fileName, _doors= doors, player=_player, player_pos= spawn_pos, taken_items= takenItems, area_id= area_id)
 
-        if spawn_pos is None: return TileMap(tmx_data= tmxData, map_id= id, name= fileName, _doors= doors, player=_player, taken_items= taken_items)
-        else: return TileMap(tmx_data= tmxData, map_id= id, name= fileName, _doors= doors, player=_player, player_pos= spawn_pos, taken_items= taken_items)
-        # return TileMap(tmx_data= tmxData, map_id=mapId, name=fileName)
+    def checkTakenItemsForMap(self, map_id: int, area_id: int):
+        logger.debug(" checking taken items for map... ")
+        logger.debug(f"{self.takenItems=}")
+        mapTakenItems = []
+        try:
+            mapTakenItems = self.takenItems[str(map_id)]
+        except Exception as e:
+            logger.info(f"{e}, No base list detected for {area_id=}, {map_id=}. Creating now....")
+            self.takenItems[str(map_id)] = []
+            mapTakenItems = self.takenItems[str(map_id)]
+        logger.debug(f"{mapTakenItems=}")
+        return mapTakenItems 
+
 
     def clear(self):
         self.currentMap.clear()
-
 
     def checkChangeMapSignal(self, cool_down : int):
         timenow = pygame.time.get_ticks()
@@ -116,11 +192,11 @@ class Area(Scene):
             return None
         keys = pygame.key.get_pressed()
         if self.currentMap.collidedDoor:
+            self.saveTakenItems(area_id= self.areaID, taken_items = self.takenItems)
+            self.updateTakenItems(self.mapIdx)
             destinationId = self.currentMap.collidedDoor.getIdDestinationMap()
-            self.changeMapById(time_now=timenow, id=destinationId,
-                               spawn_pos= Area.generatePlrSpawnPos(map_id=destinationId,
-                                                                   doors=self.doors,
-                                                                   collided_door=self.currentMap.collidedDoor))
+            self.changeMapById(time_now=timenow, id=destinationId,spawn_pos= Area.generatePlrSpawnPos(map_id=destinationId,doors=self.doors, collided_door=self.currentMap.collidedDoor))
+            
 
     @staticmethod
     def generatePlrSpawnPos(map_id: int, doors: list[Door], collided_door: Door):
@@ -167,15 +243,16 @@ class Area(Scene):
             return None
 
         self.clear()
-        self.currentMap = Area.loadMapById(tmx_data= self.mapData, id= self.mapIdx, _doors=self.doors, _player=self.player)
+        self.currentMap = self.loadMapById(tmx_data= self.mapData, id= self.mapIdx, _doors=self.doors, _player=self.player, area_id = self.areaID)
         logger.info(f"Successfully changed map to {self.currentMap=}")
         self.timeLastChangedMap = time_now
 
     def changeMapById(self, time_now: int, id: int, spawn_pos=None):
         self.updateTakenItems(self.currentMap.getId())
         self.clear()
-        self.currentMap = Area.loadMapById(tmx_data = self.mapData, id= id, _doors = self.doors, _player=self.player, spawn_pos=spawn_pos, taken_items= self.takenItems[id])
+        self.currentMap = self.loadMapById(tmx_data = self.mapData, id= id, _doors = self.doors, _player=self.player, spawn_pos=spawn_pos, area_id = self.areaID)
 
+        self.mapIdx = id
         self.timeLastChangedMap = time_now
 
     AREA_SWITCH_COOLDOWN = 150
@@ -208,7 +285,8 @@ class Area(Scene):
     def getPlayer(self): return self.player
 
     def update(self, screen: pygame.Surface):
-         
+        logger.debug(f"{self.mapIdx=}")
+        logger.debug(f"{self.takenItems=}") 
         self.currentMap.update(screen=screen) 
         self.checkChangeMapSignal(cool_down=Area.AREA_SWITCH_COOLDOWN)
         self.checkPauseSignal(state= self.state) 

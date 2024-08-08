@@ -102,8 +102,8 @@ class PlayerRectCollisionIDs:
     RIGHT = 3
 
 class PlayerRectCollisionTypes:
-    DOOR = "Door"
-    WALL = "Wall"
+    DOOR = "DOOR"
+    WALL = "WALL"
     NONE = "None"
 
 class Player:

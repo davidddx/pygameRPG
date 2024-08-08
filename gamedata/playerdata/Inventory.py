@@ -75,6 +75,11 @@ def checkItemInInventory(item_id: int, item_category: str, inventory: dict):
         return True
     return False
 
+def saveItemToInventory(item_id: int, item_category, amount=1):
+    inventory = loadInventory() 
+    addItemToInventory(item_id, item_category, inventory, amount)
+    saveInventoryData(inventory)
+
 def addItemToInventory(item_id: int, item_category: str, inventory: dict, amount=1):
     #print(f"previous inventory before add: {inventory=}")
     categoryInventory = inventory[item_category]

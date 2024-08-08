@@ -9,10 +9,11 @@ import globalVars.SettingsConstants as SETTINGS
 import game.Player as Player
 from game.Tile import Tile, TileTypes
 import gamedata.playerdata.Inventory as Inventory
+import json
 class MapObjectNames:
     ## Spawn related ##
     SPAWN_DEFAULT = "SPAWN_DEFAULT"
-    DOOR = "Door"
+    DOOR = "DOOR"
 
 class TileMap:
     trueSpriteGroupID = 0
@@ -21,9 +22,9 @@ class TileMap:
     COLLISION_TYPE_WALL_ID = 0
     COLLISION_TYPE_DOOR_ID = 1
 
-    def __init__(self, tmx_data, map_id: int, _doors: list[Door], player: Player.Player, taken_items: list, player_pos= None, name=""):
+    def __init__(self, tmx_data, map_id: int, _doors: list[Door], player: Player.Player, taken_items: list, player_pos= None, name="", area_id=0):
         logger.debug(f"Class {TileMap=} initializing....")
-        
+        logger.debug(f"TAKEN ITEMS ARGUMENT OF TILEMAP CONSTRUCTOR: {taken_items=}") 
         self.timeMapInitialized = pygame.time.get_ticks()
         self.playerSpawnPos = player_pos
         self.spriteGroups = ()
@@ -32,6 +33,7 @@ class TileMap:
         self.player = player
         self.writeCurrentDoorsOutput()
         self.name = name
+        self.areaID = area_id ## this var for logging purposes)
         self.mapID = map_id
         self.takenItems = taken_items
         self.spriteGroups = self.convertTMXToSpriteGroups(tmx_data= tmx_data)
@@ -40,13 +42,13 @@ class TileMap:
         self.camera = TileMap.initializeCamera(player_rect= player.rect)
         logger.debug(f"Class {TileMap=} initialized.")
 
-
     def writeCurrentDoorsOutput(self):
         logger.debug("Writing output for all doors in this map...")
         for door in self.doors:
             door.writeOutput()
 
         logger.debug("Finished writing output for all doors in map.")
+
     @staticmethod
     def initDoors(doors: list[Door]):
         group = pygame.sprite.Group()
@@ -56,8 +58,6 @@ class TileMap:
     @staticmethod
     def initializeCamera(player_rect : pygame.Rect):
         return player_rect.x - SETTINGS.SCREEN_WIDTH/2 + player_rect.width/2, player_rect.y - SETTINGS.SCREEN_HEIGHT/2 + player_rect.height/2
-
-
 
     def clear(self):
         for group in self.spriteGroups:
@@ -98,6 +98,7 @@ class TileMap:
             if abs(player.rect.top - tile.rect.bottom) < COLLISION_TOLERANCE and player.movementDirection[1] < 0:
                 onCollision[Player.PlayerRectCollisionIDs.UP] = True
             ### USING COLLISION INFO ###
+            tile.writeOutput()
             if tile.tileType == TileTypes.DOOR:
                 self.collidedDoor = tile
                 return None
@@ -143,9 +144,11 @@ class TileMap:
                     props = tmx_data.get_tile_properties(x, y, layerIndex)
                     collision = None
                     collisionType = None
+                    logger.debug(f"{props=}")
                     try:
+                        _type = "TYPE"
                         collision = props["collision"]
-                        tileType = props["type"]
+                        tileType = props[_type]
                     except:
                         collision = False
                         tileType = None
@@ -155,9 +158,10 @@ class TileMap:
                     else:
                         spriteGroupNonCollisionList.append(tile)
 
+
             elif isinstance(layer, pyTMX.TiledObjectGroup):
-                name = "name"
-                objType = "type"
+                name = "NAME"
+                objType = "TYPE"
                 for _object in layer:
                     properties = _object.properties
                     
@@ -167,7 +171,7 @@ class TileMap:
                         case TileTypes.ITEM:
                             if self.checkItemTaken(pos= (_object.x, _object.y), name = properties[name], takenItems= self.takenItems ):
                                 continue
-                            items.append(Item(sprite= _object.image, pos= (_object.x, _object.y), name= properties[name]))
+                            items.append( Item(sprite= _object.image, pos= (_object.x, _object.y), name= properties[name]))
 
             layerIndex += 1
         spriteGroupCollision.add(items)
@@ -182,16 +186,15 @@ class TileMap:
         return (trueSpriteGroup, spriteGroupNonCollision, spriteGroupCollision)
    
     def takeItem(self, item : Item):
-        self.takenItems.append({item.getName(), item.getPos()})
+        self.takenItems.append([item.getName(), item.getPos()])
     
     def checkItemTaken(self, pos: tuple, name: str, takenItems):
-        try:
-            if {pos,name} in takenItems:
-                return True
+        logger.debug(f"checking item taken. \n {name=}, {pos=}, {takenItems=}") 
+        if ([name, pos] not in takenItems) or ([name, list(pos)] not in takenItems) :
+            logger.debug("item taken: false")
             return False
-        except:
-            return False
-
+        logger.debug("item taken: true")
+        return True
     def displayMap(self, screen, camera: tuple[float, float], player: Player.Player):
         renderAfterGroup = pygame.sprite.Group()
         for tile in self.spriteGroups[TileMap.trueSpriteGroupID]:
@@ -230,10 +233,16 @@ class TileMap:
     def addItemToInventory(item : Item):
         if not Item.checkValidItem(item):
             logger.error(f"could not add the following item to inventory: \n {item.getId()=} \n {item.getName()=}")
-        Inventory.addItemToInventory(item_id = item.getId(), item_category = ItemConstants.getCategoryById(item.getId())) 
+        Inventory.saveItemToInventory(item_id = item.getId(), item_category = ItemConstants.getCategoryById(item.getId())) 
         
     def getTakenItems(self): return self.takenItems
    
+    def getTakenItemsAsListDict(self):
+        takenItems = []
+        for item in self.takenItems:
+            takenItems.append(item.getItemDictionary())
+        return takenItems
+
     def getId(self): return self.mapID
 
     def update(self, screen: pygame.Surface):

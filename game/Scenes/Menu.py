@@ -33,6 +33,7 @@ class Menu(Scene):
         else: 
             self.selectedOtherButtonIdx = [selected_button_idx[0], selected_button_idx[1]]
             self.selectedButtonIdx = [selected_button_idx[0], selected_button_idx[1]]
+        self.initializeSelectedButton(self.currentButtons[selected_button_idx[0]][selected_button_idx[1]]) 
         self.lastSceneFrame = last_scene_frame
         self.selectedButtonIdx = self.selectedMainButtonIdx
         self.lastMousePosition = 0
@@ -53,11 +54,18 @@ class Menu(Scene):
         self.surfaces = []
         self.positiveUIKeys = [pygame.K_s, pygame.K_DOWN]
         self.negativeUIKeys = [pygame.K_w, pygame.K_UP]
-        self.positiveUIKeysRow = [pygame.K_a, pygame.K_LEFT]
-        self.negativeUIKeysRow = [pygame.K_d, pygame.K_RIGHT]
+        self.negativeUIKeysRow = [pygame.K_a, pygame.K_LEFT]
+        self.positiveUIKeysRow = [pygame.K_d, pygame.K_RIGHT]
         self.surfacePositions = [] 
         self.timeLastUIKeystroke = 0
         if fade_in: self.state = SceneStates.ON_ANIMATION
+        self.buttonCursorMoved = False
+
+    def initializeSelectedButton(self, button: TextButton):
+        button.animateTextWithOutline(color = (255, 255, 0))
+        button.animateTextToSize(size= 40, step= 3, shrink= False)
+        button.animateTextToColor(color = (button.originalTextColor[0] - 20, button.originalTextColor[1] - 20, button.originalTextColor[2] - 20), speed = "medium")
+
 
     def getMaxIndex(self, my_list: list[list], index: int):
         return [len(my_list) - 1, len(my_list[index]) - 1]
@@ -100,12 +108,12 @@ class Menu(Scene):
         dummyScreen.blit(self.background, (0,0))
         try:
             for index, surface in enumerate(self.surfaces):
-                dummyScreen.blit(surface, self.surfacePositions[index])
+                dummyScreen.blit(surface, self.surfacePositions[index]) 
         finally:
             pass
+
         for column in self.mainButtons:
             for button in column: button.update(dummyScreen)
-
         if self.otherButtons is not None:
             for column in self.otherButtons:
                 for button in column:
@@ -131,12 +139,31 @@ class Menu(Scene):
                 return None
 
     def update(self, screen):
+        logger.debug(f"{self.buttonCursorMoved=}")
+        logger.debug(f"{self.uiLock=}")
+        logger.debug(f"{self.buttonPressedName=}")
         self.updateSelectionMode(self.currentButtons, self.positiveUIKeys, self.negativeUIKeys,  self.positiveUIKeysRow, self.negativeUIKeysRow)
         self.checkUILock(self.timeButtonLastPressed)
-        self.animateButtons(self.currentButtons)
+        self.selectCurrentPressedButton(self.currentButtons)
+        if self.buttonCursorMoved:
+            self.animateButtons(self.currentButtons)
         if self.animation != Menu.animations[Menu.noneAnimationId]:
             self.animate()
         self.render(screen)
+
+    def selectCurrentPressedButton(self, buttons: list[list[TextButton]]):
+        button = buttons[self.selectedButtonIdx[0]][self.selectedButtonIdx[1]]
+        keys = pygame.key.get_pressed()
+        timenow = pygame.time.get_ticks()
+        for key in SAVED_DATA.PLAYER_SELECTION_KEYS:
+            if keys[key] and not self.uiLock: 
+                self.timeButtonLastPressed = timenow
+                button.setPressed(True)
+                self.buttonPressedName = button.getName()
+        if pygame.mouse.get_pressed()[0] and button.hover and not self.uiLock:
+            self.timeButtonLastPressed = timenow
+            button.setPressed(True)
+            self.buttonPressedName = button.getName()
 
     def checkUILock(self, time_button_last_pressed):
         timenow = pygame.time.get_ticks()
@@ -149,9 +176,11 @@ class Menu(Scene):
             return None
         self.uiLock = False
 
+    @staticmethod
+    def getAvgColor(color1: tuple, color2: tuple):
+        return ((color1[0] + color2[0]) / 2, (color1[1] + color2[1]) / 2, (color1[2] + color2[2]) / 2 )
+
     def animateButtons(self, current_buttons: list[list[TextButton]]):
-        keys = pygame.key.get_pressed()
-        timenow = pygame.time.get_ticks()
         for indexColumn, column in enumerate(current_buttons):
                 
             for indexRow, button in enumerate(column):
@@ -161,26 +190,22 @@ class Menu(Scene):
                     if self.onSubMenu:
                         button.animateTextWithOutline(color=(255, 255, 190))
                     else:
-                        button.animateTextWithOutline()
-                    for key in SAVED_DATA.PLAYER_SELECTION_KEYS:
-
-                        if keys[key] and not self.uiLock: 
-                            self.timeButtonLastPressed = timenow
-                            button.setPressed(True)
-                            self.buttonPressedName = button.getName()
-                    if pygame.mouse.get_pressed()[0] and button.hover and not self.uiLock:
-                        self.timeButtonLastPressed = timenow
-                        button.setPressed(True)
-                        self.buttonPressedName = button.getName()
+                        button.animateTextWithOutline(color = (255, 255, 0))
                     continue
+
                 if button.fontSize != button.originalFontSize:
                     button.animateTextToSize(size= button.originalFontSize, step= 10, shrink= True)
                 if button.textColor != button.originalTextColor: button.animateTextToColor(color = button.originalTextColor, speed = "medium")
                 if button.outlineColor != button.originalOutlineColor: button.animateTextWithOutline(color=button.originalOutlineColor)
 
     def updateSelectionMode(self, current_buttons: list[list[Button]], positive_ui_keys, negative_ui_keys, row_positive_ui_keys, row_negative_ui_keys):
-        if self.uiLock: return None
-        if self.state != SceneStates.RUNNING: return None
+        if self.uiLock: 
+            self.buttonCursorMoved = False
+            return None
+        if self.state != SceneStates.RUNNING:
+            self.buttonCursorMoved = False
+            return None
+        lastSelectedButtonIdx = [self.selectedButtonIdx[0], self.selectedButtonIdx[1]]
         hoveringOnButton = False
         keys = pygame.key.get_pressed()
         timenow = pygame.time.get_ticks()
@@ -235,7 +260,6 @@ class Menu(Scene):
                         self.timeLastUIKeystroke = timenow
                 logger.debug(f"{selectStepX=}, {selectStepY=}")
                 prevIndices = [self.selectedButtonIdx[0], self.selectedButtonIdx[1]]
-                logger.debug(f"{prevIndices=}")
                 if self.selectedButtonIdx[0] + selectStepX < 0:
                     self.selectedButtonIdx[0] = len(current_buttons) - 1 
                 elif self.selectedButtonIdx[0] + selectStepX > len(current_buttons) - 1:
@@ -251,34 +275,24 @@ class Menu(Scene):
                     self.selectedButtonIdx[1] += selectStepY
                 selectedButtonDestination = self.selectedButtonIdx
 
-                logger.debug(f"{selectedButtonDestination=}")
                 try:
                     current_buttons[self.selectedButtonIdx[0]][self.selectedButtonIdx[1]] 
                 except:
                     self.selectedButtonIdx = prevIndices
-                '''
-                if self.selectedButtonIdx[0] + selectStepX < 0:
-                    self.selectedButtonIdx[0] = len(current_buttons) - 1 
-                elif self.selectedButtonIdx[0] + selectStepX > len(current_buttons) - 1:
-                    self.selectedButtonIdx[0] = 0
-                else:
-                    self.selectedButtonIdx[0] += selectStepX
-                
-                if self.selectedButtonIdx[1] + selectStepY < 0:
-                    self.selectedButtonIdx[1] = len(current_buttons[self.selectedButtonIdx[0]])-1
-                elif self.selectedButtonIdx[1] + selectStepY > len(current_buttons[self.selectedButtonIdx[0]]) - 1:
-                    self.selectedButtonIdx[1] = 0 
-                else:
-                    self.selectedButtonIdx[1] += selectStepY
-                '''
+        if self.selectedButtonIdx == lastSelectedButtonIdx:
+            self.buttonCursorMoved = False
+        else:
+            self.buttonCursorMoved = True
 
     def blitSurfaceAndOutline(self, screen: pygame.Surface, surface: pygame.Surface, surface_outline: pygame.Surface, surface_position):
-        screen.blit(surface_outline, (surface_position[0] + 2, surface_position[1]))
-        screen.blit(surface_outline, (surface_position[0] - 2, surface_position[1]))
-        screen.blit(surface_outline, (surface_position[0], surface_position[1] + 2))
-        screen.blit(surface_outline, (surface_position[0], surface_position[1] - 2))
-        screen.blit(surface, surface_position)
-
+        dummyScreen = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+        dummyScreen.set_alpha(self.opacity)
+        dummyScreen.blit(surface_outline, (surface_position[0] + 2, surface_position[1]))
+        dummyScreen.blit(surface_outline, (surface_position[0] - 2, surface_position[1]))
+        dummyScreen.blit(surface_outline, (surface_position[0], surface_position[1] + 2))
+        dummyScreen.blit(surface_outline, (surface_position[0], surface_position[1] - 2))
+        dummyScreen.blit(surface, surface_position)
+        screen.blit(dummyScreen, (0,0))
 
     def fadeScene(self, opacity, opacityStep):
         opacity += opacityStep

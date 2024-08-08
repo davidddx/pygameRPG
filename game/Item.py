@@ -2,10 +2,10 @@ import pygame
 from game.Tile import Tile
 from debug.logger import logger
 class ItemConstants:
-    ITEM = "Item"
-    WATER = "Water"
+    ITEM = "ITEM"
+    WATER = "WATER"
 
-    HEART = "Heart"
+    HEART = "HEART"
     itemIds = {
             0: WATER,
             1: HEART,
@@ -70,6 +70,10 @@ class ItemConstants:
         return ItemConstants.itemDescriptions[ItemConstants.itemIds[item_id]]
     
     @staticmethod
+    def getItemNameById(id: int):
+        return ItemConstants.itemIds[id]
+
+    @staticmethod
     def getItemIdByName(name: str):
         if not ItemConstants.checkValidItemName(name):
             return ItemConstants.DEFAULT_ID
@@ -77,7 +81,16 @@ class ItemConstants:
         names = list(ItemConstants.itemIds.values())       
         return ids[names.index(name)]
 
+    @staticmethod
+    def checkItemsEqual(name1: str, pos1, name2: str, pos2):
+        if name1 != name2: return False
+        if pos1[0] != pos2[0]: return False
+        if pos1[1] != pos2[1]: return False
+        return True
+
 class Item(Tile):
+    NAME_ID = 0
+    POS_ID = 1
     def __init__(self, sprite : pygame.Surface, pos: tuple[int, int], name: str):
         super().__init__(pos= pos, collidable= True, image=sprite, _type= ItemConstants.ITEM)
         self.name = name

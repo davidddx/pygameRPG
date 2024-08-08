@@ -8,7 +8,7 @@ class DoorEntryPointIDs:
     LEFT = 2
     RIGHT = 3
 class Door(Tile):
-    strNAME = "door"
+    strNAME = "DOOR"
     strDOOR_ID = "DOOR_ID"
     strENTRY_POINT = "entryPoint"
     intCOLLISION_TYPE = 1
@@ -44,11 +44,3 @@ class Door(Tile):
         logger.debug(f"{self.image=}")
         logger.debug(f"{(self.rect.x, self.rect.y)=}")
 
-    def printOutput(self):
-        print(f"Writing door output")
-        print(f"{self.idDestinationMap=}")
-        print(f"{self.id=}")
-        print(f"{self.idCurrentMap=}")
-        print(f"{self.entryPoint=}")
-        print(f"{self.image=}")
-        print(f"{(self.rect.x, self.rect.y)=}")
