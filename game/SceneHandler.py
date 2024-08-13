@@ -167,7 +167,7 @@ class SceneHandler:
     def loadSettings(self, screen_size, last_pause_menu_frame: pygame.Surface):
         return Settings(self.lastSceneFrame, self.lastAreaFrame, screen_size)
 
-    def loadPauseMenu(self, screen: pygame.Surface, time_last_paused, fade_in=False, selected_button_idx = [-1,-1], selection_mode = "NONE") -> PauseMenu:
+    def loadPauseMenu(self, screen: pygame.Surface, time_last_paused, fade_in=False, selected_button_idx = [0,0], selection_mode = "NONE") -> PauseMenu:
         return PauseMenu(name = "PauseMenu",last_world_frame= self.lastAreaFrame, time_last_paused= time_last_paused, fade_in= fade_in, selected_button_idx = selected_button_idx, selection_mode = selection_mode)
         
         

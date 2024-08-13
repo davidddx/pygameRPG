@@ -4,7 +4,6 @@ from debug.logger import logger
 class ItemConstants:
     ITEM = "ITEM"
     WATER = "WATER"
-
     HEART = "HEART"
     itemIds = {
             0: WATER,
@@ -17,8 +16,7 @@ class ItemConstants:
             }
     
     BOOSTS = "BOOSTS"
-    HEALING = "HEALING"
-    
+    HEALING = "HEALING"    
     itemCategories = {
             WATER: BOOSTS,
             HEART: HEALING,
@@ -27,6 +25,7 @@ class ItemConstants:
     DEFAULT_ID = 0
     DEFAULT_NAME = itemIds[DEFAULT_ID]
     DEFAULT_DESCRIPTION = itemDescriptions[DEFAULT_NAME]
+
     @staticmethod
     def checkValidItemId(item_id: int):
         try:
@@ -69,6 +68,12 @@ class ItemConstants:
         if not ItemConstants.checkValidItemId(item_id): return ItemConstants.itemDescriptions[ItemConstants.DEFAULT_NAME]  
         return ItemConstants.itemDescriptions[ItemConstants.itemIds[item_id]]
     
+    @staticmethod
+    def getDescriptionByName(item_name: str):
+        if item_name not in list(ItemConstants.itemDescriptions.keys()):
+            return "No description found"
+        return ItemConstants.itemDescriptions[item_name]
+
     @staticmethod
     def getItemNameById(id: int):
         return ItemConstants.itemIds[id]

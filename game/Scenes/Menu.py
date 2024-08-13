@@ -24,8 +24,8 @@ class Menu(Scene):
         self.mainButtons = main_buttons
         self.otherButtons = other_buttons
         self.currentButtons = self.mainButtons
-        self.selectedMainButtonIdx = [-1, -1] 
-        self.selectedOtherButtonIdx = [-1, -1]
+        self.selectedMainButtonIdx = [0, 0] 
+        self.selectedOtherButtonIdx = [0, 0]
         self.onSubMenu = False
         if on_main_buttons: 
             self.selectedMainButtonIdx = [selected_button_idx[0], selected_button_idx[1]]
@@ -33,6 +33,7 @@ class Menu(Scene):
         else: 
             self.selectedOtherButtonIdx = [selected_button_idx[0], selected_button_idx[1]]
             self.selectedButtonIdx = [selected_button_idx[0], selected_button_idx[1]]
+        logger.debug(f"{self.selectedButtonIdx=}")
         self.initializeSelectedButton(self.currentButtons[selected_button_idx[0]][selected_button_idx[1]]) 
         self.lastSceneFrame = last_scene_frame
         self.selectedButtonIdx = self.selectedMainButtonIdx
@@ -193,8 +194,7 @@ class Menu(Scene):
                         button.animateTextWithOutline(color = (255, 255, 0))
                     continue
 
-                if button.fontSize != button.originalFontSize:
-                    button.animateTextToSize(size= button.originalFontSize, step= 10, shrink= True)
+                if button.fontSize != button.originalFontSize: button.animateTextToSize(size= button.originalFontSize, step= 10, shrink= True)
                 if button.textColor != button.originalTextColor: button.animateTextToColor(color = button.originalTextColor, speed = "medium")
                 if button.outlineColor != button.originalOutlineColor: button.animateTextWithOutline(color=button.originalOutlineColor)
 
@@ -365,6 +365,7 @@ class Menu(Scene):
             self.selectedMainButtonIdx = self.selectedButtonIdx
             self.selectedButtonIdx = self.selectedOtherButtonIdx
             self.onSubMenu = True
+            self.animateButtons(self.currentButtons)
 
     def focusOffSubMenu(self):
         if self.onSubMenu:
@@ -372,6 +373,7 @@ class Menu(Scene):
             self.currentButtons = self.mainButtons
             self.selectedButtonIdx = self.selectedMainButtonIdx
             self.onSubMenu = False
+            self.animateButtons(self.currentButtons)
 
     def getSelectedButton(self) -> Button:
         return self.currentButtons[self.selectedButtonIdx[0]][self.selectedButtonIdx[1]]

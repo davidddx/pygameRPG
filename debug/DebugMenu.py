@@ -154,8 +154,12 @@ class DebugMenu:
             logger.debug(f"{currentScene.selectedButtonIdx=}")
             surfaceList.append(f"SELECTION MODE: {currentScene.selectionMode}")
             surfaceList.append(f"SELECTED BUTTON IDX: {currentScene.selectedButtonIdx}")
+            surfaceList.append(f"SELECTED MAIN BUTTON IDX: {currentScene.selectedMainButtonIdx}")
+            surfaceList.append(f"SELECTED OTHER BUTTON IDX: {currentScene.selectedOtherButtonIdx}")
+
             if type(currentScene) == Inventory:
                 surfaceList.append(f"LAST SELECTED BUTTON IDX: {currentScene.lastSelectedButtonIdx}")
+                surfaceList.append(f"buttonPressedName: {currentScene.buttonPressedName}")
         for surface in surfaceList:
             surface = DebugMenu.turnStringToFontSurf(string= surface, font_fp = fontFp)
             screen.blit(surface, (startingPoint[0], startingPoint[1]))

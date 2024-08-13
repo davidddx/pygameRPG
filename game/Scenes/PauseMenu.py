@@ -12,7 +12,7 @@ class PauseMenu(Menu):
     def __init__(self, name: str, last_world_frame: pygame.Surface, time_last_paused, fade_in=True, selected_button_idx=(0,0), selection_mode = "NONE"):
         super().__init__(name, last_world_frame, PauseMenu.loadButtons(), fade_in, 0, selected_button_idx = selected_button_idx, selection_mode = selection_mode)
         self.timeLastPaused = time_last_paused
-        self.maxSelectedButtonIdx = [0,1]
+        self.maxSelectedButtonIdx = [1,2]
         self.pausedFontOutline = self.turnStringToFontSurf(string= "PAUSE MENU", font_fp = SAVED_DATA.FONT_PATH, base_size = SETTINGS.TILE_SIZE, anti_aliasing= True, color=(186, 85, 211))
         self.pausedFont = self.turnStringToFontSurf(string = "PAUSE MENU", font_fp = SAVED_DATA.FONT_PATH, base_size = SETTINGS.TILE_SIZE, anti_aliasing = True, color= (75, 0, 130)) 
         self.pausedFontPos = (SETTINGS.SCREEN_WIDTH/2 - self.pausedFont.get_width() / 2, 0)

@@ -14,7 +14,7 @@ import json
 class Area(Scene):
 
     def __init__(self, name, starting_map_idx : int, _player : Player, area_id = 0):
-
+        timeInitStarted = pygame.time.get_ticks()
         logger.debug(f"Class {Area=} initializing....")
         super().__init__(name)
         self.areaID = area_id
@@ -28,10 +28,9 @@ class Area(Scene):
         self.currentMap = self.loadMapById(tmx_data= self.mapData, id= starting_map_idx, _doors= self.doors, _player=self.player, area_id = self.areaID)
         self.timeLastPaused = 0        
         self.state = SceneStates.RUNNING
-        logger.debug(f"Class {Area=} intialized.")
+        logger.debug(f"Class {Area=} intialized. Time taken: {pygame.time.get_ticks() - timeInitStarted}")
 
     def updateTakenItems(self, current_map_idx: int):
-        pass
         ''' TAKEN ITEM FORMAT 
         {
             AREA_ID0: {

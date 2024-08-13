@@ -23,6 +23,7 @@ class TileMap:
     COLLISION_TYPE_DOOR_ID = 1
 
     def __init__(self, tmx_data, map_id: int, _doors: list[Door], player: Player.Player, taken_items: list, player_pos= None, name="", area_id=0):
+        timeInitStarted = pygame.time.get_ticks()
         logger.debug(f"Class {TileMap=} initializing....")
         logger.debug(f"TAKEN ITEMS ARGUMENT OF TILEMAP CONSTRUCTOR: {taken_items=}") 
         self.timeMapInitialized = pygame.time.get_ticks()
@@ -40,13 +41,12 @@ class TileMap:
         self.player.setPlayerPos(pos_x=self.playerSpawnPos[0], pos_y=self.playerSpawnPos[1])
         self.player.setPlayerMovability(False)
         self.camera = TileMap.initializeCamera(player_rect= player.rect)
-        logger.debug(f"Class {TileMap=} initialized.")
+        logger.debug(f"Class {TileMap=} initialized. \nID: {map_id} \nTime taken: {pygame.time.get_ticks() - timeInitStarted}")
 
     def writeCurrentDoorsOutput(self):
         logger.debug("Writing output for all doors in this map...")
         for door in self.doors:
             door.writeOutput()
-
         logger.debug("Finished writing output for all doors in map.")
 
     @staticmethod
@@ -188,9 +188,10 @@ class TileMap:
     def takeItem(self, item : Item):
         self.takenItems.append([item.getName(), item.getPos()])
     
-    def checkItemTaken(self, pos: tuple, name: str, takenItems):
+    def checkItemTaken(self, pos, name: str, takenItems):
         logger.debug(f"checking item taken. \n {name=}, {pos=}, {takenItems=}") 
-        if ([name, pos] not in takenItems) or ([name, list(pos)] not in takenItems) :
+        logger.debug(f"{[name, pos] in takenItems=}")
+        if not ([name, pos] in takenItems) and not [name, list(pos)] in takenItems:
             logger.debug("item taken: false")
             return False
         logger.debug("item taken: true")
