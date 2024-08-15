@@ -189,7 +189,6 @@ class Inventory(Menu):
             itemName = button.getName().partition(' ')[2]  
             logger.debug(f"Using item {itemName=}. {self.inventory=}")
             self.addItemToInventory(inventory= self.inventory, item_name=itemName, step=-1)
-            itemAmount = self.getItemAmount(inventory= self.inventory, item_name= itemName)
             logger.debug(f"Used item {itemName=}. {self.inventory=}")
             button.editText(f"({self.getItemAmount(self.inventory, itemName)}) {itemName}")
             self.buttonPressedName = "NONE"
@@ -197,10 +196,12 @@ class Inventory(Menu):
             return None
 
         if name == "DISCARD":
-            itemName = self.mainButtons[self.selectedMainButtonIdx[0]][self.selectedMainButtonIdx[1]].getName().partition(' ')[2]  
+            button = self.mainButtons[self.selectedMainButtonIdx[0]][self.selectedMainButtonIdx[1]]
+            itemName = button.getName().partition(' ')[2]  
             logger.debug(f"Discarding item {itemName=}. {self.inventory=}")
             self.addItemToInventory(inventory= self.inventory, item_name=itemName, step=-1)
             logger.debug(f"Discarded item {itemName=}. {self.inventory=}")
+            button.editText(f"({self.getItemAmount(self.inventory, itemName)}) {itemName}")
             self.buttonPressedName = "NONE"
             return None
 
