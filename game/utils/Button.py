@@ -471,6 +471,11 @@ class TextButton(Button):
         self.textSurface = self.loadFontSurface(self.text, self.fontSize, self.textColor) 
         if animationInfo.getScaleStep(): self.changeRect(self.textSurface.get_rect(topleft= self.textPosition))
 
+    def editText(self, new_text: str):
+        self.textSurface = self.loadFontSurface(new_text, self.fontSize, self.textColor) 
+        self.changeRect(self.textSurface.get_rect(topleft= self.textPosition))
+        self.text = new_text
+
     def update(self, screen: pygame.Surface):
         #if self.hover: self.backgroundColor = (255, 255, 255)
         #else: self.backgroundColor = (0, 0, 0)
