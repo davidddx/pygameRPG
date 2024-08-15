@@ -18,6 +18,7 @@ class Inventory(Menu):
         self.nonItemButtonNames = []
         self.name = SceneTypes.INVENTORY
         self.inventory = self.loadInventoryData()
+        self.initialInventory = copy.deepcopy(self.inventory)
         self.state = SceneStates.INITIALIZING
         self.heading = self.loadFontSurf("INVENTORY", SETTINGS.TILE_SIZE, True, color = (8,100,10)) 
         self.headingPosition = (SETTINGS.SCREEN_WIDTH/2 - self.heading.get_width()/2, 0)
@@ -143,6 +144,7 @@ class Inventory(Menu):
         button.animateTextToColor(color = (button.originalTextColor[0] - 20, button.originalTextColor[1] - 20, button.originalTextColor[2] - 20), speed = "medium")
 
     def checkButtonPressed(self, name, screen_size):
+        logger.debug(f"Button pressed name: {name}")
         if name == "NONE": return None
 
         if not self.onSubMenu:
@@ -160,6 +162,7 @@ class Inventory(Menu):
                 self.ptrNextScene = SceneTypes.PAUSE_MENU
                 self.animation = Menu.animations[2]
                 self.buttonPressedName = "NONE"
+                self.close()
                 return None
 
             # button pressed name must be an item name if edge cases not satisfied
@@ -182,11 +185,15 @@ class Inventory(Menu):
             return None
 
         if name == "USE":
-            itemName = self.mainButtons[self.selectedMainButtonIdx[0]][self.selectedMainButtonIdx[1]].getName().partition(' ')[2]  
+            button = self.mainButtons[self.selectedMainButtonIdx[0]][self.selectedMainButtonIdx[1]]
+            itemName = button.getName().partition(' ')[2]  
             logger.debug(f"Using item {itemName=}. {self.inventory=}")
             self.addItemToInventory(inventory= self.inventory, item_name=itemName, step=-1)
+            itemAmount = self.getItemAmount(inventory= self.inventory, item_name= itemName)
             logger.debug(f"Used item {itemName=}. {self.inventory=}")
+            button.editText(f"({self.getItemAmount(self.inventory, itemName)}) {itemName}")
             self.buttonPressedName = "NONE"
+
             return None
 
         if name == "DISCARD":
@@ -195,8 +202,11 @@ class Inventory(Menu):
             self.addItemToInventory(inventory= self.inventory, item_name=itemName, step=-1)
             logger.debug(f"Discarded item {itemName=}. {self.inventory=}")
             self.buttonPressedName = "NONE"
-
             return None
+
+    def getItemAmount(self, inventory: dict, item_name: str):
+        categoryDict = inventory[ItemConstants.getCategoryByName(item_name)]
+        return categoryDict[str(ItemConstants.getItemIdByName(item_name))]
 
     def addItemToInventory(self, inventory: dict, step: int, item_id=None, item_name=None):
 
@@ -279,6 +289,10 @@ class Inventory(Menu):
         inventoryModule = importlib.import_module("gamedata.playerdata.Inventory")
 
         return inventoryModule.loadInventory()
+
+    def saveInventoryData(self):
+        inventoryModule = importlib.import_module("gamedata.playerdata.Inventory")
+        inventoryModule.saveInventoryData(self.inventory)
 
     def animateButtons(self, current_buttons: list[list[TextButton]]):
         keys = pygame.key.get_pressed()
@@ -373,6 +387,10 @@ class Inventory(Menu):
         super().update(screen)
         logger.debug(f"{self.currentButtons=}")
         logger.debug(f"{self.originalMainButtons}")
+        logger.debug(f"{self.inventory=}")
         self.updateCurrentButtonList(self.mainButtons, last_selected_button_idx=self.lastSelectedButtonIdx, current_selected_button_idx=self.selectedMainButtonIdx,)
         self.checkButtonPressed(self.buttonPressedName, screen.get_size())
     
+    def close(self):
+        if self.inventory != self.initialInventory:
+            self.saveInventoryData() 
