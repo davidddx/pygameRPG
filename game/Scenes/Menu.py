@@ -4,6 +4,7 @@ import gamedata.Save.SavedData as SAVED_DATA
 from game.utils.Button import TextButton, Button
 from game.Scenes.BaseScene import Scene, SceneStates
 from debug.logger import logger
+import os
 
 class Menu(Scene):
     selectionModes = ("NONE", "MOUSE", "KEYBOARD")
@@ -66,7 +67,6 @@ class Menu(Scene):
         button.animateTextWithOutline(color = (255, 255, 0))
         button.animateTextToSize(size= 40, step= 3, shrink= False)
         button.animateTextToColor(color = (button.originalTextColor[0] - 20, button.originalTextColor[1] - 20, button.originalTextColor[2] - 20), speed = "medium")
-
 
     def getMaxIndex(self, my_list: list[list], index: int):
         return [len(my_list) - 1, len(my_list[index]) - 1]
