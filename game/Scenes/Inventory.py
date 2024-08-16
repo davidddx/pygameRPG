@@ -27,21 +27,15 @@ class Inventory(Menu):
         self.originalMainButtons = self.generateMainButtons(inventory_data = self.inventory, screen_width = last_scene_frame.get_width())
         mainButtons = copy.deepcopy(self.originalMainButtons)
         super().__init__(name= "INVENTORY", last_area_frame= last_area_frame, main_buttons = mainButtons, last_scene_frame = last_scene_frame) 
-        self.lastSelectedButtonIdx = [-1, -1]
+        #self.lastSelectedButtonIdx = [-1, -1]
         self.buttonDescriptionSurfacePtr = None
         self.descriptionTextPos = [0, 0]
         self.lastFrameOpacity = self.opacity
         self.categoryButtonNames = self.initializeCategoryButtonNames(self.nonItemButtonNames) 
         self.subMenuPromptSurf = None
         self.descriptionOpacity = 255
-        self.buttonSelectSound = Inventory.loadButtonSelectSound()
-
-    @staticmethod
-    def loadButtonSelectSound():
-        path = os.path.join(os.getcwd(), 'Sounds', 'Effects', 'ButtonSelect.wav')
-
-        logger.debug(f"loading button select sound from path {path=}, {pygame.mixer.Sound(path)=}")
-        return pygame.mixer.Sound(path)
+        self.firstFrame = True
+        #self.buttonSelectSound = Inventory.loadButtonSelectSound()
 
     def initializeCategoryButtonNames(self, non_item_button_names):
         categoryButtonNames = []
@@ -250,14 +244,25 @@ class Inventory(Menu):
 
 
     def updateCurrentButtonList(self, current_buttons: list[list[TextButton]], last_selected_button_idx: list[int], current_selected_button_idx: list[int]):
+        logger.debug(f"Updating current button list. {last_selected_button_idx=}, {current_selected_button_idx=}")
+        logger.debug(f"Checking equality... {last_selected_button_idx == current_selected_button_idx}")
+        
+        def changeCurrentButtons(current_buttons, last_selected_button_idx, current_selected_button_idx):
+            current_buttons[last_selected_button_idx[0]] = copy.deepcopy(self.originalMainButtons[last_selected_button_idx[0]])
+            current_buttons[current_selected_button_idx[0]] = self.loadItemsByCategoryIndex(self.categoryIndices, current_selected_button_idx[0], current_buttons[current_selected_button_idx[0]], self.inventory)
+
+        if self.firstFrame:
+            self.firstFrame = False
+            changeCurrentButtons(current_buttons, last_selected_button_idx, current_selected_button_idx)
+
+            self.currentButtons[current_selected_button_idx[0]][current_selected_button_idx[1]].animateTextWithOutline(color = (255, 255, 0))
         if last_selected_button_idx == current_selected_button_idx:
             return None
-        self.lastSelectedButtonIdx[1] = current_selected_button_idx[1] 
+        #self.lastSelectedButtonIdx[1] = current_selected_button_idx[1] 
         if last_selected_button_idx[0] == current_selected_button_idx[0]:
             return None
-        current_buttons[last_selected_button_idx[0]] = copy.deepcopy(self.originalMainButtons[last_selected_button_idx[0]])
-        current_buttons[current_selected_button_idx[0]] = self.loadItemsByCategoryIndex(self.categoryIndices, current_selected_button_idx[0], current_buttons[current_selected_button_idx[0]], self.inventory)
-        self.lastSelectedButtonIdx[0] = current_selected_button_idx[0]
+        changeCurrentButtons(current_buttons, last_selected_button_idx, current_selected_button_idx)
+        #self.lastSelectedButtonIdx[0] = current_selected_button_idx[0]
 
     def loadItemsByCategoryIndex(self, category_indices: bidict, current_index: int, category_list: list[TextButton], inventory: dict):
         ##categoryDict format: {Item1: Count1, Item2: Count2, ..., ItemN: CountN}
@@ -398,19 +403,10 @@ class Inventory(Menu):
         logger.debug(f"{self.currentButtons=}")
         logger.debug(f"{self.originalMainButtons}")
         logger.debug(f"{self.inventory=}")
-        self.updateSound(self.lastSelectedButtonIdx, self.selectedButtonIdx)
+        #self.updateSound(self.lastSelectedButtonIdx, self.selectedButtonIdx)
 
-        self.updateCurrentButtonList(self.mainButtons, last_selected_button_idx=self.lastSelectedButtonIdx, current_selected_button_idx=self.selectedMainButtonIdx,)
+        self.updateCurrentButtonList(self.mainButtons, last_selected_button_idx=self.lastSelectedButtonIdx, current_selected_button_idx=self.selectedMainButtonIdx)
         self.checkButtonPressed(self.buttonPressedName, screen.get_size())
-    
-    def updateSound(self, last_selected_button_idx, selected_button_idx):
-        if last_selected_button_idx == [-1, -1]:
-            return None
-        if last_selected_button_idx == selected_button_idx:
-            return None
-        
-        logger.debug(f"User ui movement detected. playing button select sound.")
-        self.buttonSelectSound.play()
 
     def close(self):
         if self.inventory != self.initialInventory:

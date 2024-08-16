@@ -18,6 +18,7 @@ class Menu(Scene):
     def __init__(self, name: str, last_area_frame: pygame.Surface, main_buttons: list[list[Button]], fade_in = True, opacity=0, last_scene_frame = None, other_buttons=None, selected_button_idx = (0, 0), selection_mode = "NONE", on_main_buttons= True):
 
         super().__init__(name)
+        self.buttonSelectSound = Menu.loadButtonSelectSound()
         self.timeInitialized = pygame.time.get_ticks()
         self.timeButtonLastPressed = 0
         self.state = SceneStates.INITIALIZING
@@ -25,12 +26,13 @@ class Menu(Scene):
         self.mainButtons = main_buttons
         self.otherButtons = other_buttons
         self.currentButtons = self.mainButtons
+        self.lastSelectedButtonIdx = [-1, -1]
         self.selectedMainButtonIdx = [0, 0] 
         self.selectedOtherButtonIdx = [0, 0]
         self.onSubMenu = False
         if on_main_buttons: 
-            self.selectedMainButtonIdx = [selected_button_idx[0], selected_button_idx[1]]
             self.selectedButtonIdx = [selected_button_idx[0], selected_button_idx[1]]
+            self.selectedMainButtonIdx = [selected_button_idx[0], selected_button_idx[1]]
         else: 
             self.selectedOtherButtonIdx = [selected_button_idx[0], selected_button_idx[1]]
             self.selectedButtonIdx = [selected_button_idx[0], selected_button_idx[1]]
@@ -67,6 +69,17 @@ class Menu(Scene):
         button.animateTextWithOutline(color = (255, 255, 0))
         button.animateTextToSize(size= 40, step= 3, shrink= False)
         button.animateTextToColor(color = (button.originalTextColor[0] - 20, button.originalTextColor[1] - 20, button.originalTextColor[2] - 20), speed = "medium")
+
+    def updateSound(self, last_selected_button_idx, selected_button_idx):
+        if last_selected_button_idx == [-1, -1]:
+            return None
+        if last_selected_button_idx == selected_button_idx:
+            return None
+        
+        logger.debug(f"User ui movement detected. playing button select sound.")
+        self.buttonSelectSound.play()
+
+
 
     def getMaxIndex(self, my_list: list[list], index: int):
         return [len(my_list) - 1, len(my_list[index]) - 1]
@@ -143,6 +156,8 @@ class Menu(Scene):
         logger.debug(f"{self.buttonCursorMoved=}")
         logger.debug(f"{self.uiLock=}")
         logger.debug(f"{self.buttonPressedName=}")
+        self.lastSelectedButtonIdx[0] = self.selectedButtonIdx[0]
+        self.lastSelectedButtonIdx[1] = self.selectedButtonIdx[1]
         self.updateSelectionMode(self.currentButtons, self.positiveUIKeys, self.negativeUIKeys,  self.positiveUIKeysRow, self.negativeUIKeysRow)
         self.checkUILock(self.timeButtonLastPressed)
         self.selectCurrentPressedButton(self.currentButtons)
@@ -151,6 +166,14 @@ class Menu(Scene):
         if self.animation != Menu.animations[Menu.noneAnimationId]:
             self.animate()
         self.render(screen)
+        self.updateSound(self.lastSelectedButtonIdx, self.selectedButtonIdx)
+
+    @staticmethod
+    def loadButtonSelectSound():
+        path = os.path.join(os.getcwd(), 'Sounds', 'Effects', 'ButtonSelect.wav')
+
+        logger.debug(f"loading button select sound from path {path=}, {pygame.mixer.Sound(path)=}")
+        return pygame.mixer.Sound(path)
 
     def selectCurrentPressedButton(self, buttons: list[list[TextButton]]):
         button = buttons[self.selectedButtonIdx[0]][self.selectedButtonIdx[1]]
@@ -235,6 +258,7 @@ class Menu(Scene):
                 hoveringOnButton = True
                 if self.selectionMode == "MOUSE":
                     self.selectedButtonIdx = [index1, index2]
+
         if not hoveringOnButton:
             if self.selectionMode == "MOUSE":
                 self.selectionMode = "NONE"
@@ -279,6 +303,12 @@ class Menu(Scene):
                     current_buttons[self.selectedButtonIdx[0]][self.selectedButtonIdx[1]] 
                 except:
                     self.selectedButtonIdx = prevIndices
+        elif self.selectionMode == "MOUSE":
+            if not self.onSubMenu:
+                self.selectedMainButtonIdx = [self.selectedButtonIdx[0], self.selectedButtonIdx[1]]
+            else:
+                self.selectedOtherButtonIdx = [self.selectedButtonIdx[0], self.selectedButtonIdx[1]]
+
         if self.selectedButtonIdx == lastSelectedButtonIdx:
             self.buttonCursorMoved = False
         else:
