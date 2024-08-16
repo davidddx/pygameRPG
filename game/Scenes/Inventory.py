@@ -34,6 +34,15 @@ class Inventory(Menu):
         self.categoryButtonNames = self.initializeCategoryButtonNames(self.nonItemButtonNames) 
         self.subMenuPromptSurf = None
         self.descriptionOpacity = 255
+        self.buttonSelectSound = Inventory.loadButtonSelectSound()
+
+    @staticmethod
+    def loadButtonSelectSound():
+        path = os.path.join(os.getcwd(), 'Sounds', 'Effects', 'ButtonSelect.wav')
+
+        logger.debug(f"loading button select sound from path {path=}, {pygame.mixer.Sound(path)=}")
+        return pygame.mixer.Sound(path)
+
     def initializeCategoryButtonNames(self, non_item_button_names):
         categoryButtonNames = []
         for name in non_item_button_names:
@@ -389,9 +398,20 @@ class Inventory(Menu):
         logger.debug(f"{self.currentButtons=}")
         logger.debug(f"{self.originalMainButtons}")
         logger.debug(f"{self.inventory=}")
+        self.updateSound(self.lastSelectedButtonIdx, self.selectedButtonIdx)
+
         self.updateCurrentButtonList(self.mainButtons, last_selected_button_idx=self.lastSelectedButtonIdx, current_selected_button_idx=self.selectedMainButtonIdx,)
         self.checkButtonPressed(self.buttonPressedName, screen.get_size())
     
+    def updateSound(self, last_selected_button_idx, selected_button_idx):
+        if last_selected_button_idx == [-1, -1]:
+            return None
+        if last_selected_button_idx == selected_button_idx:
+            return None
+        
+        logger.debug(f"User ui movement detected. playing button select sound.")
+        self.buttonSelectSound.play()
+
     def close(self):
         if self.inventory != self.initialInventory:
             self.saveInventoryData() 
