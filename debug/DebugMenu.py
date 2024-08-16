@@ -152,6 +152,7 @@ class DebugMenu:
         elif isinstance(currentScene, Menu):
             surfaceList.append(sceneType + f"{type(currentScene)}")
             logger.debug(f"{currentScene.selectedButtonIdx=}")
+            surfaceList.append(f"UI LOCK: {currentScene.uiLock}")
             surfaceList.append(f"SELECTION MODE: {currentScene.selectionMode}")
             surfaceList.append(f"SELECTED BUTTON IDX: {currentScene.selectedButtonIdx}")
             surfaceList.append(f"SELECTED MAIN BUTTON IDX: {currentScene.selectedMainButtonIdx}")
