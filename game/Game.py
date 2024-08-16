@@ -13,9 +13,9 @@ import gamedata.Save.SavedData as SAVED_DATA
 def loop():
     logger.info("Initializing Game....")
     ### Initializing Game ###
-    pygame.init()
     running = True
     pygame.init()
+    pygame.mixer.init()
     SETTINGS_FUNCTIONS.loadSavedData()
     cwd = os.getcwd()
     pygame.display.set_icon(SETTINGS_FUNCTIONS.getIcon(cwd))
