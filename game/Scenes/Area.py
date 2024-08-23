@@ -169,8 +169,8 @@ class Area(Scene):
         else: return TileMap(tmx_data= tmxData, map_id= id, name= fileName, _doors= doors, player=_player, player_pos= spawn_pos, taken_items= takenItems, area_id= area_id)
 
     def checkTakenItemsForMap(self, map_id: int, area_id: int):
-        logger.debug(" checking taken items for map... ")
-        logger.debug(f"{self.takenItems=}")
+        #logger.debug(" checking taken items for map... ")
+        #logger.debug(f"{self.takenItems=}")
         mapTakenItems = []
         try:
             mapTakenItems = self.takenItems[str(map_id)]
@@ -284,8 +284,8 @@ class Area(Scene):
     def getPlayer(self): return self.player
 
     def update(self, screen: pygame.Surface):
-        logger.debug(f"{self.mapIdx=}")
-        logger.debug(f"{self.takenItems=}") 
+        #logger.debug(f"{self.mapIdx=}")
+        #logger.debug(f"{self.takenItems=}") 
         self.currentMap.update(screen=screen) 
         self.checkChangeMapSignal(cool_down=Area.AREA_SWITCH_COOLDOWN)
         self.checkPauseSignal(state= self.state) 

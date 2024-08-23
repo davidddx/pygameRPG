@@ -8,6 +8,7 @@ from game.Item import Item, ItemConstants
 import globalVars.SettingsConstants as SETTINGS
 import game.Player as Player
 from game.Tile import Tile, TileTypes
+from game.Enemy import Enemy
 import gamedata.playerdata.Inventory as Inventory
 import json
 class MapObjectNames:
@@ -133,10 +134,13 @@ class TileMap:
         spriteGroupNonCollisionList = []
         trueSpriteGroup = pygame.sprite.Group()
         items = []
+        enemies = []
         logger.info(f"Converting map tmx data to spritegroups...")
         visibleLayers = tmx_data.visible_layers
         logger.debug(f"{visibleLayers=}")
         layerIndex = 0
+        surfsLoaded = {}
+
         for layer in visibleLayers:
             if isinstance(layer, pyTMX.TiledTileLayer):
                 for x, y, surface in layer.tiles():
@@ -172,11 +176,18 @@ class TileMap:
                             if self.checkItemTaken(pos= (_object.x, _object.y), name = properties[name], takenItems= self.takenItems ):
                                 continue
                             items.append( Item(sprite= _object.image, pos= (_object.x, _object.y), name= properties[name]))
+                        case TileTypes.ENEMY:
+                            if properties[name] not in surfsLoaded:
+                                surfsLoaded[properties[name]] = Enemy.convertSurfDictToList(Enemy.getSurfsByName(properties[name]))
+                            logger.debug(f"{surfsLoaded[properties[name]]=}")
+                            enemySurfs = surfsLoaded[properties[name]]
+                            enemies.append(Enemy(name = properties[name], pos=(_object.x, _object.y), surfs = enemySurfs))
 
             layerIndex += 1
         spriteGroupCollision.add(items)
         spriteGroupCollision.add(spriteGroupCollisionList)
         spriteGroupCollision.add(self.doors)
+        spriteGroupCollision.add(enemies)
         spriteGroupNonCollision.add(spriteGroupNonCollisionList)
         trueSpriteGroup.add(spriteGroupNonCollision)
         trueSpriteGroup.add(spriteGroupCollision)
@@ -210,10 +221,17 @@ class TileMap:
             
                     
             # logger.debug(f"Blitting tile of type: {type(tile)=}")
+            if tile.tileType == TileTypes.ENEMY:
+                tile.update(screen, camera, (player.rect.x, player.rect.y), (player.rect.width, player.rect.height))
+                continue
             screen.blit(tile.image, (tile.rect.x - camera[0], tile.rect.y - camera[1]))
         player.update(screen= screen, camera= camera)
         for tile in renderAfterGroup:
+            if tile.tileType == TileTypes.ENEMY:
+                tile.update(screen, camera, (player.rect.x, player.rect.y), (player.rect.width, player.rect.height))
+                continue
             screen.blit(tile.image, (tile.rect.x - camera[0], tile.rect.y - camera[1]))
+
         renderAfterGroup.empty()
         
 

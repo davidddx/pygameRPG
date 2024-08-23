@@ -6,7 +6,7 @@ class TileTypes:
     ITEM = "ITEM"
     VISUAL = "VISUAL"
     WALL = "WALL"
-
+    ENEMY = "ENEMY"
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, pos: tuple[int, int], collidable: bool, image: pygame.Surface,_type=None):
