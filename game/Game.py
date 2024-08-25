@@ -32,9 +32,7 @@ def loop():
 
     ### Initialization Done ###
     logger.info("Initializing Done.")
-    windowResizeCooldown = 100
     while running:
-        keys = pygame.key.get_pressed()
         logger.debug(f"CURRENT FPS: {clock.get_fps()}")
         clock.tick(MAX_FPS)
         baseScreen.fill(screenFillColor)
