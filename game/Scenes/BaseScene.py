@@ -12,6 +12,13 @@ class SceneStates:
     ON_ANIMATION = "ANIMATION"
     NONE = "NONE"
 
+class SceneAnimations:
+    NONE = "NONE"
+    FADE_IN = "FADE_IN"
+    FADE_OUT = "FADE_OUT"
+    DRAG_IN_WITH_BLACK_HORIZONTAL_LINES = "DRAG_IN_WITH_BLACK_HORIZONTAL_LINES"
+    DRAG_IN_WITH_WHITE_HORIZONTAL_LINES = "DRAG_IN_WITH_WHITE_HORIZONTAL_LINES"
+
 class SceneTypes:
     NONE = "NONE"
     AREA = "AREA"
@@ -19,6 +26,7 @@ class SceneTypes:
     PAUSE_MENU = "PAUSE_MENU"
     TITLE_SCREEN = "TITLE_SCREEN"
     SETTINGS = "SETTINGS"
+    BATTLE = "BATTLE"
 
 class Scene(ABC):
 

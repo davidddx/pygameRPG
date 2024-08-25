@@ -8,9 +8,10 @@ from game.Item import Item, ItemConstants
 import globalVars.SettingsConstants as SETTINGS
 import game.Player as Player
 from game.Tile import Tile, TileTypes
-from game.Enemy import Enemy
+from game.Enemy import Enemy, EnemyNames
 import gamedata.playerdata.Inventory as Inventory
 import json
+
 class MapObjectNames:
     ## Spawn related ##
     SPAWN_DEFAULT = "SPAWN_DEFAULT"
@@ -20,6 +21,7 @@ class TileMap:
     trueSpriteGroupID = 0
     SPRITE_GROUP_NON_COLLISION_ID = 1
     SPRITE_GROUP_COLLISION_ID = 2
+    SPRITE_GROUP_ENEMY_ID = 3
     COLLISION_TYPE_WALL_ID = 0
     COLLISION_TYPE_DOOR_ID = 1
 
@@ -32,6 +34,7 @@ class TileMap:
         self.spriteGroups = ()
         self.doors = TileMap.initDoors(doors= _doors)
         self.collidedDoor = None
+        self.collidedObject = None
         self.player = player
         self.writeCurrentDoorsOutput()
         self.name = name
@@ -42,6 +45,7 @@ class TileMap:
         self.player.setPlayerPos(pos_x=self.playerSpawnPos[0], pos_y=self.playerSpawnPos[1])
         self.player.setPlayerMovability(False)
         self.camera = TileMap.initializeCamera(player_rect= player.rect)
+        self.setEnemyLock(500)
         logger.debug(f"Class {TileMap=} initialized. \nID: {map_id} \nTime taken: {pygame.time.get_ticks() - timeInitStarted}")
 
     def writeCurrentDoorsOutput(self):
@@ -75,6 +79,13 @@ class TileMap:
         if onCollision[Player.PlayerRectCollisionIDs.UP]:
             player.rect.top = tile.rect.bottom - offset
 
+    def getCollidedEnemyName(self):
+        logger.debug(f"{self.collidedObject=}")
+        if self.collidedObject is None:
+            return None
+        if self.collidedObject.name not in Enemy.getValidEnemyNames():
+            return EnemyNames.GROUNDER
+        return self.collidedObject.name
 
     def playerCollisionHandler(self, player : Player.Player):
         COLLISION_TOLERANCE = 10
@@ -98,9 +109,11 @@ class TileMap:
                 onCollision[Player.PlayerRectCollisionIDs.DOWN] = True
             if abs(player.rect.top - tile.rect.bottom) < COLLISION_TOLERANCE and player.movementDirection[1] < 0:
                 onCollision[Player.PlayerRectCollisionIDs.UP] = True
+
             ### USING COLLISION INFO ###
             tile.writeOutput()
             if tile.tileType == TileTypes.DOOR:
+                self.collidedObj = tile
                 self.collidedDoor = tile
                 return None
             
@@ -108,18 +121,20 @@ class TileMap:
                 TileMap.collidePlayerWithTile(onCollision= onCollision, player= player, tile= tile) 
             elif tile.tileType == TileTypes.ITEM:
                 TileMap.collidePlayerWithTile(onCollision= onCollision, player= player, tile= tile, offset=1)
-            if tile.tileType == TileTypes.ITEM:
                 if player.getInputState() == Player.PossiblePlayerInputStates.SELECTION_INPUT:
                     self.takeItem(tile)
                     self.removeTileFromMap(tile)
                     self.addItemToInventory(item= tile)
                     continue
-
-
+            elif tile.tileType == TileTypes.ENEMY:
+                if tile.locked:
+                    return None
+                self.collidedObject = tile 
 
         if not collisionOccured:
             player.rectColor = WHITE
             return None
+
     def removeTileFromMap(self, tile: Tile):
         for spritegroup in self.spriteGroups:
             try:
@@ -133,6 +148,7 @@ class TileMap:
         spriteGroupNonCollision = pygame.sprite.Group()
         spriteGroupNonCollisionList = []
         trueSpriteGroup = pygame.sprite.Group()
+        spriteGroupEnemy = pygame.sprite.Group()
         items = []
         enemies = []
         logger.info(f"Converting map tmx data to spritegroups...")
@@ -188,14 +204,19 @@ class TileMap:
         spriteGroupCollision.add(spriteGroupCollisionList)
         spriteGroupCollision.add(self.doors)
         spriteGroupCollision.add(enemies)
+        spriteGroupEnemy.add(enemies)
         spriteGroupNonCollision.add(spriteGroupNonCollisionList)
         trueSpriteGroup.add(spriteGroupNonCollision)
         trueSpriteGroup.add(spriteGroupCollision)
 
 
         logger.info(f"Converted map tmx data to spritegroups.")
-        return (trueSpriteGroup, spriteGroupNonCollision, spriteGroupCollision)
+        return (trueSpriteGroup, spriteGroupNonCollision, spriteGroupCollision, spriteGroupEnemy)
    
+    def setEnemyLock(self, milliseconds=500):
+        for enemy in self.spriteGroups[TileMap.SPRITE_GROUP_ENEMY_ID]:
+            enemy.lock(milliseconds)
+
     def takeItem(self, item : Item):
         self.takenItems.append([item.getName(), item.getPos()])
     

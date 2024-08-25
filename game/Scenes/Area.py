@@ -115,6 +115,9 @@ class Area(Scene):
             mapTmxData.append([tmxData, fileName])
         return mapTmxData
 
+    def getCollidedEnemyName(self):
+        return self.currentMap.getCollidedEnemyName()
+
     @staticmethod
     def loadDoors(tmx_data: list[list[pytmx.TiledMap, str]]) -> list[Door]:
         ### Fetching the doors ###
@@ -181,21 +184,24 @@ class Area(Scene):
         logger.debug(f"{mapTakenItems=}")
         return mapTakenItems 
 
-
     def clear(self):
         self.currentMap.clear()
+
+    def setEnemyLock(self, milliseconds):
+        self.currentMap.setEnemyLock(milliseconds)
+
+    def clearCollidedObject(self):
+        self.currentMap.collidedObject = None
 
     def checkChangeMapSignal(self, cool_down : int):
         timenow = pygame.time.get_ticks()
         if timenow - self.timeLastChangedMap <= cool_down:
             return None
-        keys = pygame.key.get_pressed()
         if self.currentMap.collidedDoor:
             self.saveTakenItems(area_id= self.areaID, taken_items = self.takenItems)
             self.updateTakenItems(self.mapIdx)
             destinationId = self.currentMap.collidedDoor.getIdDestinationMap()
             self.changeMapById(time_now=timenow, id=destinationId,spawn_pos= Area.generatePlrSpawnPos(map_id=destinationId,doors=self.doors, collided_door=self.currentMap.collidedDoor))
-            
 
     @staticmethod
     def generatePlrSpawnPos(map_id: int, doors: list[Door], collided_door: Door):
@@ -283,9 +289,15 @@ class Area(Scene):
 
     def getPlayer(self): return self.player
 
+    def checkEnemyCollision(self, collided_enemy_name):
+        if collided_enemy_name is None: return None
+        self.setPtrNextScene(SceneTypes.BATTLE)
+        self.setState(SceneStates.PAUSED)
+
     def update(self, screen: pygame.Surface):
         #logger.debug(f"{self.mapIdx=}")
         #logger.debug(f"{self.takenItems=}") 
         self.currentMap.update(screen=screen) 
         self.checkChangeMapSignal(cool_down=Area.AREA_SWITCH_COOLDOWN)
         self.checkPauseSignal(state= self.state) 
+        self.checkEnemyCollision(self.currentMap.getCollidedEnemyName())

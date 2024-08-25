@@ -4,6 +4,7 @@ import os
 from game.Tile import Tile, TileTypes
 from debug.logger import logger
 from globalVars.SettingsConstants import TILE_SIZE
+
 class EnemyNames:
     GROUNDER = 'GROUNDER'
 
@@ -47,6 +48,26 @@ class Enemy(Tile):
         self.surfaces = surfs
         self.rect = surfs[0][0].get_rect(topleft=pos)
         self.hasCollision = collision
+        self.locked = False
+        self.timeLastLocked = 0
+        self.lockCooldown = 500
+
+    def lock(self, milliseconds=500):
+        self.locked = True
+        self.timeLastLocked = pygame.time.get_ticks()
+        self.lockCooldown = milliseconds
+
+    def unlock(self):
+        self.locked = False
+
+    def updateLock(self, lock_cooldown, time_last_locked):
+        if not self.locked:
+            return None
+        timenow = pygame.time.get_ticks()
+        logger.debug(f"{time_last_locked=}")
+        if timenow - time_last_locked < lock_cooldown:
+            return None
+        self.locked = False 
 
     @staticmethod
     def getSpeed(name):
@@ -77,6 +98,10 @@ class Enemy(Tile):
         myList[DirectionIndices.FRONT_LEFT] = _dict[DirectionNames.FRONT_LEFT]
         return myList 
         
+    @staticmethod
+    def getValidEnemyNames():
+        return [attr for attr in dir(EnemyNames) if not attr.startswith('__')] 
+
     @staticmethod
     def getSurfsByName(name):
         enemySpriteDir = os.path.join(os.getcwd(), "images", "test", "Enemy", name)
@@ -112,7 +137,6 @@ class Enemy(Tile):
         if not self.checkInRange(player_pos, (self.rect.x, self.rect.y), screen.get_size()): return None
         pygame.draw.circle(screen, (255, 255, 0), (self.rect.x - camera_offset[0] + self.rect.width/2, self.rect.y - camera_offset[1] + self.rect.height/2),self.detectionRadius)
         screen.blit(surf, (self.rect.x - camera_offset[0], self.rect.y - camera_offset[1]))
-        logger.debug(f"drawing circle")
 
 
     def checkDetectionRadius(self, pos: tuple[int, int], player_pos: tuple[int, int], player_size):
@@ -170,6 +194,10 @@ class Enemy(Tile):
     def update(self, screen, camera, player_pos, player_size):
         #logger.debug(f"{self.surfIndex[0]=}, {self.surfIndex[1]=}")
         self.render(surf=self.surfaces[self.surfIndex[0]][self.surfIndex[1]], screen=screen, camera_offset=camera, player_pos=player_pos)
+        logger.debug(f"{self.locked=}")
+        if self.locked: 
+            self.updateLock(self.timeLastLocked, self.lockCooldown)
+            return None
         self.checkDetectionRadius(pos= (self.rect.x, self.rect.y), player_pos=player_pos, player_size = player_size) 
         self.move(self.movementDirection) 
         self.updateSurfIndex(self.facingDirection)

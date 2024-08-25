@@ -2,6 +2,7 @@ from debug.logger import logger
 from game.Scenes.Area import Area
 import os
 import pygame
+import copy
 import gamedata.Save.SavedData as SAVED_DATA
 from game.Scenes.TitleScreen import TitleScreen
 from game.Scenes.Inventory import Inventory
@@ -9,7 +10,9 @@ from game.Player import Player
 from game.Scenes.BaseScene import SceneStates, Scene, SceneTypes
 from game.Scenes.PauseMenu import PauseMenu
 from game.Scenes.Settings import Settings
+from game.Scenes.Battle import Battle
 from debug.DebugMenu import DebugMenu
+
 
 class SceneHandler:
     def __init__(self, DEBUG= False, display_size=None):
@@ -19,6 +22,7 @@ class SceneHandler:
         logger.debug(f"Class {SceneHandler=} initializing....")
         self.player = SceneHandler.loadPlayer()
         self.Areas = self.loadTestArea(_player= self.player);
+        self.currentAreaIdx = 0
         self.TitleScreen = TitleScreen(background=pygame.image.load(os.getcwd() + '/images/test/titleScreenBackground.png'))
         self.currentScene = self.TitleScreen
         self.currentArea = None
@@ -67,8 +71,6 @@ class SceneHandler:
         # areas.append(Area(name="test", starting_map_idx=0))
         return [Area(name="test", starting_map_idx=0, _player= _player)]
 
-    def loadArea(self, idx : int) -> Area:
-        return self.Areas[idx]
     '''
     def checkSceneState(self, currentScene: Scene, debug: bool, screen):
         if not (currentScene.state == SceneStates.FINISHED or currentScene.state == SceneStates.PAUSED) or currentScene.state == 0 :
@@ -125,14 +127,13 @@ class SceneHandler:
         if type(current_scene) == Area: self.lastAreaFrame = screen.copy()
         nextScene = self.loadNextScene(current_scene= current_scene, next_scene_ptr= nextScenePtr, screen= screen, timenow= timenow)
         # Case where pausing area
-        if type(current_scene) == Area: 
-            if nextScenePtr == SceneTypes.PAUSE_MENU:
-                self.currentArea = self.currentScene
-                
-                self.currentScene = nextScene 
-                if debug: self.debugMenu.setCurrentScene(self.currentScene)
+        if type(current_scene) == Area and nextScenePtr == SceneTypes.PAUSE_MENU: 
+            self.currentArea = self.loadArea(self.currentAreaIdx)
+            
+            self.currentScene = nextScene 
+            if debug: self.debugMenu.setCurrentScene(self.currentScene)
 
-                return None               
+            return None               
 
         # Case where pause menu switches to area  
         if type(current_scene) == PauseMenu and nextScenePtr == SceneTypes.AREA:
@@ -142,6 +143,15 @@ class SceneHandler:
             self.currentScene.setState(SceneStates.RUNNING)
             self.currentArea = None
             if debug: self.debugMenu.setCurrentScene(self.currentScene)
+            return None
+
+        # Case where current scene is area and next scene ptr is any other scene type
+        # Ex: Area to Battle scene
+        if type(current_scene) == Area and nextScenePtr != SceneTypes.AREA:
+            current_scene = nextScene
+            self.currentScene = current_scene
+            if debug: self.debugMenu.setCurrentScene(current_scene)
+            logger.debug(f"{current_scene=}")
             return None
 
         ## Finished edge cases
@@ -162,15 +172,27 @@ class SceneHandler:
                 return self.loadPauseMenu(screen, timenow)
             case SceneTypes.SETTINGS: return self.loadSettings(screen.get_size(), self.lastSceneFrame)
             case SceneTypes.INVENTORY: return Inventory(self.lastAreaFrame, self.lastSceneFrame)
-            case SceneTypes.AREA: return self.loadArea(SAVED_DATA.CURRENT_AREA_INDEX) 
+            case SceneTypes.AREA: 
+                area = self.loadArea(SAVED_DATA.CURRENT_AREA_INDEX)
+                if type(current_scene) == Battle:
+                    area.setEnemyLock(1500)
+                    area.setState(SceneStates.RUNNING)
+                    area.currentMap.collidedObject = None
+                return area
+            case SceneTypes.BATTLE: return self.loadBattleScene(screen.get_size(), current_scene.getCollidedEnemyName())
+
+    def loadBattleScene(self, screen_size: tuple[int, int], enemy_name: str):
+        return Battle(last_area_frame= self.lastAreaFrame, screen_size= screen_size, enemy_name= enemy_name)
 
     def loadSettings(self, screen_size, last_pause_menu_frame: pygame.Surface):
         return Settings(self.lastSceneFrame, self.lastAreaFrame, screen_size)
 
     def loadPauseMenu(self, screen: pygame.Surface, time_last_paused, fade_in=False, selected_button_idx = [0,0], selection_mode = "NONE") -> PauseMenu:
         return PauseMenu(name = "PauseMenu",last_world_frame= self.lastAreaFrame, time_last_paused= time_last_paused, fade_in= fade_in, selected_button_idx = selected_button_idx, selection_mode = selection_mode)
-        
-        
+
+    def loadArea(self, idx : int) -> Area:
+        return self.Areas[idx]
+       
     def logSceneInfo(self, current_scene : Scene):
         logger.debug(f"Current Scene State: {current_scene.state=}")
         logger.debug(f"Current Scene Name: {current_scene.name=}")
@@ -181,6 +203,9 @@ class SceneHandler:
         self.checkSceneState(currentScene=self.currentScene, debug=True, screen= screen)
 
     def runDebug(self, screen: pygame.Surface, clock: pygame.time.Clock):
+        logger.debug(f"{type(self.currentArea)=}")
+        if self.currentArea is not None:
+            logger.debug(f"{self.currentArea.currentMap.collidedObject=}")
         self.currentScene.update(screen=screen)
         self.debugMenu.run(screen=screen, clock= clock, currentScene= self.currentScene)
         self.checkSceneStateTest(current_scene=self.currentScene, debug=True, screen= screen)
