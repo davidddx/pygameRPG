@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "TileSets/Enemies.tsx",
+    "activeFile": "TestMaps/TestMap1.tmx",
     "expandedProjectPaths": [
         ".",
         "TileSets",
@@ -48,8 +48,8 @@
             "scale": 1,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 480,
-                "y": 319.5
+                "x": 478.5,
+                "y": 318.5
             }
         },
         "TestMaps/TestMap2.tmx": {
@@ -105,8 +105,8 @@
     "recentFiles": [
         "TileSets/Test.tsx",
         "TileSets/Items.tsx",
-        "TestMaps/TestMap1.tmx",
         "TileSets/Enemies.tsx",
+        "TestMaps/TestMap1.tmx",
         "TestMaps/TestMap3.tmx",
         "TestMaps/TestMap2.tmx",
         "C:/Users/david/Documents/GitHub/pythonProject/pygameproj/Maps/testmap/level1.tmx",
