@@ -1,4 +1,5 @@
 import pygame
+import pygame.gfxdraw
 from debug.logger import logger
 import globalVars.SettingsConstants as globalVars
 import globalVars.TilemapConstants as mapVars
@@ -228,6 +229,11 @@ class TileMap:
             return False
         logger.debug("item taken: true")
         return True
+
+    def drawEnemyDetectionRadius(self, screen, camera_offset):
+        for enemy in self.spriteGroups[TileMap.SPRITE_GROUP_ENEMY_ID]:
+            pygame.gfxdraw.circle(screen, int(enemy.rect.x - camera_offset[0] + enemy.rect.width/2), int(enemy.rect.y - camera_offset[1] + enemy.rect.height/2), enemy.detectionRadius, (255,255,0))
+
     def displayMap(self, screen, camera: tuple[float, float], player: Player.Player):
         renderAfterGroup = pygame.sprite.Group()
         for tile in self.spriteGroups[TileMap.trueSpriteGroupID]:
@@ -246,6 +252,7 @@ class TileMap:
                 tile.update(screen, camera, (player.rect.x, player.rect.y), (player.rect.width, player.rect.height))
                 continue
             screen.blit(tile.image, (tile.rect.x - camera[0], tile.rect.y - camera[1]))
+        self.drawEnemyDetectionRadius(screen, camera)
         player.update(screen= screen, camera= camera)
         for tile in renderAfterGroup:
             if tile.tileType == TileTypes.ENEMY:
