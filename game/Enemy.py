@@ -8,6 +8,11 @@ from globalVars.SettingsConstants import TILE_SIZE
 class EnemyNames:
     GROUNDER = 'GROUNDER'
 
+def loadEnemyImage(name: str, direction: str, frame: int, battle=False) -> pygame.Surface: #adding battle stuff later
+    baseDir = os.path.join(os.getcwd(), 'images', 'test', 'Enemy', name, direction, f"{str(frame)}.png")
+    return pygame.image.load(baseDir)
+
+
 class DirectionNames:
     FRONT = "Front"
     FRONT_RIGHT = "Front Right"
@@ -135,9 +140,7 @@ class Enemy(Tile):
         return surfDict
     def render(self, surf: pygame.Surface, screen: pygame.Surface, camera_offset, player_pos):
         if not self.checkInRange(player_pos, (self.rect.x, self.rect.y), screen.get_size()): return None
-        pygame.draw.circle(screen, (255, 255, 0), (self.rect.x - camera_offset[0] + self.rect.width/2, self.rect.y - camera_offset[1] + self.rect.height/2),self.detectionRadius)
         screen.blit(surf, (self.rect.x - camera_offset[0], self.rect.y - camera_offset[1]))
-
 
     def checkDetectionRadius(self, pos: tuple[int, int], player_pos: tuple[int, int], player_size):
         playerEnemyDistance = (pos[0] + self.rect.width/2) - (player_pos[0] + player_size[0]/2), (pos[1] + self.rect.height/2) - (player_pos[1] + player_size[1]/2) 
