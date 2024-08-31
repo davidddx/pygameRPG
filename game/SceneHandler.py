@@ -52,6 +52,16 @@ class SceneHandler:
         return Player(pos = SAVED_DATA.PLAYER_POSITION, plr_parts_path = playerSpriteDir, plr_direction_path =
                       playerDirectionDirs) 
 
+    #test function
+    def loadPlayerSurf(self, direction: str) -> pygame.Surface:
+        cwd = os.getcwd()
+        playerSpriteDir = os.path.join(cwd, 'images', 'test', 'PlrSpriteTest', 'AnimationTesting', 'FullPlayer')
+        pathToSurf = os.path.join(playerSpriteDir, direction)
+        assert os.path.exists(pathToSurf)
+        base_surf = os.path.join(pathToSurf, "0.png")
+        return pygame.image.load(base_surf)
+            
+
     def loadTestArea(self, _player) -> list[Area]:
         logger.info(f"Loading Test Area....")
         return [Area(name = "test", starting_map_idx=SAVED_DATA.CURRENT_MAP_INDEX, _player=_player)]
@@ -182,7 +192,8 @@ class SceneHandler:
             case SceneTypes.BATTLE: return self.loadBattleScene(screen.get_size(), current_scene.getCollidedEnemyName())
 
     def loadBattleScene(self, screen_size: tuple[int, int], enemy_name: str):
-        return Battle(last_area_frame= self.lastAreaFrame, screen_size= screen_size, enemy_name= enemy_name)
+        #will chnge constructor later, testing for now
+        return Battle(last_area_frame= self.lastAreaFrame, screen_size= screen_size, enemy_name= enemy_name, player_base_surf = self.loadPlayerSurf("Right"))
 
     def loadSettings(self, screen_size, last_pause_menu_frame: pygame.Surface):
         return Settings(self.lastSceneFrame, self.lastAreaFrame, screen_size)
