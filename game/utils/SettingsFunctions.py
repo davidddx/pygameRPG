@@ -5,6 +5,9 @@ import gamedata.Save.SavedData as SAVED_DATA
 import Font.FontPaths as FONT_PATHS
 import pathlib
 
+def checkVariableInClass(variable_value, _class) -> bool:
+    return True if hasattr(_class, variable_value) else False
+
 def getIcon(cwd: str) -> pygame.Surface: 
     return pygame.image.load(os.path.join(cwd, "icon", "icon.png"))
 
