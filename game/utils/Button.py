@@ -392,7 +392,6 @@ class TextButton(Button):
         self.textAnimationInfo.setShrink(shrink)
         self.textAnimationInfo.setScale(True)
 
-
     def animateTextWithOutline(self, color=(255, 255, 0), size= "medium"):
         if self.originalOutlineColor is None: self.originalOutlineColor = color
         self.outlineColor = color
