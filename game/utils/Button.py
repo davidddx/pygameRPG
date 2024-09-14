@@ -175,9 +175,16 @@ class TextAnimationInfo:
         self.colorShiftColor = color
         self.lerpRGBStep = 0.1
         self.lerpRGBValue = 0
+        self.lerpXYStep = 0
+        self.lerpXYPos = (0,0)
         self.validLerpSpeeds = ["very slow, slow, medium, fast, very fast"]
         self.finished = False
 
+    def setLerpXYStep(self, lerp_xy_step: float | int): self.lerpXYStep = lerp_xy_step
+    def setLerpXYPos(self, lerp_xy_pos: tuple[float | int]): self.lerpXYPos = lerp_xy_pos
+    def setLerpXYGoalPos(self, lerp_xy_pos: float | int): self.lerpXYPos = lerp_xy_pos
+    def getLerpXYGoalPos(self): return self.lerpXYPos
+    def getLerpXYPos(self): return self.lerpXYPos
     def setFinished(self, finished): self.finished = finished
     def getFinished(self): return self.finished
     def setOutline(self, outline: bool): self.outline = outline
@@ -358,7 +365,8 @@ class TextButton(Button):
 
     def setTextSurfaceOutlineAlpha(self, opacity: int):
         if opacity < 0 or opacity > 255: opacity = 255
-        if self.textSurfaceOutline is None: return None
+        logger.debug(f"{self.textSurfaceOutline=}")
+        #if self.textSurfaceOutline is None: return None
         self.textSurfaceOutlineAlpha = opacity
 
     def setTextAlignment(self, alignment: str):
@@ -423,6 +431,12 @@ class TextButton(Button):
         self.textAnimationInfo.setColorShift(True)
         self.textAnimationInfo.setColorShiftingSpeed(speed)
         self.textAnimationInfo.setColorShiftColor(color)
+
+    def animateTextToPosition(self,goal_pos: tuple, step=0.1):
+        self.setState(ButtonStates.ON_ANIMATION)
+        self.textAnimationInfo.setLerpXYStep(step)
+        self.textAnimationInfo.setLerpXYPos(goal_pos)
+
 
     def animate(self, animationInfo, state):
         if state != ButtonStates.ON_ANIMATION: return None
