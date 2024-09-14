@@ -13,6 +13,7 @@ fileHandler.setFormatter(formatter)
 consoleHandler.setFormatter(formatter)
 logger.addHandler(fileHandler)
 logger.addHandler(consoleHandler)
+
 try:
     logger.info('LOGGER HAS BEEN INITIALIZED')
 except Exception as e:
