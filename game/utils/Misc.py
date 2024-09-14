@@ -61,16 +61,17 @@ def padZeros(mystr: str, num_chars = 5, at_beginning = True, at_end=False):
 
     return mystr
 
-def getCartesianFromPolar(distance_from_origin, angle, decimal_places=5):
+def getCartesianFromPolar(distance_from_origin, angle, decimal_places=2):
     x = numpy.round(distance_from_origin * numpy.cos(angle), decimal_places)
     y = -numpy.round(distance_from_origin * numpy.sin(angle), decimal_places)
     return numpy.c_[x,y]
 
-def getPolarCoordinates(angle, major_axis_size, minor_axis_size):
-    a = minor_axis_size * numpy.cos(angle)
-    b = major_axis_size*numpy.sin(angle)
+
+def getPolarCoordinates(angle, vertical_radius_size, horizontal_radius_size):
+    a = vertical_radius_size * numpy.cos(angle)
+    b = horizontal_radius_size * numpy.sin(angle)
     denominator = numpy.sqrt(a**2 + b**2)
-    numerator = major_axis_size * minor_axis_size
-    logger.debug(f"{major_axis_size=}, {minor_axis_size=}, {numerator=}, {denominator=}")
+    numerator = vertical_radius_size * horizontal_radius_size
+    logger.debug(f"{vertical_radius_size=}, {horizontal_radius_size=}, {numerator=}, {denominator=}")
     return numerator/denominator
 
