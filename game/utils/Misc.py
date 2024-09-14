@@ -1,15 +1,25 @@
 import pygame
-import math
+import numpy 
 import os
 import PIL.Image as Image
+from debug.logger import logger
 
 def bottomToTopleftPos(bottom_pos: tuple, base_sprite: pygame.Surface):
     topleftPos = bottom_pos[0] - base_sprite.get_width()/2, bottom_pos[1] - base_sprite.get_height()
     return topleftPos
 
+# S for tuple parameter b/c python doesnt have method overloading
+def bottomToTopleftPosS(bottom_pos: tuple, size: tuple):
+    topleftPos = bottom_pos[0] - size[0]/2, bottom_pos[1] - size[1]
+    return topleftPos
+
 def topleftToBottomPos(topleft_pos: tuple, base_sprite: pygame.Surface):
     bottomPos = topleft_pos[0] + base_sprite.get_width()/2, topleft_pos[1] + base_sprite.get_height()
     return bottomPos
+
+def bottomToMiddlePos(bottom_pos, size):
+    middlePos = bottom_pos[0], bottom_pos[1] + size[1]/2
+    return middlePos
 
 def tileImage(tile_size: int, image_path: str, output_dir: str):
     image = Image.open(image_path)
@@ -51,14 +61,16 @@ def padZeros(mystr: str, num_chars = 5, at_beginning = True, at_end=False):
 
     return mystr
 
-def getCartesianFromPolar(distance_from_origin, angle, decimal_places=2):
-    return (round(distance_from_origin * math.cos(angle), decimal_places), round(distance_from_origin * math.sin(angle), decimal_places))
+def getCartesianFromPolar(distance_from_origin, angle, decimal_places=5):
+    x = numpy.round(distance_from_origin * numpy.cos(angle), decimal_places)
+    y = -numpy.round(distance_from_origin * numpy.sin(angle), decimal_places)
+    return numpy.c_[x,y]
 
 def getPolarCoordinates(angle, major_axis_size, minor_axis_size):
-    print(f"{angle=}")
-    a = minor_axis_size * math.cos(angle)
-    b = major_axis_size*math.sin(angle)
-    denominator = math.sqrt(a**2 + b**2)
+    a = minor_axis_size * numpy.cos(angle)
+    b = major_axis_size*numpy.sin(angle)
+    denominator = numpy.sqrt(a**2 + b**2)
     numerator = major_axis_size * minor_axis_size
+    logger.debug(f"{major_axis_size=}, {minor_axis_size=}, {numerator=}, {denominator=}")
     return numerator/denominator
 
