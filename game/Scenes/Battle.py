@@ -11,7 +11,7 @@ import gamedata.Moves as MOVES
 import game.utils.SettingsFunctions as SETTINGS_FUNCTIONS
 import game.utils.Misc as Misc 
 import gamedata.Save.SavedData as SAVED_DATA
-
+import numpy
 class BackgroundTile(pygame.sprite.Sprite):
     def __init__(self, sprite_group: pygame.sprite.Group, image_dir: str, pos: tuple):
         super().__init__(sprite_group)
@@ -134,38 +134,29 @@ class BattleSceneTransitionAnimations:
         self.animations[self.currentAnimationIdx].update(screen, background, background2)
         self.checkAnimationFinished(self.animations[self.currentAnimationIdx])
 
+
 # loading button positions for player battle scene using a model ellipses and the number of buttons 
 # goal: run this operation only once and store it in this file so that less float/double operations are done
 
-def loadButtonPositions():
-    buttonPositions = []
-    
-    modelEllipse = 90, 30 #formatted as such: top radius, side radius
-    numButtons = Battle.NUM_BUTTONS
-    #approach: use polar coordinates and then convert them back to cartesian to generate x and y positions
-    import math
-    for i in range(-90, 270, int(360/numButtons)):
-        print(f"{i}")
-        if i == 0 or i == 180:
-            buttonPositions.append((0, modelEllipse[0]))
-            continue
-        if i == -90 or i == 90:
-            buttonPositions.append((0, modelEllipse[1]))
-            continue
-        angle = math.radians(i) 
-        polar = Misc.getPolarCoordinates(angle, modelEllipse[0], modelEllipse[1])
-        cartesian = Misc.getCartesianFromPolar(polar, angle)
-        buttonPositions.append(cartesian)
-
+def loadButtonPositions(num_buttons: int, pos=(0,0)):
+    # numpy used for easier array operations
+    modelEllipse = 105, 20 #formatted as such: top radius, side radius
+    paddingSpace = 20
+    angle = numpy.radians(numpy.array(range(-90, 270, int(360/num_buttons))))
+    #pos = Misc.bottomToMiddlePos(pos, modelEllipse)
+    polarCoordinates = Misc.getPolarCoordinates(angle, modelEllipse[0], modelEllipse[1])
+    buttonPositions = Misc.getCartesianFromPolar(polarCoordinates, angle) + (pos[0], pos[1] - paddingSpace)
     logger.debug(f"{buttonPositions=}")
+    return buttonPositions 
 
-    return buttonPositions
+def loadButtonPositionOrientation(NUM_BUTTONS: int):
+    return numpy.zeros(NUM_BUTTONS)
 
 
 class Battle(Scene):
     class States:
         PREPARING_TURN = "PREPARING_TURN"
-        PLAYER_CHOOSING_MOVE = "PLAYER_CHOOSING_MOVE"
+        PLAYER_CHOOSING_ACTION = "PLAYER_CHOOSING_ACTION"
         ANIMATING = "ANIMATING"
         ENEMY_CHOOSING_MOVE = "ENEMY_CHOOSING_MOVE"
         ANIMATING_MOVE = "ANIMATING_MOVE"
@@ -179,9 +170,11 @@ class Battle(Scene):
         FINISHED = "FINISHED"
         NOT_MOVING = "NOT_MOVING"
 
-    NUM_BUTTONS = 6
+    NUM_BUTTONS = 5 
 
-    ButtonPositions = loadButtonPositions()
+    PLAYER_BOTTOM_POS = 350, 420
+    ButtonPositions = loadButtonPositions(NUM_BUTTONS, pos=(PLAYER_BOTTOM_POS[0], PLAYER_BOTTOM_POS[1] - 2*TILE_SIZE))
+    ButtonPositionsOrientation = loadButtonPositionOrientation(NUM_BUTTONS)
 
     def __init__(self, last_area_frame: pygame.Surface, screen_size: tuple[int, int], enemy_name: str, player_base_surf: pygame.Surface):
         self.setState(SceneStates.INITIALIZING)
@@ -198,14 +191,13 @@ class Battle(Scene):
         self.background = self.loadBattleSurface(Battle.Backgrounds.GRASS)
         self.currentAnimation = SceneAnimations.NONE
         self.setState(SceneStates.ON_ANIMATION)
-        playerBottomPos = 350, 420
-        enemyBottomPos = screen_size[0] - playerBottomPos[0], playerBottomPos[1] 
+        enemyBottomPos = screen_size[0] - Battle.PLAYER_BOTTOM_POS[0], Battle.PLAYER_BOTTOM_POS[1] 
         self.enemy = self.loadEnemy(enemy_name, enemyBottomPos)
-        self.player = self.loadPlayer(player_base_surf, playerBottomPos)
+        self.player = self.loadPlayer(player_base_surf, Battle.PLAYER_BOTTOM_POS)
         self.currentEntity = self.player # describes entity turn
         self.zoomScale = 1
         self.zoomState = "NONE"
-        self.playerTurnButtons = self.generatePlayerTurnButtons(playerBottomPos, player_base_surf)
+        self.playerTurnButtons = self.generatePlayerTurnButtons(Battle.PLAYER_BOTTOM_POS, player_base_surf)
         self.playerTurnButtonIdx = 0
         self.currentButtons = self.playerTurnButtons
         self.currentButtonIdx = self.playerTurnButtonIdx
@@ -231,11 +223,38 @@ class Battle(Scene):
         button5 = TextButton("USE ITEM", "USE ITEM", 0, 0, 0, 0, fit_to_text=True, color=(0, 153, 0), font_path=SAVED_DATA.FONT_PATH)
         button5.animateTextWithOutline((102, 255, 0))
         buttonList.append(button5)
+        
+
+        '''
         for button in buttonList:
             pos = Misc.bottomToTopleftPos(bottomPos, button.textSurface)
             button.setX(pos[0])
             button.setY(pos[1])
+        '''
+        for i in range(len(buttonList)):
+            adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[0 - i], buttonList[i].textSurface) 
+            buttonList[i].setX(adjustedPos[0])
+            buttonList[i].setY(adjustedPos[1])
         return buttonList
+
+
+    def updateButtonsOnUIInput(self, current_buttons, current_button_idx):
+        #updates alphas and position
+        for i in range(len(current_buttons)):
+            #pos = Battle.ButtonPositions[current_button_idx - i]
+            adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[current_button_idx - i],current_buttons[i].textSurface)
+
+            self.currentButtons[i].setX(adjustedPos[0])
+            self.currentButtons[i].setY(adjustedPos[1])
+            if i == current_button_idx:
+                selectedOpacity = 255
+                self.currentButtons[i].setTextSurfaceAlpha(selectedOpacity)
+                self.currentButtons[i].setTextSurfaceOutlineAlpha(selectedOpacity)
+
+                continue
+            unselectedOpacity = 100
+            self.currentButtons[i].setTextSurfaceAlpha(unselectedOpacity) 
+            self.currentButtons[i].setTextSurfaceOutlineAlpha(unselectedOpacity)
 
     def checkInput(self, state: str, battle_state: str):
         if state != SceneStates.RUNNING:
@@ -246,7 +265,7 @@ class Battle(Scene):
         timenow = pygame.time.get_ticks()
         cooldown = 300
         match battle_state:
-            case Battle.States.PLAYER_CHOOSING_MOVE:
+            case Battle.States.PLAYER_CHOOSING_ACTION:
                 if timenow - self.timeLastInput < cooldown:
                     return None
 
@@ -258,6 +277,7 @@ class Battle(Scene):
                     if self.currentButtonIdx >= len(self.currentButtons):
                         self.currentButtonIdx = 0
                     self.timeLastInput = timenow
+                    self.updateButtonsOnUIInput(self.currentButtons, self.currentButtonIdx)
                 for key in SAVED_DATA.UI_MOVE_LEFT:
                     if not keys[key]:
                         continue 
@@ -265,6 +285,7 @@ class Battle(Scene):
                     if self.currentButtonIdx < 0:
                         self.currentButtonIdx = len(self.currentButtons) - 1
                     self.timeLastInput = timenow
+                    self.updateButtonsOnUIInput(self.currentButtons, self.currentButtonIdx)
 
     def setBattleState(self, state: str):
         assert SETTINGS_FUNCTIONS.checkVariableInClass(state, Battle.States)
@@ -377,7 +398,7 @@ class Battle(Scene):
     def checkBattleState(self, screen: pygame.Surface, battle_state: str):
         logger.debug(f"{battle_state=}, {self.prevState=}, {self.state=}")
         match battle_state:
-            case self.States.PLAYER_CHOOSING_MOVE:
+            case self.States.PLAYER_CHOOSING_ACTION:
                 if self.prevState == Battle.States.PREPARING_TURN:
                     self.zoomState = Battle.ZoomStates.ZOOMING_TO_RECT
                     self.prevState = self.state
@@ -387,14 +408,18 @@ class Battle(Scene):
                 self.player.update(blittedSurface)
                 self.updateButtons(battle_state, self.currentButtons, self.currentButtonIdx, blittedSurface)
                 self.enemy.update(blittedSurface)
-                #SETTINGS_FUNCTIONS.zoomToSurface(screen, blittedSurface, self.player.rect, self.zoomScale, self.zoomScale - 1)
                 position2 = (blittedSurface.get_width()/2 - self.player.rect.center[0], blittedSurface.get_height()/2 - self.player.rect.center[1])
                 SETTINGS_FUNCTIONS.zoomToPosition(screen, blittedSurface, (0,0), position2, self.zoomScale, self.zoomScale-1)
+
     def updateButtons(self, battle_state, current_buttons, current_button_idx, screen):
-        assert battle_state == self.States.PLAYER_CHOOSING_MOVE
+        assert battle_state == self.States.PLAYER_CHOOSING_ACTION
         logger.debug(f"{current_buttons=}")
         logger.debug(f"{current_button_idx=}")
-        current_buttons[current_button_idx].update(screen)
+        # draw buttons
+        currentButtonLen = len(current_buttons)
+        for i in range(current_button_idx - currentButtonLen , current_button_idx+1, 1):
+
+            current_buttons[i].update(screen)
 
 
     def checkState(self, state: str, screen: pygame.Surface):
@@ -405,7 +430,7 @@ class Battle(Scene):
                 self.transitionToBattleSurface(screen)
                 if self.animationHandler.state == AnimationStates.FINISHED:
                     self.setState(SceneStates.RUNNING)
-                    self.setBattleState(Battle.States.PLAYER_CHOOSING_MOVE)
+                    self.setBattleState(Battle.States.PLAYER_CHOOSING_ACTION)
             case SceneStates.FINISHING:
                 self.background.empty()
                 self.exitScene(SceneTypes.AREA)
@@ -413,6 +438,7 @@ class Battle(Scene):
     def update(self, screen):
         self.checkState(state= self.state, screen= screen)
         self.checkInput(self.state, self.battleState)
+        logger.debug(f"current button pos: " + f"{self.currentButtons[self.currentButtonIdx].rect=}")
 
         if DEBUG_MODE:
             self.debugExit(state= self.state)
