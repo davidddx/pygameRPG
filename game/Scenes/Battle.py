@@ -137,17 +137,13 @@ class BattleSceneTransitionAnimations:
 
 # loading button positions for player battle scene using a model ellipses and the number of buttons 
 # goal: run this operation only once and store it in this file so that less float/double operations are done
+def loadButtonPositions(num_buttons: int, pos=(0,0), model_ellipse = (30, 30)):
+    angles = numpy.radians(numpy.array(range(-90, 270, int(360/num_buttons))))
+    polarCoordinates = Misc.getPolarCoordinates(angles, model_ellipse[1], model_ellipse[0])
+    pos = Misc.getCartesianFromPolar(polarCoordinates, angles) + pos
+    return pos 
 
-def loadButtonPositions(num_buttons: int, pos=(0,0)):
-    # numpy used for easier array operations
-    modelEllipse = 105, 20 #formatted as such: top radius, side radius
-    paddingSpace = 20
-    angle = numpy.radians(numpy.array(range(-90, 270, int(360/num_buttons))))
-    #pos = Misc.bottomToMiddlePos(pos, modelEllipse)
-    polarCoordinates = Misc.getPolarCoordinates(angle, modelEllipse[0], modelEllipse[1])
-    buttonPositions = Misc.getCartesianFromPolar(polarCoordinates, angle) + (pos[0], pos[1] - paddingSpace)
-    logger.debug(f"{buttonPositions=}")
-    return buttonPositions 
+
 
 def loadButtonPositionOrientation(NUM_BUTTONS: int):
     return numpy.zeros(NUM_BUTTONS)
@@ -173,7 +169,8 @@ class Battle(Scene):
     NUM_BUTTONS = 5 
 
     PLAYER_BOTTOM_POS = 350, 420
-    ButtonPositions = loadButtonPositions(NUM_BUTTONS, pos=(PLAYER_BOTTOM_POS[0], PLAYER_BOTTOM_POS[1] - 2*TILE_SIZE))
+    BUTTON_MODEL_ELLIPSE = (10000, 20)
+    ButtonPositions = loadButtonPositions(NUM_BUTTONS, pos=(PLAYER_BOTTOM_POS[0], PLAYER_BOTTOM_POS[1] - 2*TILE_SIZE - BUTTON_MODEL_ELLIPSE[1]), model_ellipse = BUTTON_MODEL_ELLIPSE)
     ButtonPositionsOrientation = loadButtonPositionOrientation(NUM_BUTTONS)
 
     def __init__(self, last_area_frame: pygame.Surface, screen_size: tuple[int, int], enemy_name: str, player_base_surf: pygame.Surface):
@@ -205,8 +202,8 @@ class Battle(Scene):
         logger.debug("Battle Scene Initialized")
 
     def generatePlayerTurnButtons(self, player_bottom_pos, player_base_surf) -> list[TextButton]:
-        extraSpacing = 20
-        bottomPos = player_bottom_pos[0], player_bottom_pos[1] - player_base_surf.get_height() - extraSpacing
+        #extraSpacing = 20
+        #bottomPos = player_bottom_pos[0], player_bottom_pos[1] - player_base_surf.get_height() - extraSpacing
         buttonList = []
         button1 = TextButton("ATTACK", "ATTACK", 0, 0, 0, 0, fit_to_text=True, color=(140, 8, 10), font_path=SAVED_DATA.FONT_PATH)
         button1.animateTextWithOutline((255, 0,0))
@@ -231,30 +228,62 @@ class Battle(Scene):
             button.setX(pos[0])
             button.setY(pos[1])
         '''
+        mainPos = Battle.ButtonPositions[0]
         for i in range(len(buttonList)):
             adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[0 - i], buttonList[i].textSurface) 
-            buttonList[i].setX(adjustedPos[0])
+            currentButton = buttonList[i]
+            currentButton.setX(adjustedPos[0])
             buttonList[i].setY(adjustedPos[1])
+            if i != 0:
+                lastSize = currentButton.fontSize
+                sizeDiff = int((mainPos[1] - Battle.ButtonPositions[0 - i, 1])/10 + 3)
+                currSize = currentButton.originalFontSize - sizeDiff
+                currentButton.setTextSurfaceAlpha(100)
+                currentButton.setTextSurfaceOutlineAlpha(100)
+                currentButton.animateTextToSize(size= currSize, step= 1, shrink= lastSize > currSize)
+                logger.debug(f"{currSize=}")
+                logger.debug(f"{sizeDiff=}")
+                logger.debug(f"{currentButton.fontSize=}")
+            else:
+                currentButton.setTextSurfaceAlpha(255)
+                currentButton.setTextSurfaceOutlineAlpha(255)
+                currentButton.animateTextToSize(size= currentButton.originalFontSize + 4, step=1, shrink= False)
+                currentButton.animateTextWithOutline()
+                logger.debug(f"{currentButton.fontSize=}")
+            logger.debug(f"{buttonList[i].textSurfaceAlpha=}")
+            logger.debug(f"{buttonList[i].textSurfaceOutlineAlpha=}")
         return buttonList
 
 
     def updateButtonsOnUIInput(self, current_buttons, current_button_idx):
-        #updates alphas and position
+        unselectedOpacity = 50
+        selectedOpacity = 255
+        mainPos = Battle.ButtonPositions[0]
         for i in range(len(current_buttons)):
             #pos = Battle.ButtonPositions[current_button_idx - i]
-            adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[current_button_idx - i],current_buttons[i].textSurface)
+            currentButton = current_buttons[i]
+            adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[current_button_idx - i], currentButton.textSurface)
 
-            self.currentButtons[i].setX(adjustedPos[0])
-            self.currentButtons[i].setY(adjustedPos[1])
+            currentButton.setX(adjustedPos[0])
+            currentButton.setY(adjustedPos[1])
             if i == current_button_idx:
-                selectedOpacity = 255
-                self.currentButtons[i].setTextSurfaceAlpha(selectedOpacity)
-                self.currentButtons[i].setTextSurfaceOutlineAlpha(selectedOpacity)
-
+                currentButton.setTextSurfaceAlpha(selectedOpacity)
+                currentButton.setTextSurfaceOutlineAlpha(selectedOpacity)
+                currentButton.animateTextToSize(size= currentButton.originalFontSize + 3, step=1, shrink=False)
+                currentButton.animateTextWithOutline()
                 continue
-            unselectedOpacity = 100
-            self.currentButtons[i].setTextSurfaceAlpha(unselectedOpacity) 
-            self.currentButtons[i].setTextSurfaceOutlineAlpha(unselectedOpacity)
+            currentButton.setTextSurfaceAlpha(unselectedOpacity) 
+            currentButton.setTextSurfaceOutlineAlpha(unselectedOpacity)
+            sizeDiff = int((mainPos[1] - Battle.ButtonPositions[current_button_idx-i, 1])/10 + 3)
+            currentButton.animateTextWithOutline(currentButton.originalOutlineColor)
+            lastSize = currentButton.fontSize
+            currSize = currentButton.originalFontSize - sizeDiff
+            logger.debug(f"{mainPos=}")
+            logger.debug(f"{lastSize=}") 
+            logger.debug(f"{currSize=}") 
+            logger.debug(f"{sizeDiff=}")
+            logger.debug(f"{lastSize >= currSize=}")
+            currentButton.animateTextToSize(size= currSize, step= 1, shrink= lastSize > currSize)
 
     def checkInput(self, state: str, battle_state: str):
         if state != SceneStates.RUNNING:
