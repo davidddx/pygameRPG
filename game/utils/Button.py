@@ -160,7 +160,7 @@ class TextAlignments:
             ]
 
 class TextAnimationInfo:
-    def __init__(self, is_scaling = False, shrink=False, scale_step=1, size_on_scale_finished=30, outline= False, outline_size = "small", outline_color= (255, 255, 0), color_shifting= False, color_shifting_speed="slow", color= (0, 0, 0), min_scaled_size=20):
+    def __init__(self, is_scaling = False, shrink=False, scale_step=1, size_on_scale_finished=30, outline= False, outline_size = "small", outline_color= (255, 255, 0), color_shifting= False, color_shifting_speed="slow", color= (0, 0, 0), min_scaled_size=20, is_xy_lerping=False, lerp_xy_pos = (0,0), lerp_xy_step = 0, is_xy_slerp = False):
         self.maxScaledSize = size_on_scale_finished
         self.minScaledSize = min_scaled_size
         self.scaleStep = scale_step
@@ -175,8 +175,10 @@ class TextAnimationInfo:
         self.colorShiftColor = color
         self.lerpRGBStep = 0.1
         self.lerpRGBValue = 0
-        self.lerpXYStep = 0
-        self.lerpXYPos = (0,0)
+        self.lerpXYStep = lerp_xy_step
+        self.lerpXYPos = lerp_xy_pos 
+        self.lerpXY = is_xy_lerping
+        self.slerpXY = is_xy_slerp
         self.validLerpSpeeds = ["very slow, slow, medium, fast, very fast"]
         self.finished = False
 
