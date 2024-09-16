@@ -12,6 +12,7 @@ import game.utils.SettingsFunctions as SETTINGS_FUNCTIONS
 import game.utils.Misc as Misc 
 import gamedata.Save.SavedData as SAVED_DATA
 import numpy
+
 class BackgroundTile(pygame.sprite.Sprite):
     def __init__(self, sprite_group: pygame.sprite.Group, image_dir: str, pos: tuple):
         super().__init__(sprite_group)
@@ -140,13 +141,10 @@ class BattleSceneTransitionAnimations:
 def loadButtonPositions(num_buttons: int, pos=(0,0), model_ellipse = (30, 30)):
     angles = numpy.radians(numpy.array(range(-90, 270, int(360/num_buttons))))
     polarCoordinates = Misc.getPolarCoordinates(angles, model_ellipse[1], model_ellipse[0])
-    pos = Misc.getCartesianFromPolar(polarCoordinates, angles) + pos
+    pos = Misc.getCartesianFromPolar(polarCoordinates, angles) + pos 
+
+    logger.debug(f"button positions: {pos}")
     return pos 
-
-
-
-def loadButtonPositionOrientation(NUM_BUTTONS: int):
-    return numpy.zeros(NUM_BUTTONS)
 
 
 class Battle(Scene):
@@ -166,12 +164,11 @@ class Battle(Scene):
         FINISHED = "FINISHED"
         NOT_MOVING = "NOT_MOVING"
 
-    NUM_BUTTONS = 5 
+    NUM_BUTTONS = 4 
 
     PLAYER_BOTTOM_POS = 350, 420
-    BUTTON_MODEL_ELLIPSE = (10000, 20)
+    BUTTON_MODEL_ELLIPSE = (100, 25)
     ButtonPositions = loadButtonPositions(NUM_BUTTONS, pos=(PLAYER_BOTTOM_POS[0], PLAYER_BOTTOM_POS[1] - 2*TILE_SIZE - BUTTON_MODEL_ELLIPSE[1]), model_ellipse = BUTTON_MODEL_ELLIPSE)
-    ButtonPositionsOrientation = loadButtonPositionOrientation(NUM_BUTTONS)
 
     def __init__(self, last_area_frame: pygame.Surface, screen_size: tuple[int, int], enemy_name: str, player_base_surf: pygame.Surface):
         self.setState(SceneStates.INITIALIZING)
@@ -214,9 +211,9 @@ class Battle(Scene):
         button3 = TextButton("FLEE", "FLEE", 0, 0, 0, 0, fit_to_text=True, color=(100, 149, 247), font_path=SAVED_DATA.FONT_PATH)
         button3.animateTextWithOutline((173, 216, 230))
         buttonList.append(button3)
-        button4 = TextButton("ANALYZE", "ANALYZE", 0, 0, 0, 0, fit_to_text = True, color = (155, 135, 12), font_path = SAVED_DATA.FONT_PATH)
-        button4.animateTextWithOutline((255, 234, 20))
-        buttonList.append(button4)
+        #button4 = TextButton("ANALYZE", "ANALYZE", 0, 0, 0, 0, fit_to_text = True, color = (155, 135, 12), font_path = SAVED_DATA.FONT_PATH)
+        #button4.animateTextWithOutline((255, 234, 20))
+        #buttonList.append(button4)
         button5 = TextButton("USE ITEM", "USE ITEM", 0, 0, 0, 0, fit_to_text=True, color=(0, 153, 0), font_path=SAVED_DATA.FONT_PATH)
         button5.animateTextWithOutline((102, 255, 0))
         buttonList.append(button5)
@@ -230,10 +227,10 @@ class Battle(Scene):
         '''
         mainPos = Battle.ButtonPositions[0]
         for i in range(len(buttonList)):
-            adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[0 - i], buttonList[i].textSurface) 
             currentButton = buttonList[i]
-            currentButton.setX(adjustedPos[0])
-            buttonList[i].setY(adjustedPos[1])
+            adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[0 - i], buttonList[i].textSurface) 
+            currentButton.setX(adjustedPos[0] )
+            currentButton.setY(adjustedPos[1] )
             if i != 0:
                 lastSize = currentButton.fontSize
                 sizeDiff = int((mainPos[1] - Battle.ButtonPositions[0 - i, 1])/10 + 3)
@@ -256,16 +253,17 @@ class Battle(Scene):
 
 
     def updateButtonsOnUIInput(self, current_buttons, current_button_idx):
-        unselectedOpacity = 50
+        unselectedOpacity = 100
         selectedOpacity = 255
         mainPos = Battle.ButtonPositions[0]
+        
         for i in range(len(current_buttons)):
-            #pos = Battle.ButtonPositions[current_button_idx - i]
             currentButton = current_buttons[i]
-            adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[current_button_idx - i], currentButton.textSurface)
-
+            adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[current_button_idx - i], currentButton.textSurface) 
             currentButton.setX(adjustedPos[0])
             currentButton.setY(adjustedPos[1])
+
+
             if i == current_button_idx:
                 currentButton.setTextSurfaceAlpha(selectedOpacity)
                 currentButton.setTextSurfaceOutlineAlpha(selectedOpacity)
@@ -283,7 +281,7 @@ class Battle(Scene):
             logger.debug(f"{currSize=}") 
             logger.debug(f"{sizeDiff=}")
             logger.debug(f"{lastSize >= currSize=}")
-            currentButton.animateTextToSize(size= currSize, step= 1, shrink= lastSize > currSize)
+            currentButton.animateTextToSize(size= currSize, step= 2, shrink= lastSize > currSize)
 
     def checkInput(self, state: str, battle_state: str):
         if state != SceneStates.RUNNING:
@@ -315,7 +313,6 @@ class Battle(Scene):
                         self.currentButtonIdx = len(self.currentButtons) - 1
                     self.timeLastInput = timenow
                     self.updateButtonsOnUIInput(self.currentButtons, self.currentButtonIdx)
-
     def setBattleState(self, state: str):
         assert SETTINGS_FUNCTIONS.checkVariableInClass(state, Battle.States)
         self.battleState = state
@@ -438,6 +435,9 @@ class Battle(Scene):
                 self.updateButtons(battle_state, self.currentButtons, self.currentButtonIdx, blittedSurface)
                 self.enemy.update(blittedSurface)
                 position2 = (blittedSurface.get_width()/2 - self.player.rect.center[0], blittedSurface.get_height()/2 - self.player.rect.center[1])
+                #for pos in Battle.ButtonPositions:
+                #    pygame.draw.rect(blittedSurface, (255,255,255), (pos[0], pos[1], 50, 25))
+
                 SETTINGS_FUNCTIONS.zoomToPosition(screen, blittedSurface, (0,0), position2, self.zoomScale, self.zoomScale-1)
 
     def updateButtons(self, battle_state, current_buttons, current_button_idx, screen):
@@ -446,9 +446,22 @@ class Battle(Scene):
         logger.debug(f"{current_button_idx=}")
         # draw buttons
         currentButtonLen = len(current_buttons)
-        for i in range(current_button_idx - currentButtonLen , current_button_idx+1, 1):
+        for i in range(currentButtonLen):
+            currentButton = current_buttons[i]
 
+            if currentButton.fontSize == currentButton.originalFontSize:
+                continue
+            if currentButton.textAnimationInfo.lerpXY:
+                continue
+
+            adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[current_button_idx-i], currentButton.textSurface) 
+            currentButton.setX(adjustedPos[0])
+            currentButton.setY(adjustedPos[1])
+
+        for i in range(current_button_idx - currentButtonLen , current_button_idx+1, 1):
             current_buttons[i].update(screen)
+
+                
 
 
     def checkState(self, state: str, screen: pygame.Surface):
@@ -465,9 +478,12 @@ class Battle(Scene):
                 self.exitScene(SceneTypes.AREA)
 
     def update(self, screen):
+
         self.checkState(state= self.state, screen= screen)
         self.checkInput(self.state, self.battleState)
         logger.debug(f"current button pos: " + f"{self.currentButtons[self.currentButtonIdx].rect=}")
+        for button in self.currentButtons:
+            logger.debug(f"{button.rect=}")
 
         if DEBUG_MODE:
             self.debugExit(state= self.state)
