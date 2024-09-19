@@ -302,6 +302,7 @@ class Battle(Scene):
                 adjustedPositions = numpy.flip(adjustedPositions, 0)
             logger.debug(f"{interpolatedPositions=}, {adjustedPositions=}")
             currentButton.animateTextToPosition(current_pos = adjustedPositions[0], goal_pos = adjustedPositions[-1], given_positions = True, positions=adjustedPositions, step=1)
+
             #currentButton.setX(adjustedPos[0])
             #currentButton.setY(adjustedPos[1])
 
