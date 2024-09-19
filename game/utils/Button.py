@@ -160,7 +160,7 @@ class TextAlignments:
             ]
 
 class TextAnimationInfo:
-    def __init__(self, is_scaling = False, shrink=False, scale_step=1, size_on_scale_finished=30, outline= False, outline_size = "small", outline_color= (255, 255, 0), color_shifting= False, color_shifting_speed="slow", color= (0, 0, 0), min_scaled_size=20, is_xy_lerping=False, lerp_xy_pos = (0,0), lerp_xy_step = 0, is_xy_slerp = False):
+    def __init__(self, is_scaling = False, shrink=False, scale_step=1, size_on_scale_finished=30, outline= False, outline_size = "small", outline_color= (255, 255, 0), color_shifting= False, color_shifting_speed="slow", color= (0, 0, 0), min_scaled_size=20, is_xy_lerping=False, lerp_xy_pos = (0,0), lerp_xy_step = 0, is_xy_ellipse_interpolation = False, ellipse_interpolation_xy_size = 0, ellipse_interpolation_xy_direction = 0):
         self.maxScaledSize = size_on_scale_finished
         self.minScaledSize = min_scaled_size
         self.scaleStep = scale_step
@@ -176,17 +176,45 @@ class TextAnimationInfo:
         self.lerpRGBStep = 0.1
         self.lerpRGBValue = 0
         self.lerpXYStep = lerp_xy_step
-        self.lerpXYPos = lerp_xy_pos 
+        self.lerpXYOriginalPos = lerp_xy_pos 
+        self.lerpXYGoalPos = lerp_xy_pos 
+        self.lerpXYCurrentPos = lerp_xy_pos
         self.lerpXY = is_xy_lerping
-        self.slerpXY = is_xy_slerp
+        self.givenLerpXYPositions = False
+        self.lerpXYPositions = None 
+        self.lerpXYIndex = 0
+        self.ellipseInterpolationXY = is_xy_ellipse_interpolation
+        self.ellipseInterpolationXYSize = ellipse_interpolation_xy_size 
+        self.ellipseInterpolationXYDirection = ellipse_interpolation_xy_direction # x==0: not moving. x>=1: Clockwise, x<=-1: Counterclockwise
         self.validLerpSpeeds = ["very slow, slow, medium, fast, very fast"]
         self.finished = False
 
+    def setLerpXYIndex(self, idx): self.lerpXYIndex = idx
+    def getLerpXYIndex(self): return self.lerpXYIndex
+    def setEllipseInterpolationXYDirection(self, direction: int): self.ellipseInterpolationXYDirection = direction
+    def getEllipseInterpolationXYDirection(self): return self.ellipseInterpolationXYDirection
+    def getEllipseInterpolationXYSize(self): return self.ellipseInterpolationXYSize
+    def getEllipseInterpolationXY(self): return self.ellipseInterpolationXY
+    def setEllipseInterpolationXY(self, val): self.ellipseInterpolationXY = val
+    def setEllipseInterpolationXYSize(self, val: tuple[float | int]): self.ellipseInterpolationXYSize = val
+    def setGivenLerpXYPositions(self, val: bool): self.givenLerpXYPositions = val 
+    def setLerpXYPositions(self, val): self.lerpXYPositions = val
+    def getGivenLerpXYPositions(self): return self.givenLerpXYPositions
+    def getLerpXYPositions(self): return self.lerpXYPositions
     def setLerpXYStep(self, lerp_xy_step: float | int): self.lerpXYStep = lerp_xy_step
-    def setLerpXYPos(self, lerp_xy_pos: tuple[float | int]): self.lerpXYPos = lerp_xy_pos
-    def setLerpXYGoalPos(self, lerp_xy_pos: float | int): self.lerpXYPos = lerp_xy_pos
-    def getLerpXYGoalPos(self): return self.lerpXYPos
-    def getLerpXYPos(self): return self.lerpXYPos
+    def getLerpXYStep(self): return self.lerpXYStep
+    def setLerpXYOriginalPos(self, lerp_xy_original_pos: tuple[float | int]): self.lerpXYOriginalPos = lerp_xy_original_pos
+    def setLerpXYCurrentPos(self, lerp_xy_pos: tuple[float | int]): self.lerpXYCurrentPos = lerp_xy_pos
+    def setLerpXYGoalPos(self, lerp_xy_pos: tuple[float | int]): self.lerpXYGoalPos = lerp_xy_pos
+    def getLerpXYOriginalPos(self): return self.lerpXYOriginalPos
+    def getLerpXYGoalPos(self): return self.lerpXYGoalPos
+    def getLerpXYCurrentPos(self): return self.lerpXYCurrentPos
+    def getSlerpXY(self): return self.slerpXY
+    def setLerpXY(self, lerp_xy: bool): self.lerpXY = lerp_xy
+    def setSlerpXY(self, slerp_xy: bool): self.slerpXY = slerp_xy
+    def setSlerpXYSize(self, size: int | float): self.slerpXYPathSize = size
+    def getSlerpXYSize(self): return self.slerpXYPathSize
+    def getLerpXY(self): return self.lerpXY
     def setFinished(self, finished): self.finished = finished
     def getFinished(self): return self.finished
     def setOutline(self, outline: bool): self.outline = outline
@@ -380,7 +408,7 @@ class TextButton(Button):
    
     @staticmethod
     def turnStringToFontSurf(string: str, font_fp: str, base_size=24,  color= (255,255,255), bold= False):        
-        font = pygame.font.Font(font_fp, base_size)
+        font = pygame.font.Font(font_fp, int(base_size))
         font.bold = bold
         return font.render(string, False, color)
 
@@ -434,15 +462,23 @@ class TextButton(Button):
         self.textAnimationInfo.setColorShiftingSpeed(speed)
         self.textAnimationInfo.setColorShiftColor(color)
 
-    def animateTextToPosition(self,goal_pos: tuple, step=0.1):
+    def animateTextToPosition(self,goal_pos: tuple, current_pos: tuple, ellipse_interpolation= False, ellipse_size = (30,30), step=0.1, given_positions = False, positions = None):
         self.setState(ButtonStates.ON_ANIMATION)
+        self.textAnimationInfo.setLerpXY(True)
         self.textAnimationInfo.setLerpXYStep(step)
-        self.textAnimationInfo.setLerpXYPos(goal_pos)
+        self.textAnimationInfo.setLerpXYGoalPos(goal_pos)
+        self.textAnimationInfo.setLerpXYCurrentPos(current_pos)
+        self.textAnimationInfo.setLerpXYOriginalPos(current_pos)
+        self.textAnimationInfo.setGivenLerpXYPositions(given_positions)
+        self.textAnimationInfo.setLerpXYPositions(positions)
+        self.textAnimationInfo.setEllipseInterpolationXY(ellipse_interpolation)
+        self.textAnimationInfo.setEllipseInterpolationXYSize(ellipse_size)
 
 
     def animate(self, animationInfo, state):
         if state != ButtonStates.ON_ANIMATION: return None
-        if not (animationInfo.getScale() or animationInfo.getColorShift() or animationInfo.getOutline()): return None 
+        logger.debug(f"LERP XY: {animationInfo.getLerpXY()}")
+        if not (animationInfo.getScale() or animationInfo.getColorShift() or animationInfo.getOutline() or animationInfo.getLerpXY()): return None 
         ### Animation text size###
         if animationInfo.shrink:
             if self.fontSize <= animationInfo.getMinScaledSize():
@@ -485,6 +521,24 @@ class TextButton(Button):
                 self.textSurfaceOutline = self.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
         self.textSurface = self.loadFontSurface(self.text, self.fontSize, self.textColor) 
         if animationInfo.getScaleStep(): self.changeRect(self.textSurface.get_rect(topleft= self.textPosition))
+        if animationInfo.getLerpXY(): 
+            if animationInfo.getGivenLerpXYPositions():
+                positions = animationInfo.getLerpXYPositions() 
+                idx = animationInfo.getLerpXYIndex()
+                if idx > len(positions) - 1:
+                    idx = len(positions) - 1
+                currentPosition = positions[int(idx)]
+                logger.debug(f"ANIMATING TEXT TO POSITION. {positions=}, {idx=}, {currentPosition=}")
+                self.setX(currentPosition[0])
+                self.setY(currentPosition[1])
+                animationInfo.setLerpXYIndex(idx + animationInfo.getLerpXYStep())
+                lastPos = positions[-1] 
+                if currentPosition[0] == lastPos[0] and currentPosition[1] == lastPos[1]:
+
+                    animationInfo.setLerpXY(False)
+                    animationInfo.setLerpXYIndex(0)
+                    animationInfo.setLerpXYStep(0)
+                    
 
     def editText(self, new_text: str):
         self.textSurface = self.loadFontSurface(new_text, self.fontSize, self.textColor) 
