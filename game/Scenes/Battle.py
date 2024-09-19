@@ -25,7 +25,6 @@ class BackgroundTile(pygame.sprite.Sprite):
         assert type(screen) == pygame.Surface
         screen.blit(self.image, self.pos)
 
-
 class BattleSceneEntity:
     #prototype class for now will use later
     class states:
@@ -135,7 +134,6 @@ class BattleSceneTransitionAnimations:
         self.animations[self.currentAnimationIdx].update(screen, background, background2)
         self.checkAnimationFinished(self.animations[self.currentAnimationIdx])
 
-
 # loading button positions for player battle scene using a model ellipses and the number of buttons 
 # goal: run this operation only once and store it in this file so that less float/double operations are done
 def loadButtonPositions(num_buttons: int, pos=(0,0), model_ellipse = (30, 30)):
@@ -146,6 +144,39 @@ def loadButtonPositions(num_buttons: int, pos=(0,0), model_ellipse = (30, 30)):
     logger.debug(f"button positions: {pos}")
     return pos 
 
+def loadEllipseInterpolatedButtonPositions(num_buttons, ellipse_size, base_angle, num_steps, pos):
+    baseArr = numpy.zeros((num_buttons, num_steps + 1, 2)) # 2 at the end because 2d
+    '''
+    num_buttons: number of buttons, 
+    ellipse_size: (ellipse horizontal axis radius, vertical axis radius)
+    base_angle: starting angle in degrees
+    num_steps: number of interpolation steps taken.
+    pos: our offset
+    baseArr is a 3d array with the format specified below
+    array[0] = 5 positions b/t path from button_positions[0] to button_positions[1]
+    array[1] = 5 positions b/t path from button_positions[1] to button_positions[2]
+    array[2] = 5 positions b/t path from button_positions[2] to button_positions[3]
+    array[3] = 5 positions b/t path from button_positions[3] to button_positions[0]
+    
+    ##Remember## array[0] pos is for -90 degrees, array[numbuttons - 1] pos is for 270
+    '''
+    endingAngle = base_angle + 360
+    numButtons = num_buttons 
+    outerStep = int((endingAngle - base_angle)/numButtons)
+    for index1, angleMeasure in enumerate(range(base_angle, endingAngle, outerStep)):
+        innerEndingAngle = angleMeasure + outerStep
+        innerStep = int(outerStep / num_steps) 
+        # range function sets interpolation range from angleMeasure to endingAngle
+        theRange = range(angleMeasure, innerEndingAngle + innerStep, innerStep)
+        innerArr = numpy.zeros(len(theRange))
+        for index2, interpolatedAngle in enumerate(theRange):
+            innerArr[index2] = interpolatedAngle
+        #logger.debug(f"Loading Ellipse Interpolated Button positions. {innerArr=}")
+        innerArr = numpy.radians(innerArr)
+        polarCoordinates = Misc.getPolarCoordinates(innerArr, ellipse_size[1], ellipse_size[0])
+        baseArr[index1] = Misc.getCartesianFromPolar(polarCoordinates, innerArr) + pos 
+    logger.debug(f"{baseArr=}")
+    return baseArr
 
 class Battle(Scene):
     class States:
@@ -165,10 +196,11 @@ class Battle(Scene):
         NOT_MOVING = "NOT_MOVING"
 
     NUM_BUTTONS = 4 
-
     PLAYER_BOTTOM_POS = 350, 420
     BUTTON_MODEL_ELLIPSE = (100, 25)
-    ButtonPositions = loadButtonPositions(NUM_BUTTONS, pos=(PLAYER_BOTTOM_POS[0], PLAYER_BOTTOM_POS[1] - 2*TILE_SIZE - BUTTON_MODEL_ELLIPSE[1]), model_ellipse = BUTTON_MODEL_ELLIPSE)
+    BUTTON_OFFSET = (PLAYER_BOTTOM_POS[0], PLAYER_BOTTOM_POS[1] - 2*TILE_SIZE - BUTTON_MODEL_ELLIPSE[1])
+    ButtonPositions = loadButtonPositions(NUM_BUTTONS, pos=BUTTON_OFFSET, model_ellipse = BUTTON_MODEL_ELLIPSE)
+    InterpolatedButtonPositions = loadEllipseInterpolatedButtonPositions(NUM_BUTTONS, BUTTON_MODEL_ELLIPSE, -90, 3, BUTTON_OFFSET)
 
     def __init__(self, last_area_frame: pygame.Surface, screen_size: tuple[int, int], enemy_name: str, player_base_surf: pygame.Surface):
         self.setState(SceneStates.INITIALIZING)
@@ -235,8 +267,8 @@ class Battle(Scene):
                 lastSize = currentButton.fontSize
                 sizeDiff = int((mainPos[1] - Battle.ButtonPositions[0 - i, 1])/10 + 3)
                 currSize = currentButton.originalFontSize - sizeDiff
-                currentButton.setTextSurfaceAlpha(100)
-                currentButton.setTextSurfaceOutlineAlpha(100)
+                currentButton.setTextSurfaceAlpha(200)
+                currentButton.setTextSurfaceOutlineAlpha(200)
                 currentButton.animateTextToSize(size= currSize, step= 1, shrink= lastSize > currSize)
                 logger.debug(f"{currSize=}")
                 logger.debug(f"{sizeDiff=}")
@@ -244,7 +276,7 @@ class Battle(Scene):
             else:
                 currentButton.setTextSurfaceAlpha(255)
                 currentButton.setTextSurfaceOutlineAlpha(255)
-                currentButton.animateTextToSize(size= currentButton.originalFontSize + 4, step=1, shrink= False)
+                currentButton.animateTextToSize(size= currentButton.originalFontSize + 4, step=0.3, shrink= False)
                 currentButton.animateTextWithOutline()
                 logger.debug(f"{currentButton.fontSize=}")
             logger.debug(f"{buttonList[i].textSurfaceAlpha=}")
@@ -252,23 +284,34 @@ class Battle(Scene):
         return buttonList
 
 
-    def updateButtonsOnUIInput(self, current_buttons, current_button_idx):
+    def updateButtonsOnUIInput(self, current_buttons, current_button_idx, direction=1):
         unselectedOpacity = 100
         selectedOpacity = 255
         mainPos = Battle.ButtonPositions[0]
         
         for i in range(len(current_buttons)):
             currentButton = current_buttons[i]
-            adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[current_button_idx - i], currentButton.textSurface) 
-            currentButton.setX(adjustedPos[0])
-            currentButton.setY(adjustedPos[1])
+            if direction == 1:
+                interpolatedPositions = Battle.InterpolatedButtonPositions[current_button_idx - i - 1]
+            else:
+                interpolatedPositions = Battle.InterpolatedButtonPositions[current_button_idx - i ]
+            adjustedPositions = numpy.zeros(interpolatedPositions.shape)
+            for index, position in enumerate(interpolatedPositions):
+                adjustedPositions[index] = Misc.bottomToTopleftPos(position, currentButton.textSurface) 
+            if direction == -1:
+                adjustedPositions = numpy.flip(adjustedPositions, 0)
+            logger.debug(f"{interpolatedPositions=}, {adjustedPositions=}")
+            currentButton.animateTextToPosition(current_pos = adjustedPositions[0], goal_pos = adjustedPositions[-1], given_positions = True, positions=adjustedPositions, step=1)
+            #currentButton.setX(adjustedPos[0])
+            #currentButton.setY(adjustedPos[1])
 
 
             if i == current_button_idx:
                 currentButton.setTextSurfaceAlpha(selectedOpacity)
                 currentButton.setTextSurfaceOutlineAlpha(selectedOpacity)
-                currentButton.animateTextToSize(size= currentButton.originalFontSize + 3, step=1, shrink=False)
+                currentButton.animateTextToSize(size= currentButton.originalFontSize + 3, step=2, shrink=False)
                 currentButton.animateTextWithOutline()
+
                 continue
             currentButton.setTextSurfaceAlpha(unselectedOpacity) 
             currentButton.setTextSurfaceOutlineAlpha(unselectedOpacity)
@@ -300,19 +343,21 @@ class Battle(Scene):
                     if not keys[key]:
                         continue
                     # do something
+                    direction = 1
                     self.currentButtonIdx += 1
                     if self.currentButtonIdx >= len(self.currentButtons):
                         self.currentButtonIdx = 0
                     self.timeLastInput = timenow
-                    self.updateButtonsOnUIInput(self.currentButtons, self.currentButtonIdx)
+                    self.updateButtonsOnUIInput(self.currentButtons, self.currentButtonIdx, direction)
                 for key in SAVED_DATA.UI_MOVE_LEFT:
                     if not keys[key]:
                         continue 
+                    direction = -1
                     self.currentButtonIdx -= 1
                     if self.currentButtonIdx < 0:
                         self.currentButtonIdx = len(self.currentButtons) - 1
                     self.timeLastInput = timenow
-                    self.updateButtonsOnUIInput(self.currentButtons, self.currentButtonIdx)
+                    self.updateButtonsOnUIInput(self.currentButtons, self.currentButtonIdx, direction)
     def setBattleState(self, state: str):
         assert SETTINGS_FUNCTIONS.checkVariableInClass(state, Battle.States)
         self.battleState = state
