@@ -9,7 +9,7 @@ def bottomToTopleftPos(bottom_pos: tuple, base_sprite: pygame.Surface):
     return topleftPos
 
 # S for tuple parameter b/c python doesnt have method overloading
-def bottomToTopleftPosS(bottom_pos: tuple, size: tuple):
+def bottomToTopleftPosS(bottom_pos: tuple | numpy.ndarray, size: tuple):
     topleftPos = bottom_pos[0] - size[0]/2, bottom_pos[1] - size[1]
     return topleftPos
 
