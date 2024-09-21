@@ -1,5 +1,6 @@
 import pygame
 import globalVars.SettingsConstants as SETTINGS
+import game.utils.Misc as Misc
 from debug.logger import logger
 import Font.FontPaths as FONT_PATHS
 
@@ -173,8 +174,14 @@ class TextAnimationInfo:
         self.colorShiftingSpeed = color_shifting_speed
         self.colorShift = color_shifting
         self.colorShiftColor = color
+        self.colorShiftOutline = False
+        self.colorShiftOutlineColor = False
+        self.colorShiftingOutlineSpeed = False
+        self.colorShiftOutlineLastColor = (0,0,0)
         self.lerpRGBStep = 0.1
         self.lerpRGBValue = 0
+        self.lerpRGBOutlineStep = 0.1
+        self.lerpRGBOutlineValue = 0
         self.lerpXYStep = lerp_xy_step
         self.lerpXYOriginalPos = lerp_xy_pos 
         self.lerpXYGoalPos = lerp_xy_pos 
@@ -183,12 +190,33 @@ class TextAnimationInfo:
         self.givenLerpXYPositions = False
         self.lerpXYPositions = None 
         self.lerpXYIndex = 0
+        self.lerpXYValue = 0
         self.ellipseInterpolationXY = is_xy_ellipse_interpolation
         self.ellipseInterpolationXYSize = ellipse_interpolation_xy_size 
         self.ellipseInterpolationXYDirection = ellipse_interpolation_xy_direction # x==0: not moving. x>=1: Clockwise, x<=-1: Counterclockwise
+        self.alphaChanging = False 
+        self.alphaGoal = 0
+        self.lerpXYGoalPosIsMiddle = False
+        self.alphaStep = 0
         self.validLerpSpeeds = ["very slow, slow, medium, fast, very fast"]
         self.finished = False
 
+    def setLerpXYGoalPosIsMiddle(self, boolean: bool): self.lerpXYGoalPosIsMiddle = boolean
+    def getLerpXYGoalPosIsMiddle(self): return self.lerpXYGoalPosIsMiddle 
+    def getAlphaChanging(self): return self.alphaChanging
+    def setAlphaChanging(self, alpha_changing: bool): self.alphaChanging = alpha_changing 
+    def getAlphaGoal(self): return self.alphaGoal
+    def setAlphaGoal(self, goal: int): self.alphaGoal = goal
+    def getAlphaStep(self): return self.alphaStep
+    def setAlphaStep(self, step): self.alphaStep = step
+    def setLerpRGBOutlineValue(self, val): self.lerpRGBOutlineValue = val
+    def getLerpRGBOutlineValue(self): return self.lerpRGBOutlineValue
+    def setLerpRGBOutlineStep(self, step): self.lerpRGPOutlineStep = step
+    def getLerpRGBOutlineStep(self): return self.lerpRGBOutlineStep
+    def setColorShiftOutlineLastColor(self, color: tuple[int, int, int]):
+        self.colorShiftOutlineLastColor = color
+    def getColorShiftOutlineLastColor(self):
+        return self.colorShiftOutlineLastColor
     def setLerpXYIndex(self, idx): self.lerpXYIndex = idx
     def getLerpXYIndex(self): return self.lerpXYIndex
     def setEllipseInterpolationXYDirection(self, direction: int): self.ellipseInterpolationXYDirection = direction
@@ -200,6 +228,8 @@ class TextAnimationInfo:
     def setGivenLerpXYPositions(self, val: bool): self.givenLerpXYPositions = val 
     def setLerpXYPositions(self, val): self.lerpXYPositions = val
     def getGivenLerpXYPositions(self): return self.givenLerpXYPositions
+    def setLerpXYValue(self, val): self.lerpXYValue = val
+    def getLerpXYValue(self): return self.lerpXYValue
     def getLerpXYPositions(self): return self.lerpXYPositions
     def setLerpXYStep(self, lerp_xy_step: float | int): self.lerpXYStep = lerp_xy_step
     def getLerpXYStep(self): return self.lerpXYStep
@@ -247,6 +277,20 @@ class TextAnimationInfo:
     def getShrink(self): return self.shrink
     def setColorShift(self, color_shift: bool): self.colorShift = color_shift
     def getColorShift(self): return self.colorShift
+    def setColorShiftOutline(self, color_shift: bool): self.colorShiftOutline = color_shift
+    def getColorShiftOutline(self): return self.colorShiftOutline
+    def setColorShiftOutlineColor(self, color: tuple[int, int, int]): self.colorShiftOutlineColor = color
+    def getColorShiftOutlineColor(self): return self.colorShiftOutlineColor
+    def setColorShiftingOutlineSpeed(self, color_shifting_speed: str):
+        if not color_shifting_speed in self.validLerpSpeeds:
+            self.colorShiftingSpeed = color_shifting_speed = "medium"
+        else: self.colorShiftingSpeed = color_shifting_speed
+        match color_shifting_speed:
+            case "very slow": self.lerpRGBStepOutline = 0.05
+            case "slow": self.lerpRGBStepOutline = 0.1
+            case "medium": self.lerpRGBStepOutline = 0.25
+            case "fast":  self.lerpRGBStepOutline = 0.5
+            case "very fast": self.lerpRGBStepOutline = 1
     def setColorShiftColor(self, color: tuple[int, int, int]): self.colorShiftColor = color
     def getColorShiftColor(self): return self.colorShiftColor
     def setColorShiftingSpeed(self, color_shifting_speed: str):
@@ -438,11 +482,16 @@ class TextButton(Button):
         self.textAnimationInfo.setOutlineColor(color)
         self.textAnimationInfo.setOutlineSize(size)
 
+    def animateTextToAlpha(self, alpha, step=5):
+        assert (step > 0 and alpha <= 255) or (step < 0 and alpha >= 0)
+        assert (step >= -255 and step <= 255)
+        self.setState(ButtonStates.ON_ANIMATION)
+        self.textAnimationInfo.setAlphaChanging(True)
+        self.textAnimationInfo.setAlphaStep(step)
+        self.textAnimationInfo.setAlphaGoal(alpha)
+
     def updateTextSurface(self):
         self.textSurface = self.loadFontSurface(self.text, self.fontSize, self.textColor) 
-
-    def animateTextToOutline(self, color= (0, 255, 255), size= "medium", speed= "slow"):
-        self.setState(ButtonStates.ON_ANIMATION)
 
     def removeTextOutline(self): 
         self.textAnimationInfo.setOutline(False)
@@ -462,11 +511,29 @@ class TextButton(Button):
         self.textAnimationInfo.setColorShiftingSpeed(speed)
         self.textAnimationInfo.setColorShiftColor(color)
 
-    def animateTextToPosition(self,goal_pos: tuple, current_pos: tuple, ellipse_interpolation= False, ellipse_size = (30,30), step=0.1, given_positions = False, positions = None):
+    def animateTextOutlineToColor(self, speed="slow", lastColor = (0,0,0), color = (0,0,0)):
+        color = list(color)
+        for i in range(len(color)):
+            if not (color[i] > 255 or color[i] < 0): continue
+            if color[i] > 255: 
+                color[i] = 255
+            elif color[i] < 0:
+                color[i] = 0
+        color = tuple(color)
         self.setState(ButtonStates.ON_ANIMATION)
+        self.textAnimationInfo.setColorShiftOutline(True)
+        self.textAnimationInfo.setColorShiftingOutlineSpeed(speed)
+        self.textAnimationInfo.setColorShiftOutlineColor(color)
+        self.textAnimationInfo.setColorShiftOutlineLastColor(lastColor)
+
+    def animateTextToPosition(self,goal_pos: tuple, current_pos: tuple, ellipse_interpolation= False, ellipse_size = (30,30), step=0.1, given_positions = False, positions = None, middle = False, num_steps = 0):
+        self.setState(ButtonStates.ON_ANIMATION)
+        if num_steps > 0 and type(num_steps) == int:
+            step = 1/num_steps 
         self.textAnimationInfo.setLerpXY(True)
         self.textAnimationInfo.setLerpXYStep(step)
         self.textAnimationInfo.setLerpXYGoalPos(goal_pos)
+        self.textAnimationInfo.setLerpXYGoalPosIsMiddle(middle)
         self.textAnimationInfo.setLerpXYCurrentPos(current_pos)
         self.textAnimationInfo.setLerpXYOriginalPos(current_pos)
         self.textAnimationInfo.setGivenLerpXYPositions(given_positions)
@@ -478,7 +545,7 @@ class TextButton(Button):
     def animate(self, animationInfo, state):
         if state != ButtonStates.ON_ANIMATION: return None
         logger.debug(f"LERP XY: {animationInfo.getLerpXY()}")
-        if not (animationInfo.getScale() or animationInfo.getColorShift() or animationInfo.getOutline() or animationInfo.getLerpXY()): return None 
+        if not (animationInfo.getScale() or animationInfo.getColorShift() or animationInfo.getOutline() or animationInfo.getLerpXY() or animationInfo.getAlphaChanging()): return None 
         ### Animation text size###
         if animationInfo.shrink:
             if self.fontSize <= animationInfo.getMinScaledSize():
@@ -508,15 +575,30 @@ class TextButton(Button):
                 green = self.lastTextColor[1] + (animationInfo.getColorShiftColor()[1] - self.lastTextColor[1]) * lerpRGBValue 
                 blue = self.lastTextColor[2] + (animationInfo.getColorShiftColor()[2] - self.lastTextColor[2]) * lerpRGBValue 
                 self.textColor = (red, green, blue)
+
             else:
                 self.lastTextColor = animationInfo.getColorShiftColor()
                 animationInfo.setColorShift(False)
                 animationInfo.setLerpRGBValue(0)
+        if animationInfo.getColorShiftOutline():
+            lerpRGBValue = animationInfo.getLerpRGBOutlineValue()
+            if not lerpRGBValue >= 1:
+                lastTextColor = animationInfo.getColorShiftOutlineLastColor()
+                red = lastTextColor[0] + (animationInfo.getColorShiftColor()[0] - lastTextColor[0]) * lerpRGBValue 
+                green = lastTextColor[1] + (animationInfo.getColorShiftColor()[1] - lastTextColor[1]) * lerpRGBValue 
+                blue = lastTextColor[2] + (animationInfo.getColorShiftOutlineColor()[2] - lastTextColor[2]) * lerpRGBValue 
+                animationInfo.setOutlineColor((red, green, blue))
+            else:
+                animationInfo.setColorShiftOutline(False)
+                animationInfo.setLerpRGBOutlineValue(0)
         if animationInfo.getOutline():
             if self.textSurfaceOutline is None:
                 self.textSurfaceOutline = self.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
                 self.textPositionOutline = self.textPosition
-            if animationInfo.getScale():
+            if animationInfo.getScale() or (animationInfo.getColorShift() and animationInfo.getColorShiftOutline()):
+                self.textPositionOutline = self.textPosition
+                self.textSurfaceOutline = self.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
+            if animationInfo.getColorShiftOutline():
                 self.textPositionOutline = self.textPosition
                 self.textSurfaceOutline = self.loadFontSurface(self.text, self.fontSize, animationInfo.getOutlineColor())
         self.textSurface = self.loadFontSurface(self.text, self.fontSize, self.textColor) 
@@ -538,7 +620,42 @@ class TextButton(Button):
                     animationInfo.setLerpXY(False)
                     animationInfo.setLerpXYIndex(0)
                     animationInfo.setLerpXYStep(0)
-                    
+            else:
+                if not animationInfo.getEllipseInterpolationXY():
+                    basePos = animationInfo.getLerpXYOriginalPos()
+                    goalPos = animationInfo.getLerpXYGoalPos()
+                    lerpXYVal = animationInfo.getLerpXYValue()
+                    if lerpXYVal >= 1:
+                        lerpXYVal = 1
+                    x = basePos[0] + (goalPos[0] - basePos[0]) * lerpXYVal
+                    y = basePos[1] + (goalPos[1] - basePos[1]) * lerpXYVal
+                    lerpXYVal += animationInfo.getLerpXYStep()
+                    animationInfo.setLerpXYValue(lerpXYVal)
+                    pos = (x,y)
+                    if animationInfo.getLerpXYGoalPosIsMiddle():
+                        newPos = Misc.middleToTopleftPos((x, y), (self.rect.width, self.rect.height))
+                        pos = newPos
+                    self.setX(pos[0])
+                    self.setY(pos[1])
+
+                 
+        if animationInfo.getAlphaChanging():
+            step = animationInfo.getAlphaStep()
+            goal = animationInfo.getAlphaGoal()
+            newAlpha = step + self.textSurfaceAlpha
+            logger.debug(f"BUTTON STEP: {step} \n BUTTON GOAL: {goal} \n BUTTON ALPHA: {newAlpha} \n BUTTON PREV ALPHA: {self.textSurfaceAlpha}")
+            if step < 0 and newAlpha < goal:
+                newAlpha = goal
+                animationInfo.setAlphaChanging(False)
+            if step > 0 and newAlpha > goal:
+                newAlpha = goal
+                animationInfo.setAlphaChanging(False)
+
+            self.setTextSurfaceAlpha(newAlpha)
+            if animationInfo.getOutline():
+                self.setTextSurfaceOutlineAlpha(newAlpha)
+            logger.debug(f"BUTTON STEP: {step} \n BUTTON GOAL: {goal} \n BUTTON ALPHA: {newAlpha} \n BUTTON PREV ALPHA: {self.textSurfaceAlpha}")
+
 
     def editText(self, new_text: str):
         self.textSurface = self.loadFontSurface(new_text, self.fontSize, self.textColor) 
