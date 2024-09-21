@@ -21,6 +21,10 @@ def bottomToMiddlePos(bottom_pos, size):
     middlePos = bottom_pos[0], bottom_pos[1] + size[1]/2
     return middlePos
 
+def middleToTopleftPos(middle_pos, size):
+    topleftPos = middle_pos[0] - size[0]/2, middle_pos[1] - size[1] / 2
+    return topleftPos
+
 def tileImage(tile_size: int, image_path: str, output_dir: str):
     image = Image.open(image_path)
     imageSize = image.size
@@ -66,6 +70,11 @@ def getCartesianFromPolar(distance_from_origin, angle, decimal_places=2):
     y = -numpy.round(distance_from_origin * numpy.sin(angle), decimal_places)
     return numpy.c_[x,y]
 
+def changeButtonsToOpacity(current_buttons, opacity, outline_opacity=255):
+    for button in current_buttons:
+        button.setTextSurfaceAlpha(opacity)
+        if button.textAnimationInfo.outline:
+            button.setTextSurfaceOutlineAlpha(outline_opacity)
 
 def getPolarCoordinates(angle, vertical_radius_size, horizontal_radius_size):
     a = vertical_radius_size * numpy.cos(angle)
