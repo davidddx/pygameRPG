@@ -627,6 +627,9 @@ class TextButton(Button):
                     lerpXYVal = animationInfo.getLerpXYValue()
                     if lerpXYVal >= 1:
                         lerpXYVal = 1
+                        animationInfo.setLerpXY(False)
+                        animationInfo.setLerpXYIndex(0)
+                        animationInfo.setLerpXYStep(0)
                     x = basePos[0] + (goalPos[0] - basePos[0]) * lerpXYVal
                     y = basePos[1] + (goalPos[1] - basePos[1]) * lerpXYVal
                     lerpXYVal += animationInfo.getLerpXYStep()

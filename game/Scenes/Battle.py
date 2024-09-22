@@ -11,7 +11,9 @@ import gamedata.Moves as MOVES
 import game.utils.SettingsFunctions as SETTINGS_FUNCTIONS
 import game.utils.Misc as Misc 
 import gamedata.Save.SavedData as SAVED_DATA
+import gamedata.Moves as MOVES
 import numpy
+
 
 class BackgroundTile(pygame.sprite.Sprite):
     def __init__(self, sprite_group: pygame.sprite.Group, image_dir: str, pos: tuple):
@@ -235,7 +237,7 @@ class Battle(Scene):
         self.currentEntity = self.player # describes entity turn
         self.zoomScale = 1
         self.zoomState = "NONE"
-        self.buttonPressed = False
+        self.buttonPressedName = "NONE" 
         self.playerTurnButtons = self.generatePlayerTurnButtons(Battle.PLAYER_BOTTOM_POS, player_base_surf)
         self.playerTurnButtonIdx = 0
         self.playerTurnButtonPressedIdx = 0
@@ -245,25 +247,71 @@ class Battle(Scene):
         self.timeLastInput = 0
         logger.debug("Battle Scene Initialized")
 
+    def generatePlayerAttackButtons(self, player_moves: list[dict]) -> list[TextButton]:
+        positions = loadButtonPositions(num_buttons = len(player_moves) + 1, model_ellipse = Battle.BUTTON_MODEL_ELLIPSE, pos= Battle.BUTTON_OFFSET ) # + 1 for back button
+        myButtons = []
+        mainPos = positions[0]
+        buttonColor = (140, 8, 10)
+        buttonOutlineColor = (200, 0, 0)
+        for i, move in enumerate(player_moves):
+            moveName = move[MOVES.NAME]
+            button = TextButton(moveName, f"{Battle.PlayerTurnButtonNames.ATTACK}.{moveName}", 0, 0, 0, 0, fit_to_text=True, color=buttonColor, font_path=SAVED_DATA.FONT_PATH)
+            button.animateTextWithOutline(buttonOutlineColor, size="small")
+            myButtons.append(button)
+            adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[0 - i], button.textSurface) 
+            button.setX(adjustedPos[0])
+            button.setY(adjustedPos[1])
+            if i != 0:
+                lastSize = button.fontSize
+                sizeDiff = int((mainPos[1] - positions[0 - i, 1])/10 + 3)
+                currSize = button.originalFontSize - sizeDiff
+                button.setTextSurfaceAlpha(100)
+                button.setTextSurfaceOutlineAlpha(100)
+                button.animateTextToSize(size= currSize, step= 1, shrink= lastSize > currSize)
+                #logger.debug(f"{currSize=}")
+                #logger.debug(f"{sizeDiff=}")
+                #logger.debug(f"{currentButton.fontSize=}")
+            else:
+                button.setTextSurfaceAlpha(255)
+                button.setTextSurfaceOutlineAlpha(255)
+                button.animateTextToSize(size= button.originalFontSize + 4, step=0.3, shrink= False)
+                button.animateTextWithOutline()
+        backButtonColor = (200, 8, 10)
+        backButtonOutlineColor = (255, 0, 0)
+        backButton = TextButton("BACK", f"{Battle.PlayerTurnButtonNames.ATTACK}.BACK", 0, 0, 0, 0, fit_to_text=True, color = backButtonColor, font_path=SAVED_DATA.FONT_PATH)
+        backButton.animateTextWithOutline(backButtonOutlineColor, size="small")
+        adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[0 - len(player_moves)], backButton.textSurface) 
+        
+        lastSize = backButton.fontSize
+        sizeDiff = int((mainPos[1] - positions[0 - len(player_moves), 1])/10 + 3)
+        currSize = backButton.originalFontSize - sizeDiff
+        backButton.setTextSurfaceAlpha(200)
+        backButton.setTextSurfaceOutlineAlpha(200)
+        backButton.animateTextToSize(size= currSize, step= 0.3, shrink= False)
+        backButton.setX(adjustedPos[0])
+        backButton.setY(adjustedPos[1])
+        myButtons.append(backButton)
+        return myButtons 
+
     def generatePlayerTurnButtons(self, player_bottom_pos, player_base_surf) -> list[TextButton]:
         #extraSpacing = 20
         #bottomPos = player_bottom_pos[0], player_bottom_pos[1] - player_base_surf.get_height() - extraSpacing
         buttonList = []
         button1 = TextButton(Battle.PlayerTurnButtonNames.ATTACK, Battle.PlayerTurnButtonNames.ATTACK, 0, 0, 0, 0, fit_to_text=True, color=(140, 8, 10), font_path=SAVED_DATA.FONT_PATH)
-        button1.animateTextWithOutline((255, 0,0))
+        button1.animateTextWithOutline((255, 0,0), size="small")
         buttonList.append(button1)
         button2 = TextButton(Battle.PlayerTurnButtonNames.WAIT, Battle.PlayerTurnButtonNames.WAIT, 0, 0, 0, 0, fit_to_text=True, color=(200, 110, 140), font_path=SAVED_DATA.FONT_PATH)
-        button2.animateTextWithOutline((244, 194, 194))
+        button2.animateTextWithOutline((244, 194, 194), size="small")
         buttonList.append(button2)
         button3 = TextButton(Battle.PlayerTurnButtonNames.FLEE, Battle.PlayerTurnButtonNames.FLEE, 0, 0, 0, 0, fit_to_text=True, color=(100, 149, 247), font_path=SAVED_DATA.FONT_PATH)
-        button3.animateTextWithOutline((173, 216, 230))
+        button3.animateTextWithOutline((173, 216, 230), size="small")
         buttonList.append(button3)
         #button4 = TextButton("ANALYZE", "ANALYZE", 0, 0, 0, 0, fit_to_text = True, color = (155, 135, 12), font_path = SAVED_DATA.FONT_PATH)
         #button4.animateTextWithOutline((255, 234, 20))
         #buttonList.append(button4)
         button5 = TextButton(Battle.PlayerTurnButtonNames.USE_ITEM, Battle.PlayerTurnButtonNames.USE_ITEM, 0, 0, 0, 0, fit_to_text=True, color=(0, 153, 0), font_path=SAVED_DATA.FONT_PATH)
 
-        button5.animateTextWithOutline((102, 255, 0))
+        button5.animateTextWithOutline((102, 255, 0), size="small")
         buttonList.append(button5)
         
 
@@ -283,8 +331,8 @@ class Battle(Scene):
                 lastSize = currentButton.fontSize
                 sizeDiff = int((mainPos[1] - Battle.ButtonPositions[0 - i, 1])/10 + 3)
                 currSize = currentButton.originalFontSize - sizeDiff
-                currentButton.setTextSurfaceAlpha(200)
-                currentButton.setTextSurfaceOutlineAlpha(200)
+                currentButton.setTextSurfaceAlpha(100)
+                currentButton.setTextSurfaceOutlineAlpha(100)
                 currentButton.animateTextToSize(size= currSize, step= 1, shrink= lastSize > currSize)
                 logger.debug(f"{currSize=}")
                 logger.debug(f"{sizeDiff=}")
@@ -313,6 +361,7 @@ class Battle(Scene):
                 pass
             case Battle.PlayerTurnButtonNames.ATTACK:
                 self.uiLock = True
+                self.buttonPressedName = Battle.PlayerTurnButtonNames.ATTACK
                 for button in self.currentButtons:
                     if button.name == Battle.PlayerTurnButtonNames.ATTACK:
                         outlineColor = button.originalOutlineColor
@@ -359,21 +408,20 @@ class Battle(Scene):
             logger.debug(f"{interpolatedPositions=}, {adjustedPositions=}")
             currentButton.animateTextToPosition(current_pos = adjustedPositions[0], goal_pos = adjustedPositions[-1], given_positions = True, positions=adjustedPositions, step=1)
 
-            #currentButton.setX(adjustedPos[0])
-            #currentButton.setY(adjustedPos[1])
+
 
 
             if i == current_button_idx:
+                currentButton.animateTextWithOutline()
                 currentButton.setTextSurfaceAlpha(selectedOpacity)
                 currentButton.setTextSurfaceOutlineAlpha(selectedOpacity)
                 currentButton.animateTextToSize(size= currentButton.originalFontSize + 3, step=2, shrink=False)
-                currentButton.animateTextWithOutline()
 
                 continue
+            currentButton.animateTextWithOutline(currentButton.originalOutlineColor, size="small")
             currentButton.setTextSurfaceAlpha(unselectedOpacity) 
             currentButton.setTextSurfaceOutlineAlpha(unselectedOpacity)
             sizeDiff = int((mainPos[1] - Battle.ButtonPositions[current_button_idx-i, 1])/10 + 3)
-            currentButton.animateTextWithOutline(currentButton.originalOutlineColor)
             lastSize = currentButton.fontSize
             currSize = currentButton.originalFontSize - sizeDiff
             logger.debug(f"{mainPos=}")
@@ -397,6 +445,8 @@ class Battle(Scene):
         lastButtonIdx = self.currentButtonIdx
         match battle_state:
             case Battle.States.PLAYER_CHOOSING_ACTION:
+                if self.uiLock:
+                    return None
                 if timenow - self.timeLastInput < cooldown:
                     return None
 
@@ -424,7 +474,6 @@ class Battle(Scene):
                     self.playerTurnButtonPressedIdx = self.currentButtonIdx
                     self.timeLastInput = timenow
                     buttonPressed = True
-                    self.buttonPressed = True
 
                     
                 if lastButtonIdx != self.currentButtonIdx or buttonPressed:
@@ -545,8 +594,13 @@ class Battle(Scene):
                 if self.prevState == Battle.States.PREPARING_TURN:
                     self.zoomState = Battle.ZoomStates.ZOOMING_TO_RECT
                     self.prevState = self.state
-                if self.buttonPressed:
-                    pass
+                if self.uiLock and self.buttonPressedName != "NONE":
+                    if self.buttonPressedName == Battle.PlayerTurnButtonNames.ATTACK:
+                        logger.debug(f"BUTTON PRESSED NAME: {Battle.PlayerTurnButtonNames.ATTACK}")
+                        if not self.currentButtons[self.currentButtonIdx].textAnimationInfo.getLerpXY():
+                            
+                            self.currentButtons = self.generatePlayerAttackButtons(self.player.moves) 
+                            self.uiLock = False
                 self.updateZoomState(self.zoomState)
                 blittedSurface = pygame.Surface(screen.get_size())
                 blittedSurface.blit(self.backgroundFull, (0,0))
@@ -570,6 +624,8 @@ class Battle(Scene):
                     self.checkUILock(self.uiLockTimeSet, self.uiLockCooldown)
 
     def checkUILock(self, ui_time_set, ui_cooldown):
+        if not self.uiLockTemp: return None
+
         timenow = pygame.time.get_ticks()
         if timenow - ui_time_set < ui_cooldown:
             return None
