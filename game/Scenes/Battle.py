@@ -229,6 +229,8 @@ class Battle(Scene):
         self.opacity = 0
         self.backgroundFull = pygame.Surface((screen_size[0] + 6*TILE_SIZE, screen_size[1]))
         self.background = self.loadBattleSurface(Battle.Backgrounds.GRASS)
+        self.additionalBackgroundSurfs = []
+        self.additionalBackgroundSurfsPos = []
         self.currentAnimation = SceneAnimations.NONE
         self.setState(SceneStates.ON_ANIMATION)
         enemyBottomPos = screen_size[0] - Battle.PLAYER_BOTTOM_POS[0], Battle.PLAYER_BOTTOM_POS[1] 
@@ -265,15 +267,17 @@ class Battle(Scene):
                 lastSize = button.fontSize
                 sizeDiff = int((mainPos[1] - positions[0 - i, 1])/10 + 3)
                 currSize = button.originalFontSize - sizeDiff
-                button.setTextSurfaceAlpha(100)
-                button.setTextSurfaceOutlineAlpha(100)
-                button.animateTextToSize(size= currSize, step= 1, shrink= lastSize > currSize)
+                button.setTextSurfaceAlpha(0)
+                button.setTextSurfaceOutlineAlpha(0)
+                button.animateTextToAlpha(100)
+                button.animateTextToSize(size= currSize, step= 2, shrink= lastSize > currSize)
                 #logger.debug(f"{currSize=}")
                 #logger.debug(f"{sizeDiff=}")
                 #logger.debug(f"{currentButton.fontSize=}")
             else:
-                button.setTextSurfaceAlpha(255)
-                button.setTextSurfaceOutlineAlpha(255)
+                button.setTextSurfaceAlpha(0)
+                button.setTextSurfaceOutlineAlpha(0)
+                button.animateTextToAlpha(255)
                 button.animateTextToSize(size= button.originalFontSize + 4, step=0.3, shrink= False)
                 button.animateTextWithOutline()
         backButtonColor = (200, 8, 10)
@@ -366,13 +370,13 @@ class Battle(Scene):
                     if button.name == Battle.PlayerTurnButtonNames.ATTACK:
                         outlineColor = button.originalOutlineColor
                         textColor = button.textColor
-                        desiredOutlineColor = outlineColor[0] - 100, outlineColor[1], outlineColor[2] 
-                        desiredTextColor = textColor[0] - 100, textColor[1], textColor[2]
+                        desiredOutlineColor = outlineColor[0] - 20, outlineColor[1], outlineColor[2] 
+                        desiredTextColor = textColor[0] - 20, textColor[1], textColor[2]
                         button.animateTextOutlineToColor(color= desiredOutlineColor, lastColor = outlineColor)
                         button.animateTextToColor(color= desiredTextColor)
                         button.animateTextToSize(button.fontSize - 7, 1, shrink=True)
 
-                        button.animateTextToAlpha(alpha=50, step=-20)
+                        #button.animateTextToAlpha(alpha=100, step=-20)
                         button.animateTextToPosition(goal_pos = (button.rect.centerx, button.rect.centery - Battle.BUTTON_MODEL_ELLIPSE[1]), current_pos = (button.rect.centerx, button.rect.centery), middle= True, num_steps=10)
 
                         # button.animateTextToPosition()
@@ -587,6 +591,12 @@ class Battle(Scene):
             if self.zoomScale == MIN_ZOOM_SCALE:
                 self.zoomState = Battle.ZoomStates.NOT_MOVING
 
+    def blitBackground(self, screen: pygame.Surface):
+        screen.blit(self.backgroundFull, (0,0))
+        for i, surf in enumerate(self.additionalBackgroundSurfs):
+            screen.blit(surf, self.additionalBackgroundSurfsPos[i])
+             
+
     def checkBattleState(self, screen: pygame.Surface, battle_state: str):
         logger.debug(f"{battle_state=}, {self.prevState=}, {self.state=}")
         match battle_state:
@@ -598,12 +608,22 @@ class Battle(Scene):
                     if self.buttonPressedName == Battle.PlayerTurnButtonNames.ATTACK:
                         logger.debug(f"BUTTON PRESSED NAME: {Battle.PlayerTurnButtonNames.ATTACK}")
                         if not self.currentButtons[self.currentButtonIdx].textAnimationInfo.getLerpXY():
-                            
+                            currButton = self.currentButtons[self.currentButtonIdx]
+                            size = currButton.textSurface.get_size()[0] + 4, currButton.textSurface.get_size()[1] + 4
+                            atkButton = pygame.Surface((size[0] + 4, size[1] + 4))
+                            atkButton.blit(currButton.textSurface, (0, 2))
+                            atkButton.blit(currButton.textSurfaceOutline, (2,0))
+                            atkButton.blit(currButton.textSurfaceOutline, (0,4))
+                            atkButton.blit(currButton.textSurfaceOutline, (0,0))
+                            atkButton.blit(currButton.textSurfaceOutline, (2,4))
+                            self.additionalBackgroundSurfs.append(self.currentButtons[self.currentButtonIdx].textSurface)
+                            self.additionalBackgroundSurfsPos.append((currButton.rect.x, currButton.rect.y))
                             self.currentButtons = self.generatePlayerAttackButtons(self.player.moves) 
                             self.uiLock = False
                 self.updateZoomState(self.zoomState)
                 blittedSurface = pygame.Surface(screen.get_size())
-                blittedSurface.blit(self.backgroundFull, (0,0))
+                self.blitBackground(blittedSurface)
+                #blittedSurface.blit(self.backgroundFull, (0,0))
                 self.player.update(blittedSurface)
                 self.updateButtons(battle_state, self.currentButtons, self.currentButtonIdx, blittedSurface)
                 self.enemy.update(blittedSurface)
