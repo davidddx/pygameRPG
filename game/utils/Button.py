@@ -584,8 +584,9 @@ class TextButton(Button):
             lerpRGBValue = animationInfo.getLerpRGBOutlineValue()
             if not lerpRGBValue >= 1:
                 lastTextColor = animationInfo.getColorShiftOutlineLastColor()
-                red = lastTextColor[0] + (animationInfo.getColorShiftColor()[0] - lastTextColor[0]) * lerpRGBValue 
-                green = lastTextColor[1] + (animationInfo.getColorShiftColor()[1] - lastTextColor[1]) * lerpRGBValue 
+                animationInfo.setLerpRGBOutlineValue(lerpRGBValue + animationInfo.getLerpRGBOutlineStep())
+                red = lastTextColor[0] + (animationInfo.getColorShiftOutlineColor()[0] - lastTextColor[0]) * lerpRGBValue 
+                green = lastTextColor[1] + (animationInfo.getColorShiftOutlineColor()[1] - lastTextColor[1]) * lerpRGBValue 
                 blue = lastTextColor[2] + (animationInfo.getColorShiftOutlineColor()[2] - lastTextColor[2]) * lerpRGBValue 
                 animationInfo.setOutlineColor((red, green, blue))
             else:
