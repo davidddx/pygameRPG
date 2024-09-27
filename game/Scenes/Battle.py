@@ -240,7 +240,7 @@ class Battle(Scene):
         self.zoomScale = 1
         self.zoomState = "NONE"
         self.buttonPressedName = "NONE" 
-        self.playerTurnButtons = self.generatePlayerTurnButtons(Battle.PLAYER_BOTTOM_POS, player_base_surf)
+        self.playerTurnButtons = self.generatePlayerTurnButtons()
         self.playerTurnButtonIdx = 0
         self.playerTurnButtonPressedIdx = 0
         self.currentButtons = self.playerTurnButtons
@@ -297,7 +297,7 @@ class Battle(Scene):
         myButtons.append(backButton)
         return myButtons 
 
-    def generatePlayerTurnButtons(self, player_bottom_pos, player_base_surf) -> list[TextButton]:
+    def generatePlayerTurnButtons(self) -> list[TextButton]:
         #extraSpacing = 20
         #bottomPos = player_bottom_pos[0], player_bottom_pos[1] - player_base_surf.get_height() - extraSpacing
         buttonList = []
@@ -368,15 +368,15 @@ class Battle(Scene):
                 self.buttonPressedName = Battle.PlayerTurnButtonNames.ATTACK
                 for button in self.currentButtons:
                     if button.name == Battle.PlayerTurnButtonNames.ATTACK:
-                        outlineColor = button.originalOutlineColor
+                        outlineColor = button.outlineColor
                         textColor = button.textColor
-                        desiredOutlineColor = outlineColor[0] - 20, outlineColor[1], outlineColor[2] 
-                        desiredTextColor = textColor[0] - 20, textColor[1], textColor[2]
+                        desiredOutlineColor = outlineColor[0] - 30, outlineColor[1] - 150, outlineColor[2]
+                        desiredTextColor = textColor[0] + 30, textColor[1] + 30, textColor[2] + 30
                         button.animateTextOutlineToColor(color= desiredOutlineColor, lastColor = outlineColor)
                         button.animateTextToColor(color= desiredTextColor)
-                        button.animateTextToSize(button.fontSize - 7, 1, shrink=True)
+                        button.animateTextToSize(button.fontSize + 3, 1, shrink=False)
 
-                        #button.animateTextToAlpha(alpha=100, step=-20)
+                        button.animateTextToAlpha(alpha=200, step=-20)
                         button.animateTextToPosition(goal_pos = (button.rect.centerx, button.rect.centery - Battle.BUTTON_MODEL_ELLIPSE[1]), current_pos = (button.rect.centerx, button.rect.centery), middle= True, num_steps=10)
 
                         # button.animateTextToPosition()
@@ -610,13 +610,18 @@ class Battle(Scene):
                         if not self.currentButtons[self.currentButtonIdx].textAnimationInfo.getLerpXY():
                             currButton = self.currentButtons[self.currentButtonIdx]
                             size = currButton.textSurface.get_size()[0] + 4, currButton.textSurface.get_size()[1] + 4
-                            atkButton = pygame.Surface((size[0] + 4, size[1] + 4))
-                            atkButton.blit(currButton.textSurface, (0, 2))
-                            atkButton.blit(currButton.textSurfaceOutline, (2,0))
-                            atkButton.blit(currButton.textSurfaceOutline, (0,4))
-                            atkButton.blit(currButton.textSurfaceOutline, (0,0))
-                            atkButton.blit(currButton.textSurfaceOutline, (2,4))
-                            self.additionalBackgroundSurfs.append(self.currentButtons[self.currentButtonIdx].textSurface)
+                            atkButton = pygame.Surface((size[0] + 4, size[1] + 4), pygame.SRCALPHA)
+                            logger.debug(f"{currButton.textSurfaceOutline=}")
+                            logger.debug(f"{currButton.textSurface=}")
+                            basePos = (0,2)
+                            offset = 2
+                            atkButton.blit(currButton.textSurfaceOutline, (basePos[0] + offset,basePos[1] - offset))
+                            atkButton.blit(currButton.textSurfaceOutline, (basePos[0] + offset, basePos[1] + offset))
+                            atkButton.blit(currButton.textSurfaceOutline, (basePos[0] - offset , basePos[1] + offset))
+                            atkButton.blit(currButton.textSurfaceOutline, (basePos[0] - offset, basePos[1] - offset))
+                            atkButton.blit(currButton.textSurface, basePos)
+                            atkButton.set_alpha(130)
+                            self.additionalBackgroundSurfs.append(atkButton)
                             self.additionalBackgroundSurfsPos.append((currButton.rect.x, currButton.rect.y))
                             self.currentButtons = self.generatePlayerAttackButtons(self.player.moves) 
                             self.uiLock = False
