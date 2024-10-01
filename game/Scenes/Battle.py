@@ -13,7 +13,7 @@ import game.utils.Misc as Misc
 import gamedata.Save.SavedData as SAVED_DATA
 import gamedata.Moves as MOVES
 import numpy
-
+from collections import deque
 
 class BackgroundTile(pygame.sprite.Sprite):
     def __init__(self, sprite_group: pygame.sprite.Group, image_dir: str, pos: tuple):
@@ -205,6 +205,10 @@ class Battle(Scene):
         FINISHED = "FINISHED"
         NOT_MOVING = "NOT_MOVING"
 
+    class ButtonMenus:
+        PLAYER_TURN = "PLAYER_TURN"
+        ATK = "ATK"
+
     NUM_BUTTONS = 4 
     PLAYER_BOTTOM_POS = 350, 420
     BUTTON_MODEL_ELLIPSE = (100, 25)
@@ -246,8 +250,18 @@ class Battle(Scene):
         self.currentButtons = self.playerTurnButtons
         self.currentButtonIdx = self.playerTurnButtonIdx
         self.currentButtonPressedIdx = self.playerTurnButtonPressedIdx
+        self.buttonIndices = self.loadButtonIndices() # Used to save button menu indices
         self.timeLastInput = 0
+        self.currentButtonMenu = Battle.ButtonMenus.PLAYER_TURN 
         logger.debug("Battle Scene Initialized")
+
+    def loadButtonIndices(self) -> dict:
+        members = [attr for attr in dir(Battle.ButtonMenus) if not callable(getattr(Battle.ButtonMenus, attr)) and not attr.startswith("__")]
+        myDict = {}
+        for member in members:
+            myDict[member] = 0
+        logger.debug(f"BUTTON INDICE DICT: {myDict}")
+        return myDict 
 
     def generatePlayerAttackButtons(self, player_moves: list[dict]) -> list[TextButton]:
         positions = loadButtonPositions(num_buttons = len(player_moves) + 1, model_ellipse = Battle.BUTTON_MODEL_ELLIPSE, pos= Battle.BUTTON_OFFSET ) # + 1 for back button
@@ -297,7 +311,7 @@ class Battle(Scene):
         myButtons.append(backButton)
         return myButtons 
 
-    def generatePlayerTurnButtons(self) -> list[TextButton]:
+    def generatePlayerTurnButtons(self, shift_right = 0) -> list[TextButton]:
         #extraSpacing = 20
         #bottomPos = player_bottom_pos[0], player_bottom_pos[1] - player_base_surf.get_height() - extraSpacing
         buttonList = []
@@ -325,6 +339,13 @@ class Battle(Scene):
             button.setX(pos[0])
             button.setY(pos[1])
         '''
+
+        # shift list right by shift_right parameter amount
+        # using deque for speed purposes
+        if shift_right != 0:
+            dequedList = deque(buttonList)
+            dequedList.rotate(shift_right)
+
         mainPos = Battle.ButtonPositions[0]
         for i in range(len(buttonList)):
             currentButton = buttonList[i]
@@ -358,37 +379,59 @@ class Battle(Scene):
         self.uiLockCooldown = cooldown
 
     def checkButtonSelected(self, selected_button):
-        match selected_button.name:
+        buttonName = selected_button.name
+        # Using facts of string.partition to nest button menus with depth of 2 
+        partitionedName = buttonName.partition(".")
+        category = partitionedName[0]
+        separator = partitionedName[1]
+        buttonName2 = partitionedName[2]
+        self.buttonPressedName = buttonName
+        logger.debug(f"{buttonName=}, {partitionedName=}, {category=}, {separator=}")
+        match category:
             case Battle.PlayerTurnButtonNames.FLEE: 
+                # Has no nested buttons 
                 fleeCooldown = 500
                 self.lockUI(fleeCooldown)
-                pass
+                return None
             case Battle.PlayerTurnButtonNames.ATTACK:
-                self.uiLock = True
-                self.buttonPressedName = Battle.PlayerTurnButtonNames.ATTACK
-                for button in self.currentButtons:
-                    if button.name == Battle.PlayerTurnButtonNames.ATTACK:
-                        outlineColor = button.outlineColor
-                        textColor = button.textColor
-                        desiredOutlineColor = outlineColor[0] - 30, outlineColor[1] - 150, outlineColor[2]
-                        desiredTextColor = textColor[0] + 30, textColor[1] + 30, textColor[2] + 30
-                        button.animateTextOutlineToColor(color= desiredOutlineColor, lastColor = outlineColor)
-                        button.animateTextToColor(color= desiredTextColor)
-                        button.animateTextToSize(button.fontSize + 3, 1, shrink=False)
+                if separator != ".": 
+                    #Case where buttonname is ATTACK & no dots found
+                    self.uiLock = True
+                    for button in self.currentButtons:
+                        if button.name == Battle.PlayerTurnButtonNames.ATTACK:
+                            outlineColor = button.outlineColor
+                            textColor = button.textColor
+                            desiredOutlineColor = outlineColor[0] - 30, outlineColor[1] - 150, outlineColor[2]
+                            desiredTextColor = textColor[0] + 30, textColor[1] + 30, textColor[2] + 30
+                            button.animateTextOutlineToColor(color= desiredOutlineColor, lastColor = outlineColor)
+                            button.animateTextToColor(color= desiredTextColor)
+                            button.animateTextToSize(button.fontSize + 3, 1, shrink=False)
+                            button.animateTextToAlpha(alpha=200, step=-20)
+                            button.animateTextToPosition(goal_pos = (button.rect.centerx, button.rect.centery - Battle.BUTTON_MODEL_ELLIPSE[1]), current_pos = (button.rect.centerx, button.rect.centery), middle= True, num_steps=10)
+                            continue
+                        button.animateTextToAlpha(alpha=0, step=-25)
 
-                        button.animateTextToAlpha(alpha=200, step=-20)
-                        button.animateTextToPosition(goal_pos = (button.rect.centerx, button.rect.centery - Battle.BUTTON_MODEL_ELLIPSE[1]), current_pos = (button.rect.centerx, button.rect.centery), middle= True, num_steps=10)
+                    return None
 
-                        # button.animateTextToPosition()
-                        continue
-                    button.animateTextToAlpha(alpha=0, step=-25)
+                ### Button pressed from Attack Button Menu case
+                match buttonName2:
+                    case "BACK":
+                        self.uiLock = True
+                        for button in self.currentButtons:
+                            button.animateTextToAlpha(alpha=0, step=-25)
+
+                    case _:
+                        raise Exception(f"Selected button with name {selected_button.name} has invalid or unchecked name")
 
             case Battle.PlayerTurnButtonNames.USE_ITEM:
                 pass
+                return None
             case Battle.PlayerTurnButtonNames.WAIT:
                 pass
+                return None
 
             case _:
+                ### If the following code below is reached than button name is invalid or has not been added functionality yet
                 raise Exception(f"Selected button with name {selected_button.name} has invalid or unchecked name")
 
     def updateButtonsOnUIInput(self, current_buttons, current_button_idx, direction=1, button_pressed = False):
@@ -479,8 +522,9 @@ class Battle(Scene):
                     self.timeLastInput = timenow
                     buttonPressed = True
 
-                    
+                 
                 if lastButtonIdx != self.currentButtonIdx or buttonPressed:
+                    self.buttonIndices[self.currentButtonMenu] = self.currentButtonIdx
                     self.updateButtonsOnUIInput(self.currentButtons, self.currentButtonIdx, direction, buttonPressed)
 
     def setBattleState(self, state: str):
@@ -605,8 +649,8 @@ class Battle(Scene):
                     self.zoomState = Battle.ZoomStates.ZOOMING_TO_RECT
                     self.prevState = self.state
                 if self.uiLock and self.buttonPressedName != "NONE":
+                    logger.debug(f"BUTTON PRESSED NAME: {self.buttonPressedName}")
                     if self.buttonPressedName == Battle.PlayerTurnButtonNames.ATTACK:
-                        logger.debug(f"BUTTON PRESSED NAME: {Battle.PlayerTurnButtonNames.ATTACK}")
                         if not self.currentButtons[self.currentButtonIdx].textAnimationInfo.getLerpXY():
                             currButton = self.currentButtons[self.currentButtonIdx]
                             size = currButton.textSurface.get_size()[0] + 4, currButton.textSurface.get_size()[1] + 4
@@ -624,7 +668,21 @@ class Battle(Scene):
                             self.additionalBackgroundSurfs.append(atkButton)
                             self.additionalBackgroundSurfsPos.append((currButton.rect.x, currButton.rect.y))
                             self.currentButtons = self.generatePlayerAttackButtons(self.player.moves) 
+                            self.currentButtonMenu = Battle.ButtonMenus.ATK
                             self.uiLock = False
+                    if self.buttonPressedName == f"{Battle.PlayerTurnButtonNames.ATTACK}.BACK":
+                        for surf in self.additionalBackgroundSurfs:
+                            newAlpha = surf.get_alpha() - 30
+                            if newAlpha < 0: newAlpha = 0
+                            surf.set_alpha(newAlpha)
+                        if not self.currentButtons[0].textAnimationInfo.getAlphaChanging():
+                            self.additionalBackgroundSurfs.clear()
+                            self.additionalBackgroundSurfsPos.clear()
+                            self.currentButtonMenu = Battle.ButtonMenus.PLAYER_TURN
+                            self.currentButtons = self.generatePlayerTurnButtons(self.buttonIndices[self.currentButtonMenu])
+                            self.uiLock = False
+                            pass
+                        pass
                 self.updateZoomState(self.zoomState)
                 blittedSurface = pygame.Surface(screen.get_size())
                 self.blitBackground(blittedSurface)
