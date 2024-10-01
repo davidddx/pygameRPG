@@ -13,6 +13,7 @@ import gamedata.Save.SavedData as SAVED_DATA
 def loop():
     logger.info("Initializing Game....")
     ### Initializing Game ###
+    DEBUG_MODE = SETTINGS.DEBUG_MODE
     running = True
     pygame.init()
     pygame.mixer.init()
@@ -28,12 +29,17 @@ def loop():
     running = True
     screenFillColor = "black"
     MAX_FPS = 45
-    sceneHandler = SceneHandler.SceneHandler(DEBUG=True, display_size = displaySize)
+    sceneHandler = SceneHandler.SceneHandler(DEBUG=DEBUG_MODE, display_size = displaySize)
 
     ### Initialization Done ###
     logger.info("Initializing Done.")
     while running:
+
         logger.debug(f"CURRENT FPS: {clock.get_fps()}")
+        if DEBUG_MODE:
+            if pygame.key.get_pressed()[pygame.K_l]:
+                MAX_FPS = 5
+            else: MAX_FPS = 45
         clock.tick(MAX_FPS)
         baseScreen.fill(screenFillColor)
         sceneHandler.runDebug(screen=baseScreen, clock= clock)

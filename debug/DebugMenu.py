@@ -6,6 +6,7 @@ from game.Scenes.Area import Area
 from game.Scenes.Menu import Menu
 from game.Scenes.PauseMenu import PauseMenu
 from game.Scenes.Inventory import Inventory
+from game.Scenes.Battle import Battle
 import Font.FontPaths as FontPaths
 import psutil
 import os
@@ -161,6 +162,28 @@ class DebugMenu:
             if type(currentScene) == Inventory:
                 surfaceList.append(f"LAST SELECTED BUTTON IDX: {currentScene.lastSelectedButtonIdx}")
                 surfaceList.append(f"buttonPressedName: {currentScene.buttonPressedName}")
+        elif type(currentScene) == Battle:
+            surfaceList.append(f"CURRENT BUTTON IDX: {currentScene.currentButtonIdx}")
+            surfaceList.append(f"BUTTON INDICES: {currentScene.buttonIndices}")
+            surfaceList.append(f"CURRENT BUTTON MENU: {currentScene.currentButtonMenu}")
+            surfaceList.append(f"UI LOCK: {currentScene.uiLock}")
+            surfaceList.append(f"BUTTON PRESSED NAME: {currentScene.buttonPressedName}")
+            buttonNames = "["
+            buttonPositions = "["
+            buttonLerping = "["
+            for button in currentScene.currentButtons:
+                buttonNames = buttonNames + button.name
+                buttonPositions+= f"{(button.rect.x, button.rect.y)}"
+                buttonLerping += str(button.textAnimationInfo.getLerpXY())
+                buttonNames += ', '
+                buttonPositions += ", "
+                buttonLerping += ", "
+            buttonNames += ']'
+            buttonPositions += "]"
+            buttonLerping += "]"
+            surfaceList.append(f"BUTTON NAMES: {buttonNames}")
+            surfaceList.append(f"BUTTON POSITIONS: {buttonPositions}")
+            surfaceList.append(f"BUTTON LERPING: {buttonLerping}")
         for surface in surfaceList:
             surface = DebugMenu.turnStringToFontSurf(string= surface, font_fp = fontFp)
             screen.blit(surface, (startingPoint[0], startingPoint[1]))
