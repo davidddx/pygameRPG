@@ -184,6 +184,7 @@ class DebugMenu:
             surfaceList.append(f"BUTTON NAMES: {buttonNames}")
             surfaceList.append(f"BUTTON POSITIONS: {buttonPositions}")
             surfaceList.append(f"BUTTON LERPING: {buttonLerping}")
+            surfaceList.append(f"BUTTON INDICES: {currentScene.buttonIndices}")
         for surface in surfaceList:
             surface = DebugMenu.turnStringToFontSurf(string= surface, font_fp = fontFp)
             screen.blit(surface, (startingPoint[0], startingPoint[1]))
