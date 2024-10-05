@@ -244,12 +244,8 @@ class Battle(Scene):
         self.zoomScale = 1
         self.zoomState = "NONE"
         self.buttonPressedName = "NONE" 
-        self.playerTurnButtons = self.generatePlayerTurnButtons()
-        self.playerTurnButtonIdx = 0
-        self.playerTurnButtonPressedIdx = 0
-        self.currentButtons = self.playerTurnButtons
-        self.currentButtonIdx = self.playerTurnButtonIdx
-        self.currentButtonPressedIdx = self.playerTurnButtonPressedIdx
+        self.currentButtons = self.generatePlayerTurnButtons() 
+        self.currentButtonIdx = 0 
         self.buttonIndices = self.loadButtonIndices() # Used to save button menu indices
         self.timeLastInput = 0
         self.currentButtonMenu = Battle.ButtonMenus.PLAYER_TURN 
@@ -315,12 +311,12 @@ class Battle(Scene):
         #extraSpacing = 20
         #bottomPos = player_bottom_pos[0], player_bottom_pos[1] - player_base_surf.get_height() - extraSpacing
         buttonList = []
-        button1 = TextButton(Battle.PlayerTurnButtonNames.ATTACK, Battle.PlayerTurnButtonNames.ATTACK, 0, 0, 0, 0, fit_to_text=True, color=(140, 8, 10), font_path=SAVED_DATA.FONT_PATH)
-        button1.animateTextWithOutline((255, 0,0), size="small")
-        buttonList.append(button1)
         button2 = TextButton(Battle.PlayerTurnButtonNames.WAIT, Battle.PlayerTurnButtonNames.WAIT, 0, 0, 0, 0, fit_to_text=True, color=(200, 110, 140), font_path=SAVED_DATA.FONT_PATH)
         button2.animateTextWithOutline((244, 194, 194), size="small")
         buttonList.append(button2)
+        button1 = TextButton(Battle.PlayerTurnButtonNames.ATTACK, Battle.PlayerTurnButtonNames.ATTACK, 0, 0, 0, 0, fit_to_text=True, color=(140, 8, 10), font_path=SAVED_DATA.FONT_PATH)
+        button1.animateTextWithOutline((255, 0,0), size="small")
+        buttonList.append(button1)
         button3 = TextButton(Battle.PlayerTurnButtonNames.FLEE, Battle.PlayerTurnButtonNames.FLEE, 0, 0, 0, 0, fit_to_text=True, color=(100, 149, 247), font_path=SAVED_DATA.FONT_PATH)
         button3.animateTextWithOutline((173, 216, 230), size="small")
         buttonList.append(button3)
@@ -345,6 +341,7 @@ class Battle(Scene):
         if shift_right != 0:
             dequedList = deque(buttonList)
             dequedList.rotate(shift_right)
+            buttonList = list(dequedList)
 
         mainPos = Battle.ButtonPositions[0]
         for i in range(len(buttonList)):
@@ -368,8 +365,16 @@ class Battle(Scene):
                 currentButton.animateTextToSize(size= currentButton.originalFontSize + 4, step=0.3, shrink= False)
                 currentButton.animateTextWithOutline()
                 logger.debug(f"{currentButton.fontSize=}")
+
             logger.debug(f"{buttonList[i].textSurfaceAlpha=}")
             logger.debug(f"{buttonList[i].textSurfaceOutlineAlpha=}")
+        if shift_right != 0:
+            dequedList = deque(buttonList)
+            dequedList.rotate(-shift_right)
+            buttonList = list(dequedList)
+            self.currentButtonIdx = -shift_right
+
+
         return buttonList
 
     def lockUI(self, cooldown):
@@ -406,10 +411,13 @@ class Battle(Scene):
                             button.animateTextOutlineToColor(color= desiredOutlineColor, lastColor = outlineColor)
                             button.animateTextToColor(color= desiredTextColor)
                             button.animateTextToSize(button.fontSize + 3, 1, shrink=False)
-                            button.animateTextToAlpha(alpha=200, step=-20)
+                            button.animateTextToAlpha(alpha=200, step=-1)
+                            current_pos = button.rect.centerx, button.rect.centery
+                            goal_pos = button.rect.centerx, button.rect.centery - Battle.BUTTON_MODEL_ELLIPSE[1]
+                            logger.debug(f"{current_pos=}, {goal_pos=}") 
                             button.animateTextToPosition(goal_pos = (button.rect.centerx, button.rect.centery - Battle.BUTTON_MODEL_ELLIPSE[1]), current_pos = (button.rect.centerx, button.rect.centery), middle= True, num_steps=10)
                             continue
-                        button.animateTextToAlpha(alpha=0, step=-25)
+                        button.animateTextToAlpha(alpha=0, step=-1)
 
                     return None
 
@@ -418,7 +426,7 @@ class Battle(Scene):
                     case "BACK":
                         self.uiLock = True
                         for button in self.currentButtons:
-                            button.animateTextToAlpha(alpha=0, step=-25)
+                            button.animateTextToAlpha(alpha=0, step=-10)
 
                     case _:
                         raise Exception(f"Selected button with name {selected_button.name} has invalid or unchecked name")
@@ -490,6 +498,7 @@ class Battle(Scene):
         direction = 0
         buttonPressed = False
         lastButtonIdx = self.currentButtonIdx
+        currentButtonIdx = lastButtonIdx
         match battle_state:
             case Battle.States.PLAYER_CHOOSING_ACTION:
                 if self.uiLock:
@@ -502,30 +511,30 @@ class Battle(Scene):
                         continue
                     # do something
                     direction = 1
-                    self.currentButtonIdx += 1
-                    if self.currentButtonIdx >= len(self.currentButtons):
-                        self.currentButtonIdx = 0
+                    currentButtonIdx+=1
+                    if currentButtonIdx >= len(self.currentButtons):
+                        currentButtonIdx = 0 
                     self.timeLastInput = timenow
                 for key in SAVED_DATA.UI_MOVE_LEFT:
                     if not keys[key]:
                         continue 
                     direction = -1
-                    self.currentButtonIdx -= 1
-                    if self.currentButtonIdx < 0:
-                        self.currentButtonIdx = len(self.currentButtons) - 1
+                    currentButtonIdx -= 1
+                    if currentButtonIdx < 0:
+                        currentButtonIdx = len(self.currentButtons) - 1
                     self.timeLastInput = timenow
                 for key in SAVED_DATA.UI_SELECT:
                     if not keys[key]: continue
                     direction = 0
-                    self.currentPressedButtonIdx = self.currentButtonIdx 
-                    self.playerTurnButtonPressedIdx = self.currentButtonIdx
                     self.timeLastInput = timenow
                     buttonPressed = True
-
                  
-                if lastButtonIdx != self.currentButtonIdx or buttonPressed:
-                    self.buttonIndices[self.currentButtonMenu] = self.currentButtonIdx
-                    self.updateButtonsOnUIInput(self.currentButtons, self.currentButtonIdx, direction, buttonPressed)
+                if lastButtonIdx != currentButtonIdx or buttonPressed:
+                    self.buttonIndices[self.currentButtonMenu] = currentButtonIdx
+                    self.updateButtonsOnUIInput(self.currentButtons, currentButtonIdx, direction, buttonPressed)
+                    self.currentButtonIdx = currentButtonIdx
+                    if buttonPressed:
+                        self.currentButtonIdx = 0
 
     def setBattleState(self, state: str):
         assert SETTINGS_FUNCTIONS.checkVariableInClass(state, Battle.States)
@@ -651,7 +660,7 @@ class Battle(Scene):
                 if self.uiLock and self.buttonPressedName != "NONE":
                     logger.debug(f"BUTTON PRESSED NAME: {self.buttonPressedName}")
                     if self.buttonPressedName == Battle.PlayerTurnButtonNames.ATTACK:
-                        if not self.currentButtons[self.currentButtonIdx].textAnimationInfo.getLerpXY():
+                        if not (self.currentButtons[self.currentButtonIdx].textAnimationInfo.getLerpXY() or self.currentButtons[self.currentButtonIdx-1].textAnimationInfo.getAlphaChanging()):
                             currButton = self.currentButtons[self.currentButtonIdx]
                             size = currButton.textSurface.get_size()[0] + 4, currButton.textSurface.get_size()[1] + 4
                             atkButton = pygame.Surface((size[0] + 4, size[1] + 4), pygame.SRCALPHA)
@@ -670,17 +679,26 @@ class Battle(Scene):
                             self.currentButtons = self.generatePlayerAttackButtons(self.player.moves) 
                             self.currentButtonMenu = Battle.ButtonMenus.ATK
                             self.uiLock = False
+                            self.buttonPressedName = "NONE"
                     if self.buttonPressedName == f"{Battle.PlayerTurnButtonNames.ATTACK}.BACK":
                         for surf in self.additionalBackgroundSurfs:
-                            newAlpha = surf.get_alpha() - 30
+                            step = 10
+                            newAlpha = surf.get_alpha() - step 
                             if newAlpha < 0: newAlpha = 0
                             surf.set_alpha(newAlpha)
-                        if not self.currentButtons[0].textAnimationInfo.getAlphaChanging():
+                        alphaChanging = False
+                        for button in self.currentButtons:
+                            if not button.textAnimationInfo.getAlphaChanging():
+                                continue
+                            alphaChanging = True 
+
+                        if not alphaChanging:
                             self.additionalBackgroundSurfs.clear()
                             self.additionalBackgroundSurfsPos.clear()
                             self.currentButtonMenu = Battle.ButtonMenus.PLAYER_TURN
-                            self.currentButtons = self.generatePlayerTurnButtons(self.buttonIndices[self.currentButtonMenu])
+                            self.currentButtons = self.generatePlayerTurnButtons(-self.buttonIndices[self.currentButtonMenu])
                             self.uiLock = False
+                            self.buttonPressedName = "NONE"
                             pass
                         pass
                 self.updateZoomState(self.zoomState)
@@ -713,6 +731,7 @@ class Battle(Scene):
         if timenow - ui_time_set < ui_cooldown:
             return None
         self.uiLock = False
+
     def updateButtons(self, battle_state, current_buttons, current_button_idx, screen):
         assert battle_state == self.States.PLAYER_CHOOSING_ACTION
         logger.debug(f"{current_buttons=}")
@@ -731,7 +750,10 @@ class Battle(Scene):
             currentButton.setX(adjustedPos[0])
             currentButton.setY(adjustedPos[1])
 
+
         for i in range(current_button_idx - currentButtonLen , current_button_idx+1, 1):
+            logger.debug(f"{current_button_idx=}")
+            logger.debug(f"{i=}")
             current_buttons[i].update(screen)
 
     def checkState(self, state: str, screen: pygame.Surface):
@@ -753,7 +775,7 @@ class Battle(Scene):
         self.checkInput(self.state, self.battleState)
         logger.debug(f"current button pos: " + f"{self.currentButtons[self.currentButtonIdx].rect=}")
         for button in self.currentButtons:
-            logger.debug(f"{button.rect=}")
+            logger.debug(f"{button.name=}, {button.rect=}")
 
         if DEBUG_MODE:
             self.debugExit(state= self.state)
