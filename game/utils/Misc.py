@@ -1,4 +1,5 @@
 import pygame
+from collections import deque
 import numpy 
 import os
 import PIL.Image as Image
@@ -75,6 +76,16 @@ def changeButtonsToOpacity(current_buttons, opacity, outline_opacity=255):
         button.setTextSurfaceAlpha(opacity)
         if button.textAnimationInfo.outline:
             button.setTextSurfaceOutlineAlpha(outline_opacity)
+
+def shiftList(list_to_shift, shift_right=0):
+    #using deque for performance purposes.
+    # shifts a list list_to_shift right by amount shift_right
+    # positive int arguments do right shift, negative int arguments do left shift
+    if shift_right != 0:
+        dequedList = deque(list_to_shift)
+        dequedList.rotate(shift_right)
+        list_to_shift = list(dequedList)
+    return list_to_shift
 
 def getPolarCoordinates(angle, vertical_radius_size, horizontal_radius_size):
     a = vertical_radius_size * numpy.cos(angle)
