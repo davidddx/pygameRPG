@@ -329,6 +329,7 @@ class Battle(Scene):
                 logger.debug(f"{currentButton.fontSize=}")
 
         myButtons = Misc.shiftList(myButtons, -shift_right)
+        self.currentButtonIdx = -shift_right
         #adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[0 - len(player_moves)], backButton.textSurface) 
         
         #lastSize = backButton.fontSize
@@ -704,9 +705,10 @@ class Battle(Scene):
                             atkButton.set_alpha(130)
                             self.additionalBackgroundSurfs.append(atkButton)
                             self.additionalBackgroundSurfsPos.append((currButton.rect.x, currButton.rect.y))
-                            shiftRight = -self.buttonIndices[self.currentButtonMenu]
-                            self.currentButtons = self.generatePlayerAttackButtons(self.player.moves, shiftRight) 
                             self.currentButtonMenu = Battle.ButtonMenus.ATK
+                            shiftRight = -self.buttonIndices[self.currentButtonMenu]
+                            logger.debug(f"SHIFT RIGHT FOR {self.currentButtonMenu} MENU: {shiftRight}")
+                            self.currentButtons = self.generatePlayerAttackButtons(self.player.moves, shiftRight) 
                             self.uiLock = False
                             self.buttonPressedName = "NONE"
                     if self.buttonPressedName == f"{Battle.PlayerTurnButtonNames.ATTACK}.BACK":
@@ -725,7 +727,9 @@ class Battle(Scene):
                             self.additionalBackgroundSurfs.clear()
                             self.additionalBackgroundSurfsPos.clear()
                             self.currentButtonMenu = Battle.ButtonMenus.PLAYER_TURN
-                            self.currentButtons = self.generatePlayerTurnButtons(-self.buttonIndices[self.currentButtonMenu])
+                            shiftRight= -self.buttonIndices[self.currentButtonMenu]
+                            logger.debug(f"SHIFT RIGHT FOR {self.currentButtonMenu} MENU: {shiftRight}")
+                            self.currentButtons = self.generatePlayerTurnButtons(shiftRight)
                             self.uiLock = False
                             self.buttonPressedName = "NONE"
                             pass
