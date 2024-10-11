@@ -215,8 +215,8 @@ class SceneHandler:
 
     def runDebug(self, screen: pygame.Surface, clock: pygame.time.Clock):
         logger.debug(f"{type(self.currentArea)=}")
-        if self.currentArea is not None:
-            logger.debug(f"{self.currentArea.currentMap.collidedObject=}")
+        #if self.currentArea is not None:
+        #    logger.debug(f"{self.currentArea.currentMap.collidedObject=}")
         self.currentScene.update(screen=screen)
         self.debugMenu.run(screen=screen, clock= clock, currentScene= self.currentScene)
         self.checkSceneStateTest(current_scene=self.currentScene, debug=True, screen= screen)
