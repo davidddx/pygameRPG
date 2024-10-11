@@ -3,7 +3,7 @@ import os
 from debug.logger import logger
 from game.Scenes.BaseScene import Scene, SceneTypes, SceneStates, SceneAnimations
 from game.utils.SceneAnimation import SceneAnimation, AnimationStates
-from globalVars.SettingsConstants import DEBUG_MODE, TILE_SIZE, NUM_TILES 
+from globalVars.SettingsConstants import DEBUG_MODE, TILE_SIZE, NUM_TILES, SCREEN_WIDTH, SCREEN_HEIGHT
 from game.Enemy import EnemyNames, loadEnemyImage, DirectionNames
 from game.utils.Button import TextButton
 import gamedata.Moves as MOVES
@@ -229,11 +229,14 @@ class Battle(Scene):
         self.animationHandler = BattleSceneTransitionAnimations(self.animations)
         super().__init__(SceneTypes.BATTLE) 
         self.lastAreaFrame = last_area_frame
+        self.lastFrame = pygame.Surface(screen_size) 
         self.opacity = 0
         self.backgroundFull = pygame.Surface((screen_size[0] + 6*TILE_SIZE, screen_size[1]))
         self.background = self.loadBattleSurface(Battle.Backgrounds.GRASS)
         self.additionalBackgroundSurfs = []
         self.additionalBackgroundSurfsPos = []
+        self.cover = []
+        self.coverPos = []
         self.currentAnimation = SceneAnimations.NONE
         self.setState(SceneStates.ON_ANIMATION)
         enemyBottomPos = screen_size[0] - Battle.PLAYER_BOTTOM_POS[0], Battle.PLAYER_BOTTOM_POS[1] 
@@ -248,6 +251,7 @@ class Battle(Scene):
         self.buttonIndices = self.loadButtonIndices() # Used to save button menu indices
         self.timeLastInput = 0
         self.currentButtonMenu = Battle.ButtonMenus.PLAYER_TURN 
+        self.canFlee = self.determinePlayerFlee()
         logger.debug("Battle Scene Initialized")
 
     def loadButtonIndices(self) -> dict:
@@ -417,8 +421,18 @@ class Battle(Scene):
         match category:
             case Battle.PlayerTurnButtonNames.FLEE: 
                 # Has no nested buttons 
-                fleeCooldown = 500
-                self.lockUI(fleeCooldown)
+                if self.canFlee:
+                    self.uiLock = True
+                    surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+                    surf.set_alpha(0)
+                    surf.fill((0,0,0))
+                    self.cover.append(surf)
+                    self.coverPos.append((0,0))
+                    for button in self.currentButtons:
+                        button.animateTextToAlpha(alpha=0, step=-10)
+                    self.lastAreaFrame.set_alpha(0)
+                else:
+                    self.lockUI(200)
                 return None
             case Battle.PlayerTurnButtonNames.ATTACK:
                 if separator != ".": 
@@ -453,14 +467,9 @@ class Battle(Scene):
 
                     case _:
                         raise Exception(f"Selected button with name {selected_button.name} has invalid or unchecked name")
-
-            case Battle.PlayerTurnButtonNames.USE_ITEM:
-                pass
-                return None
-            case Battle.PlayerTurnButtonNames.WAIT:
-                pass
-                return None
-
+            #case Battle.PlayerTurnButtonNames.WAIT:
+            #    pass
+            #    return None
             case _:
                 ### If the following code below is reached than button name is invalid or has not been added functionality yet
                 raise Exception(f"Selected button with name {selected_button.name} has invalid or unchecked name")
@@ -669,9 +678,30 @@ class Battle(Scene):
 
     def blitBackground(self, screen: pygame.Surface):
         screen.blit(self.backgroundFull, (0,0))
+        self.blitSurfs(screen, self.additionalBackgroundSurfs, self.additionalBackgroundSurfsPos)
+        '''
         for i, surf in enumerate(self.additionalBackgroundSurfs):
             screen.blit(surf, self.additionalBackgroundSurfsPos[i])
-             
+        '''  
+
+    def blitSurfs(self, screen, lst_surf, lst_pos):
+        for i, surf in enumerate(lst_surf):
+            screen.blit(surf, lst_pos[i])
+    
+    def blitCover(self, screen):
+        if not self.cover:
+            return None
+        self.blitSurfs(screen, self.cover, self.coverPos)
+
+    # Calculate Flee pct and rng to determine flee outcome as fled or not fled
+    # Will add feature later, for now it is a number from 0-9 or always true for debugging purposes
+    def determinePlayerFlee(self) -> bool:
+        '''
+        if numpy.random.randint(low=0, high=9, size=1, dtype=numpy.uint8)[0] > 4:
+            return False
+        return True
+        '''
+        return True
 
     def checkBattleState(self, screen: pygame.Surface, battle_state: str):
         logger.debug(f"{battle_state=}, {self.prevState=}, {self.state=}")
@@ -682,6 +712,29 @@ class Battle(Scene):
                     self.prevState = self.state
                 if self.uiLock and self.buttonPressedName != "NONE":
                     logger.debug(f"BUTTON PRESSED NAME: {self.buttonPressedName}")
+
+                    #Flee Button Pressed
+                    if self.buttonPressedName == Battle.PlayerTurnButtonNames.FLEE:
+                        if self.canFlee:
+                            if self.lastAreaFrame.get_alpha() == 0:
+                                for cover in self.cover:
+                                    cover.set_alpha(self.opacity)
+                            else:
+                                self.lastAreaFrame.set_alpha(self.opacity)
+                            if self.opacity == 255:
+                                if self.lastAreaFrame.get_alpha() != 0:
+                                    self.setState(SceneStates.FINISHING)
+                                else:
+                                    self.lastAreaFrame.set_alpha(1)
+                                    self.opacity = 0
+                            self.opacity += 10
+                            if self.opacity >= 255:
+                                self.opacity = 255
+                        else:
+                            
+                            self.buttonPressedName = "NONE" 
+                            self.lockUI(200)
+                    #Attack Button pressed
                     if self.buttonPressedName == Battle.PlayerTurnButtonNames.ATTACK:
                         currButton = self.currentButtons[self.currentButtonIdx]
                         alphaChanging = False
@@ -711,6 +764,8 @@ class Battle(Scene):
                             self.currentButtons = self.generatePlayerAttackButtons(self.player.moves, shiftRight) 
                             self.uiLock = False
                             self.buttonPressedName = "NONE"
+
+                    #Back button pressed
                     if self.buttonPressedName == f"{Battle.PlayerTurnButtonNames.ATTACK}.BACK":
                         for surf in self.additionalBackgroundSurfs:
                             step = 10
@@ -734,6 +789,8 @@ class Battle(Scene):
                             self.buttonPressedName = "NONE"
                             pass
                         pass
+
+                
                 self.updateZoomState(self.zoomState)
                 blittedSurface = pygame.Surface(screen.get_size())
                 self.blitBackground(blittedSurface)
@@ -741,8 +798,8 @@ class Battle(Scene):
                 self.player.update(blittedSurface)
                 self.updateButtons(battle_state, self.currentButtons, self.currentButtonIdx, blittedSurface)
                 self.enemy.update(blittedSurface)
+                self.blitCover(blittedSurface)
                 position2 = (blittedSurface.get_width()/2 - self.player.rect.center[0], blittedSurface.get_height()/2 - self.player.rect.center[1])
-
 
                 # for debugging vvv
                 ellipsePos = Battle.BUTTON_OFFSET[0], Battle.BUTTON_OFFSET[1] - 20
@@ -754,6 +811,9 @@ class Battle(Scene):
                 #    pygame.draw.rect(blittedSurface, (255,255,255), (pos[0], pos[1], 50, 25))
 
                 SETTINGS_FUNCTIONS.zoomToPosition(screen, blittedSurface, (0,0), position2, self.zoomScale, self.zoomScale-1)
+                if self.buttonPressedName == Battle.PlayerTurnButtonNames.FLEE and self.canFlee:
+                    screen.blit(self.lastAreaFrame, (0,0))
+                    self.lastFrame.blit(screen, (0,0))
                 if self.uiLock:
                     self.checkUILock(self.uiLockTimeSet, self.uiLockCooldown)
 
@@ -801,6 +861,7 @@ class Battle(Scene):
                     self.setState(SceneStates.RUNNING)
                     self.setBattleState(Battle.States.PLAYER_CHOOSING_ACTION)
             case SceneStates.FINISHING:
+                screen.blit(self.lastFrame, (0,0))
                 self.background.empty()
                 self.exitScene(SceneTypes.AREA)
 
