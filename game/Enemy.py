@@ -196,11 +196,11 @@ class Enemy(Tile):
 
     def update(self, screen, camera, player_pos, player_size):
         #logger.debug(f"{self.surfIndex[0]=}, {self.surfIndex[1]=}")
-        self.render(surf=self.surfaces[self.surfIndex[0]][self.surfIndex[1]], screen=screen, camera_offset=camera, player_pos=player_pos)
         logger.debug(f"{self.locked=}")
         if self.locked: 
             self.updateLock(self.timeLastLocked, self.lockCooldown)
-            return None
-        self.checkDetectionRadius(pos= (self.rect.x, self.rect.y), player_pos=player_pos, player_size = player_size) 
-        self.move(self.movementDirection) 
-        self.updateSurfIndex(self.facingDirection)
+        else:
+            self.checkDetectionRadius(pos= (self.rect.x, self.rect.y), player_pos=player_pos, player_size = player_size) 
+            self.move(self.movementDirection) 
+            self.updateSurfIndex(self.facingDirection)
+        self.render(surf=self.surfaces[self.surfIndex[0]][self.surfIndex[1]], screen=screen, camera_offset=camera, player_pos=player_pos)
