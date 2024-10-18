@@ -297,7 +297,8 @@ class Area(Scene):
     def update(self, screen: pygame.Surface):
         #logger.debug(f"{self.mapIdx=}")
         #logger.debug(f"{self.takenItems=}") 
-        self.currentMap.update(screen=screen) 
+        self.checkEnemyCollision(self.currentMap.getCollidedEnemyName())
+        self.currentMap.update(screen=screen)         
         self.checkChangeMapSignal(cool_down=Area.AREA_SWITCH_COOLDOWN)
         self.checkPauseSignal(state= self.state) 
-        self.checkEnemyCollision(self.currentMap.getCollidedEnemyName())
+

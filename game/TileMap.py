@@ -30,7 +30,6 @@ class TileMap:
         timeInitStarted = pygame.time.get_ticks()
         logger.debug(f"Class {TileMap=} initializing....")
         logger.debug(f"TAKEN ITEMS ARGUMENT OF TILEMAP CONSTRUCTOR: {taken_items=}") 
-        self.timeMapInitialized = pygame.time.get_ticks()
         self.playerSpawnPos = player_pos
         self.spriteGroups = ()
         self.doors = TileMap.initDoors(doors= _doors)
@@ -47,6 +46,7 @@ class TileMap:
         self.player.setPlayerMovability(False)
         self.camera = TileMap.initializeCamera(player_rect= player.rect)
         self.setEnemyLock(500)
+        self.timeMapInitialized = pygame.time.get_ticks()
         logger.debug(f"Class {TileMap=} initialized. \nID: {map_id} \nTime taken: {pygame.time.get_ticks() - timeInitStarted}")
 
     def writeCurrentDoorsOutput(self):
@@ -294,6 +294,6 @@ class TileMap:
 
     def update(self, screen: pygame.Surface):
         self.checkMapCooldownForPlayerMovement()
-        self.displayMap(screen=screen, camera=self.camera, player= self.player)
         self.playerCollisionHandler(player= self.player)
         self.camera = TileMap.updateCameraPos(player_pos = self.player.getPlayerPos(), current_camera=self.camera, player_rect=self.player.rect)
+        self.displayMap(screen=screen, camera=self.camera, player= self.player)
