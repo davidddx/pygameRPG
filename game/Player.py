@@ -180,7 +180,7 @@ class Player:
             try:
                 screen.blit(_part.walkAnimationImages[PlayerPart.walkAnimationIndex], (self.rect.x - camera_offset[0],
                                           self.rect.y - camera_offset[1] - self.rect.height/2))
-            except Exception as e:
+            except:
                 
                 #logger.info(f"could not blit part {_part.name=} to screen, {e=}")
                 continue
@@ -341,7 +341,6 @@ class Player:
     def update(self, screen, camera : tuple[float, float]):
         # also handles animation in render function
         
-        self.render(player_sprite=self.playerSprites[self.currentDirectionalIdx], screen=screen, camera_offset=camera)
         keys = pygame.key.get_pressed()
         self.updatePlayerMovementState(keys)
         self.updatePlayerInputState(keys)
@@ -349,3 +348,4 @@ class Player:
         self.movePlayer(direction=self.movementDirection, velocity = self.velocity);
         self.currentDirectionalIdx = Player.determineDirectionalIdx(self.facingDirection)
         self.updateAnimation()
+        self.render(player_sprite=self.playerSprites[self.currentDirectionalIdx], screen=screen, camera_offset=camera)
