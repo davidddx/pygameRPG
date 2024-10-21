@@ -36,3 +36,6 @@ KICK = {
         DMG: 7,
         LUCK: 5,
 }
+
+MOVE_LIST = [PUNCH, HEADBUTT, KICK]
+MOVE_NAMES = [move[NAME] for move in MOVE_LIST]
