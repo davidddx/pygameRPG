@@ -163,11 +163,18 @@ class DebugMenu:
                 surfaceList.append(f"LAST SELECTED BUTTON IDX: {currentScene.lastSelectedButtonIdx}")
                 surfaceList.append(f"buttonPressedName: {currentScene.buttonPressedName}")
         elif type(currentScene) == Battle:
+            surfaceList.append(f"BATTLE STATE: {currentScene.battleState}")
             surfaceList.append(f"CURRENT BUTTON IDX: {currentScene.currentButtonIdx}")
+            surfaceList.append(f"OPACITY: {currentScene.opacity}")
+            surfaceList.append(f"ADDITIONAL SURFACES: {currentScene.additionalBackgroundSurfs}")
+            surfaceList.append(f"ADDITIONAL SURFACES POS: {currentScene.additionalBackgroundSurfsPos}")
+            surfaceList.append(f"COVER: {currentScene.cover}")
+            surfaceList.append(f"COVER_POS: {currentScene.coverPos}")
             surfaceList.append(f"BUTTON INDICES: {currentScene.buttonIndices}")
             surfaceList.append(f"CURRENT BUTTON MENU: {currentScene.currentButtonMenu}")
             surfaceList.append(f"UI LOCK: {currentScene.uiLock}")
             surfaceList.append(f"BUTTON PRESSED NAME: {currentScene.buttonPressedName}")
+            surfaceList.append(f"ZOOM SCALE: {currentScene.zoomScale}")
             buttonNames = "["
             buttonPositions = "["
             buttonLerping = "["
