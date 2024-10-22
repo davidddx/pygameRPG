@@ -27,13 +27,20 @@ class BackgroundTile(pygame.sprite.Sprite):
 
 class BattleSceneEntity:
     #prototype class for now will use later
-    class states:
+    class States:
         INITIALIZING = "INITIALIZING"
         IDLE = "IDLE"
         DOING_MOVE = "DOING_MOVE"
         DEFENDING = "DEFENDING"
         COMPLETING_TURN = "COMPLETING_TURN" 
 
+    #class that describes possible values for self.movestate variable
+    class MoveStates:
+        IDLE = "IDLE"
+        INITIALIZING = "INITIALIZING"
+        MOVING = "MOVING"
+        ATTACKING = "ATTACKING"
+        RETURNING = "RETURNING"
 
     #position param refer to bottom position of sprite
     #enemy: bool to decifer if unit is enemy or not
@@ -41,7 +48,7 @@ class BattleSceneEntity:
     #base_sprite: base sprite of entity, sprite when entity is not moving
     def __init__(self, name: str, base_sprite: pygame.Surface, enemy: bool, position: tuple):
         logger.debug(f"Initializing BattleSceneEntity {name=}. ")
-        self.state = SceneStates.INITIALIZING
+        self.setState(self.States.INITIALIZING)
         self.isEnemy = enemy
         self.offense = False if enemy else True
         self.name = name
@@ -49,11 +56,20 @@ class BattleSceneEntity:
         position = Misc.bottomToTopleftPos(position, self.baseSprite)
         self.rect = self.baseSprite.get_rect(topleft=position)
         self.moves = self.loadMoves(name, enemy)
+        self.setMoveState(self.MoveStates.IDLE)
         self.moveAnimations = self.loadMoveAnimations(self.moves)
         self.currentAnimationIdx = 0    
         self.currentSprite = self.baseSprite # points to current sprite 
         logger.debug(f"Initialized BattleSceneEntity {name=}.")
-        self.state = self.states.IDLE
+        self.setState(self.States.IDLE)
+
+    def setState(self, state: str):
+        assert hasattr(BattleSceneEntity.States, state)
+        self.state = state
+
+    def setMoveState(self, state: str):
+        assert hasattr(BattleSceneEntity.MoveStates, state)
+        self.moveState = state
 
     def loadMoveAnimations(self, moves: dict):
         pass
@@ -80,15 +96,15 @@ class BattleSceneEntity:
 
     def checkState(self, state):
         match state:
-            case self.states.INITIALIZING:
+            case self.States.INITIALIZING:
                 return None
-            case self.states.DEFENDING:
+            case self.States.DEFENDING:
                 pass
-            case self.states.DOING_MOVE:
+            case self.States.DOING_MOVE:
                 pass
-            case self.states.COMPLETING_TURN:
+            case self.States.COMPLETING_TURN:
                 pass
-            case self.states.IDLE:
+            case self.States.IDLE:
                 self.currentAnimationIdx = 0
                 return None
 
@@ -484,7 +500,7 @@ class Battle(Scene):
                         self.additionalBackgroundSurfs.clear()
                         self.additionalBackgroundSurfsPos.clear()
                         for button in self.currentButtons:
-                            button.animateTextToAlpha(alpha = 0, step = -10)
+                            button.animateTextToAlpha(alpha = 0, step = -40)
                         
                         #self.setBattleState(Battle.States.ANIMATING_MOVE)
 
@@ -878,9 +894,11 @@ class Battle(Scene):
                 zoomToPos = (blittedSurface.get_width()/2 - self.player.rect.center[0], blittedSurface.get_height()/2 - self.player.rect.center[1])
 
                 # for debugging vvv
+                '''
                 ellipsePos = Battle.BUTTON_OFFSET[0], Battle.BUTTON_OFFSET[1] - 20
                 ellipseSize = Battle.BUTTON_MODEL_ELLIPSE[0] * 2, Battle.BUTTON_MODEL_ELLIPSE[1] * 2
                 pygame.draw.ellipse(blittedSurface, (0,0,0), (ellipsePos[0] - ellipseSize[0]/2, ellipsePos[1] - ellipseSize[1]/2, 2*Battle.BUTTON_MODEL_ELLIPSE[0], 2*Battle.BUTTON_MODEL_ELLIPSE[1]), width=3)
+                '''
                 # Debuging Code end ^^^
 
                 if self.uiLock:
