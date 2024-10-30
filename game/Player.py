@@ -2,6 +2,30 @@ import pygame
 from debug.logger import logger
 import globalVars.SettingsConstants as globalVars
 import gamedata.Save.SavedData as SAVED_DATA
+import gamedata.Save.PlayerCustomization as PLAYER_CUSTOMIZATION
+
+class MinimalPart(pygame.sprite.Sprite):
+    NONE = "NONE"
+    def __init__(self, group: pygame.sprite.Group, name: str, image):
+        super().__init__(group)
+        self.name = name
+        self.image = image
+
+    def render(self, position: tuple, screen: pygame.Surface):
+        if self.image is None:
+            return None
+        screen.blit(self.image, position)
+
+
+class DirectionNames:
+    FRONT = "Front"
+    FRONT_RIGHT = "FrontRight"
+    FRONT_LEFT = "FrontLeft"
+    LEFT = "Left"
+    RIGHT = "Right"
+    BACK_LEFT = "BackLeft"
+    BACK_RIGHT = "BackRight"
+    BACK = "Back"
 
 class PlayerPart(pygame.sprite.Sprite):
     walkAnimationIndex = 0
@@ -30,6 +54,7 @@ class PlayerPart(pygame.sprite.Sprite):
         self.name = partName
         self.direction_id = direction_id
         self.direction = PlayerPart.translateDirectionID(self.direction_id)
+        logger.debug(f"{animation_path=}")
         self.walkAnimationImages = PlayerPart.loadWalkAnimSprites(animation_path= animation_path)
     
     @staticmethod
@@ -147,11 +172,11 @@ class Player:
         def createPart(name: str, direction_path: str, group: pygame.sprite.Group, direction_id: int):
             direction_path += "/" + name
             if (name == PlayerPart.hair):
-                direction_path += f"/{SAVED_DATA.PLAYER_HAIR_STYLE_ID}"
-                direction_path += f"/{SAVED_DATA.PLAYER_HAIR_COLOR_ID}"
+                direction_path += f"/{PLAYER_CUSTOMIZATION.PLAYER_HAIR_STYLE_ID}"
+                direction_path += f"/{PLAYER_CUSTOMIZATION.PLAYER_HAIR_COLOR_ID}"
             else:
             
-                direction_path +=  "/" + str(getattr(SAVED_DATA, "PLAYER_" + name.upper() + "_ID"))
+                direction_path +=  "/" + str(getattr(PLAYER_CUSTOMIZATION, "PLAYER_" + name.upper() + "_ID"))
             return PlayerPart(animation_path = direction_path, group= group, partName = name, direction_id = direction_id)
         for key in direction_path.keys():
             group = pygame.sprite.Group()
