@@ -5,6 +5,7 @@ from game.Scenes.BaseScene import Scene, SceneTypes, SceneStates, SceneAnimation
 from game.utils.SceneAnimation import SceneAnimation, AnimationStates
 from globalVars.SettingsConstants import DEBUG_MODE, TILE_SIZE, NUM_TILES, SCREEN_WIDTH, SCREEN_HEIGHT
 from game.Enemy import EnemyNames, loadEnemyImage, DirectionNames
+from game.Player import DirectionNames
 from game.utils.Button import TextButton
 import game.utils.SettingsFunctions as SETTINGS_FUNCTIONS
 import game.utils.Misc as Misc 
@@ -33,6 +34,7 @@ class BattleSceneEntity:
         DOING_MOVE = "DOING_MOVE"
         DEFENDING = "DEFENDING"
         COMPLETING_TURN = "COMPLETING_TURN" 
+        NONE = "NONE"
 
     #class that describes possible values for self.movestate variable
     class MoveStates:
@@ -48,16 +50,20 @@ class BattleSceneEntity:
     #base_sprite: base sprite of entity, sprite when entity is not moving
     def __init__(self, name: str, base_sprite: pygame.Surface, enemy: bool, position: tuple):
         logger.debug(f"Initializing BattleSceneEntity {name=}. ")
+        self.state = self.States.NONE
+        self.prevState = self.States.NONE
         self.setState(self.States.INITIALIZING)
+        self.setMoveState(self.MoveStates.IDLE)
         self.isEnemy = enemy
         self.offense = False if enemy else True
         self.name = name
         self.baseSprite = base_sprite 
         position = Misc.bottomToTopleftPos(position, self.baseSprite)
         self.rect = self.baseSprite.get_rect(topleft=position)
+        self.selectedMove = MOVES.NONE 
         self.moves = self.loadMoves(name, enemy)
-        self.setMoveState(self.MoveStates.IDLE)
         self.moveAnimations = self.loadMoveAnimations(self.moves)
+        self.walkAnimation = self.loadWalkAnimation()
         self.currentAnimationIdx = 0    
         self.currentSprite = self.baseSprite # points to current sprite 
         logger.debug(f"Initialized BattleSceneEntity {name=}.")
@@ -65,7 +71,16 @@ class BattleSceneEntity:
 
     def setState(self, state: str):
         assert hasattr(BattleSceneEntity.States, state)
+        self.prevState = self.state
         self.state = state
+
+    
+
+    def getPrevState(self):
+        return self.prevState
+
+    def getState(self):
+        return self.state
 
     def setMoveState(self, state: str):
         assert hasattr(BattleSceneEntity.MoveStates, state)
@@ -83,6 +98,9 @@ class BattleSceneEntity:
         }
         return moveDict
 
+    def loadWalkAnimation(self):
+        return Misc.loadWalkAnimByDirection(DirectionNames.RIGHT)
+
     ##will modify later
     def loadMoves(self, entity_name: str, is_enemy: bool) -> dict:
         # Each move is a dict with different attributes, dicts stored in gamedata.Moves
@@ -94,6 +112,10 @@ class BattleSceneEntity:
             case _:
                 return {MOVES.PUNCH[MOVES.NAME] : MOVES.PUNCH} 
 
+
+    def animateMove(self, move):
+        pass
+
     def checkState(self, state):
         match state:
             case self.States.INITIALIZING:
@@ -101,6 +123,7 @@ class BattleSceneEntity:
             case self.States.DEFENDING:
                 pass
             case self.States.DOING_MOVE:
+                self.animateMove(self.currentAnimationIdx)
                 pass
             case self.States.COMPLETING_TURN:
                 pass
@@ -300,31 +323,6 @@ class Battle(Scene):
             button.setTextSurfaceAlpha(0)
             button.setTextSurfaceOutlineAlpha(0)
             myButtons.append(button)
-        '''
-        for i, move in enumerate(player_moves):
-            moveName = move[MOVES.NAME]
-            button = TextButton(moveName, f"{Battle.PlayerTurnButtonNames.ATTACK}.{moveName}", 0, 0, 0, 0, fit_to_text=True, color=buttonColor, font_path=SAVED_DATA.FONT_PATH)
-            button.animateTextWithOutline(buttonOutlineColor, size="small")
-            adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[0 - i], button.textSurface) 
-            button.setX(adjustedPos[0])
-            button.setY(adjustedPos[1])
-            if i != 0:
-                # Not a current button idx
-                lastSize = button.fontSize
-                sizeDiff = int((mainPos[1] - positions[0 - i, 1])/10 + 3)
-                currSize = button.originalFontSize - sizeDiff
-                button.setTextSurfaceAlpha(0)
-                button.setTextSurfaceOutlineAlpha(0)
-                button.animateTextToAlpha(100)
-                button.animateTextToSize(size= currSize, step= 2, shrink= lastSize > currSize)
-            else:
-                # Case with a current button idx
-                button.setTextSurfaceAlpha(0)
-                button.setTextSurfaceOutlineAlpha(0)
-                button.animateTextToAlpha(255)
-                button.animateTextToSize(size= button.originalFontSize + 4, step=0.3, shrink= False)
-                button.animateTextWithOutline()
-        '''
         # adding back button
         backButtonColor = (200, 8, 10)
         backButtonOutlineColor = (255, 0, 0)
@@ -362,15 +360,6 @@ class Battle(Scene):
         #adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[0 - len(player_moves)], backButton.textSurface) 
         
         #lastSize = backButton.fontSize
-        ''''
-        sizeDiff = int((mainPos[1] - positions[0 - len(player_moves), 1])/10 + 3)
-        currSize = backButton.originalFontSize - sizeDiff
-        backButton.setTextSurfaceAlpha(200)
-        backButton.setTextSurfaceOutlineAlpha(200)
-        backButton.animateTextToSize(size= currSize, step= 0.3, shrink= False)
-        backButton.setX(adjustedPos[0])
-        backButton.setY(adjustedPos[1])
-        '''
         return myButtons 
 
     def generatePlayerTurnButtons(self, shift_right = 0) -> list[TextButton]:
@@ -861,33 +850,6 @@ class Battle(Scene):
                             if not buttonsFading:
                                 # Finished transition to animating move battle state
                                 self.setBattleState(Battle.States.ANIMATING_MOVE)
-                        
-
-                    '''
-
-                    #Back button pressed
-                    if self.buttonPressedName == f"{Battle.PlayerTurnButtonNames.ATTACK}.BACK":
-                        for surf in self.additionalBackgroundSurfs:
-                            step = 10
-                            newAlpha = surf.get_alpha() - step 
-                            if newAlpha < 0: newAlpha = 0
-                            surf.set_alpha(newAlpha)
-                        alphaChanging = False
-                        for button in self.currentButtons:
-                            if not button.textAnimationInfo.getAlphaChanging():
-                                continue
-                            alphaChanging = True 
-
-                        if not alphaChanging:
-                            self.additionalBackgroundSurfs.clear()
-                            self.additionalBackgroundSurfsPos.clear()
-                            self.currentButtonMenu = Battle.ButtonMenus.PLAYER_TURN
-                            shiftRight= -self.buttonIndices[self.currentButtonMenu]
-                            logger.debug(f"SHIFT RIGHT FOR {self.currentButtonMenu} MENU: {shiftRight}")
-                            self.currentButtons = self.generatePlayerTurnButtons(shiftRight)
-                            self.uiLock = False
-                            self.buttonPressedName = Battle.NONE 
-                    '''
 
                 self.updateButtons(battle_state, self.currentButtons, self.currentButtonIdx, blittedSurface)
                 self.updateZoomState(self.zoomState)
@@ -903,9 +865,11 @@ class Battle(Scene):
 
                 if self.uiLock:
                     self.checkUILock(self.uiLockTimeSet, self.uiLockCooldown)
-            case Battle.States.ANIMATING_MOVE:
+            case self.States.ANIMATING_MOVE:
                 zoomToPos = (blittedSurface.get_width()/2 - self.player.rect.center[0], blittedSurface.get_height()/2 - self.player.rect.center[1])
-                pass
+                if self.currentEntity.getState() == BattleSceneEntity.States.IDLE:
+                    self.currentEntity.setState(BattleSceneEntity.States.DOING_MOVE)
+
         self.player.update(blittedSurface)
         self.enemy.update(blittedSurface)
 

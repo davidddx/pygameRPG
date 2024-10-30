@@ -13,6 +13,7 @@ NAME = 'NAME'
 DMG = 'DAMAGE'
 LUCK = 'LUCK'
 TYPE = 'TYPE'
+NONE = "NONE"
 class MoveTypes:
     STATUS_EFFECT = "STATUS_EFFECT"
     MELEE = "MELEE"

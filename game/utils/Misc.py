@@ -4,6 +4,8 @@ import numpy
 import os
 import PIL.Image as Image
 from debug.logger import logger
+import gamedata.Save.PlayerCustomization as PLAYER_OUTFIT
+from game.Player import PlayerPart, MinimalPart
 
 def bottomToTopleftPos(bottom_pos: tuple, base_sprite: pygame.Surface):
     topleftPos = bottom_pos[0] - base_sprite.get_width()/2, bottom_pos[1] - base_sprite.get_height()
@@ -95,3 +97,41 @@ def getPolarCoordinates(angle, vertical_radius_size, horizontal_radius_size):
     logger.debug(f"{vertical_radius_size=}, {horizontal_radius_size=}, {numerator=}, {denominator=}")
     return numerator/denominator
 
+def getPlayerPartImage(direction_path: str, name: str):
+    direction_path += "/" + name
+    if (name == PlayerPart.hair):
+        direction_path += f"/{PLAYER_OUTFIT.PLAYER_HAIR_STYLE_ID}"
+        direction_path += f"/{PLAYER_OUTFIT.PLAYER_HAIR_COLOR_ID}"
+    else:
+    
+        direction_path +=  "/" + str(getattr(PLAYER_OUTFIT, "PLAYER_" + name.upper() + "_ID"))
+    return direction_path
+
+def loadWalkAnimByDirection(direction: str):
+    assert (direction == "Front" or direction == "Back" or direction == "Left" or direction == "Right" or direction == "FrontRight" or direction == "FrontLeft" or direction == "BackRight" or direction == "BackLeft")
+    walkAnimDir = os.path.join(os.getcwd(), "images", "test", "PlrSpriteTest", "AnimationTesting", "Parts", direction) 
+    groupWalkAnimFrames = []
+    
+    numWalkFrames = 4
+    for i in range(numWalkFrames):
+        groupWalkAnimFrames.append(pygame.sprite.Group())
+    for partName in PlayerPart.names:
+        
+
+        partIdPath = getPlayerPartImage(walkAnimDir, partName)
+        logger.debug(f"{partIdPath=}")
+
+        for i in range(numWalkFrames):
+            group = groupWalkAnimFrames[i]
+            imgLocation = os.path.join(partIdPath, f"{i}.png")
+            logger.debug(f"{imgLocation=}")
+            try:
+                img = pygame.image.load(imgLocation)
+                MinimalPart(group=group, name = imgLocation, image = img) # creates & adds part to group 
+                logger.debug(f"{imgLocation} is a VALID IMG LOCATION")
+                
+            except:
+                MinimalPart(group=group, name=f"({MinimalPart.NONE}) {imgLocation}", image=None) # creates & adds adds part to group
+                logger.debug(f"{imgLocation} is NOT a VALID IMG LOCATION")
+
+    return groupWalkAnimFrames
