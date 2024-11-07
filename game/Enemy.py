@@ -1,16 +1,63 @@
 import pygame
 import math
+from game.MinimalPart import MinimalPart
 import os
 from game.Tile import Tile, TileTypes
 from debug.logger import logger
 from globalVars.SettingsConstants import TILE_SIZE
+import pathlib
 
 class EnemyNames:
     GROUNDER = 'GROUNDER'
 
+## Functions for loading enemy images
+
+def getEnemyBaseDir(name: str):
+    return os.path.join(os.getcwd(), 'images', 'test', 'Enemy', name)
+
+def getEnemyDirectionDir(name: str, direction: str):
+    baseDir = getEnemyBaseDir(name)
+    return os.path.join(baseDir, direction)
+
+def getEnemyPathWithFrame(name: str, direction: str, frame: int):
+    directionDir = getEnemyDirectionDir(name, direction)
+    return os.path.join(directionDir, f"{str(frame)}.png")
+
 def loadEnemyImage(name: str, direction: str, frame: int, battle=False) -> pygame.Surface: #adding battle stuff later
-    baseDir = os.path.join(os.getcwd(), 'images', 'test', 'Enemy', name, direction, f"{str(frame)}.png")
+    baseDir = getEnemyPathWithFrame(name, direction, frame)
     return pygame.image.load(baseDir)
+
+def loadEnemyImageAsSpriteGroup(name: str, direction: str, frame: int, battle=False) -> pygame.sprite.Group:
+    image = loadEnemyImage(name, direction, frame, battle)
+    group = pygame.sprite.Group()
+    part = MinimalPart(group, name, image) # part is a part of group
+    return group 
+
+def loadEnemyImagesAsSpriteGroup(name: str, direction_specific = False, direction=None) -> list[pygame.sprite.Group]:
+    spriteGroups = []
+    if direction_specific:
+        if type(direction) != str:
+            raise Exception("DIRECTION PARAM IN game/Enemy.py function loadEnemyImagesAsSpriteGroup IS NOT OF TYPE STR")
+        baseDir = getEnemyDirectionDir(name, direction)
+        for directory_name in os.listdir(baseDir):
+            if directory_name == "__pycache__":
+                continue
+            newDir = os.path.join(baseDir, directory_name)
+            currentPath = pathlib.Path(baseDir, newDir)
+            if not currentPath.is_dir():
+                continue
+            logger.debug(f"CURRENT PATH: {currentPath=}")
+            logger.debug(f"DIRECTORY NAME: {directory_name}")
+
+
+        return spriteGroups
+    
+    # case not direction specific
+
+    return spriteGroups
+
+
+
 
 
 class DirectionNames:
