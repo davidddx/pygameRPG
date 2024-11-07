@@ -5,7 +5,8 @@ from game.Scenes.BaseScene import Scene, SceneTypes, SceneStates, SceneAnimation
 from game.utils.SceneAnimation import SceneAnimation, AnimationStates
 from globalVars.SettingsConstants import DEBUG_MODE, TILE_SIZE, NUM_TILES, SCREEN_WIDTH, SCREEN_HEIGHT
 from game.Enemy import EnemyNames, loadEnemyImage, DirectionNames
-from game.Player import DirectionNames
+import game.Enemy as Enemy
+from game.Player import DirectionNames, PLAYER
 from game.utils.Button import TextButton
 import game.utils.SettingsFunctions as SETTINGS_FUNCTIONS
 import game.utils.Misc as Misc 
@@ -22,6 +23,7 @@ class BackgroundTile(pygame.sprite.Sprite):
         assert(type(self.image) == pygame.Surface)
         self.pos = pos
         logger.debug(f"{self.image=}, {self.pos=}")
+
     def render(self, screen):
         assert type(screen) == pygame.Surface
         screen.blit(self.image, self.pos)
@@ -48,33 +50,76 @@ class BattleSceneEntity:
     #enemy: bool to decifer if unit is enemy or not
     #name: unit name
     #base_sprite: base sprite of entity, sprite when entity is not moving
-    def __init__(self, name: str, base_sprite: pygame.Surface, enemy: bool, position: tuple):
+    def __init__(self, name: str, enemy: bool, position: tuple):
         logger.debug(f"Initializing BattleSceneEntity {name=}. ")
         self.state = self.States.NONE
         self.prevState = self.States.NONE
         self.setState(self.States.INITIALIZING)
         self.setMoveState(self.MoveStates.IDLE)
         self.isEnemy = enemy
-        self.offense = False if enemy else True
+        self.offense = False if enemy else True # player turn is always first, will probably change this to do a comparison off of speed
         self.name = name
-        self.baseSprite = base_sprite 
-        position = Misc.bottomToTopleftPos(position, self.baseSprite)
-        self.rect = self.baseSprite.get_rect(topleft=position)
-        self.selectedMove = MOVES.NONE 
         self.moves = self.loadMoves(name, enemy)
-        self.moveAnimations = self.loadMoveAnimations(self.moves)
-        self.walkAnimation = self.loadWalkAnimation()
+        self.currentGroupIdx = 0 # max group index is len(groups) - 1
         self.currentAnimationIdx = 0    
-        self.currentSprite = self.baseSprite # points to current sprite 
+        ## GROUPS:
+        # each group has a minimal part which holds image and name data
+        # idle group is entity being idle
+        # walk animation is entity walking
+        # move animation is entity doing move
+        # current group points to the current group based on state n other logic that i have and/or will implement
+        self.idleGroup = BattleSceneEntity.loadIdleSprites(name, enemy)
+        self.walkAnimation = self.loadWalkAnimation()
+        self.moveAnimation = self.loadMoveAnimations(self.moves)
+        self.currentGroups = self.idleGroup # points to the current sprite group 
+        ##
+        baseSprite = self.getBaseSpriteSurface(self.idleGroup)
+        position = Misc.bottomToTopleftPos(position, baseSprite) # Turns position to topleft appropriately
+        self.rect = baseSprite.get_rect(topleft=position)
+        self.selectedMove = MOVES.NONE 
+        #self.currentSprite = self.baseSprite # points to current sprite 
         logger.debug(f"Initialized BattleSceneEntity {name=}.")
         self.setState(self.States.IDLE)
+
+    @staticmethod
+    def loadIdleSprites(name: str, enemy: bool):
+        sprites = []
+        frameNumber = 0
+        if enemy:
+            # logic of loading enemy sprites
+            match name:
+                case EnemyNames.GROUNDER:
+
+                    group = Enemy.loadEnemyImageAsSpriteGroup(name, DirectionNames.LEFT, 0)
+                    sprites.append(group)
+                    pass
+                case _:
+                    raise Exception(f"Error in game/Scenes/Battle.py function BattleSceneEntity.loadSprites: invalid enemy name: {name=}") 
+            return sprites 
+        if name == PLAYER:
+            # logic of loading player sprites
+            myGroup = Misc.loadIdleAnimByDirection(direction= DirectionNames.RIGHT)
+            sprites.append(myGroup)
+            logger.debug(f"{myGroup=}")
+            return sprites 
+        
+        raise Exception(f"Error in game/Scenes/Battle.py function BattleSceneEntity.loadSprites: Invalid entity name: {name=}") 
+        # invalid name case.
+
+    def getBaseSpriteSurface(self, groups: list) -> pygame.Surface:
+        for group in groups:
+            assert type(group) == pygame.sprite.Group
+            for part in group:
+                # All images in a entity sprite group should have the same size.
+                assert part.image != None
+                return part.image
+
+        raise Exception("Error in game/Scenes/Battle.py function getBaseSpriteSurface: could not return a image; no images found") 
 
     def setState(self, state: str):
         assert hasattr(BattleSceneEntity.States, state)
         self.prevState = self.state
         self.state = state
-
-    
 
     def getPrevState(self):
         return self.prevState
@@ -99,7 +144,9 @@ class BattleSceneEntity:
         return moveDict
 
     def loadWalkAnimation(self):
-        return Misc.loadWalkAnimByDirection(DirectionNames.RIGHT)
+        if not self.isEnemy:
+            return Misc.loadWalkAnimByDirection(DirectionNames.RIGHT)
+        return None
 
     ##will modify later
     def loadMoves(self, entity_name: str, is_enemy: bool) -> dict:
@@ -132,7 +179,10 @@ class BattleSceneEntity:
                 return None
 
     def render(self, screen: pygame.Surface):
-        screen.blit(self.currentSprite, (self.rect.x, self.rect.y))
+        
+        for minimalPart in self.currentGroups[self.currentGroupIdx]:
+            minimalPart.render(position = (self.rect.x,self.rect.y), screen = screen)
+        #screen.blit(self.currentSprite, (self.rect.x, self.rect.y))
 
     def logInfo(self):
         logger.debug(f"LOGGING ENTITY {self.name=} info")
@@ -288,7 +338,7 @@ class Battle(Scene):
         self.setState(SceneStates.ON_ANIMATION)
         enemyBottomPos = screen_size[0] - Battle.PLAYER_BOTTOM_POS[0], Battle.PLAYER_BOTTOM_POS[1] 
         self.enemy = self.loadEnemy(enemy_name, enemyBottomPos)
-        self.player = self.loadPlayer(player_base_surf, Battle.PLAYER_BOTTOM_POS)
+        self.player = self.loadPlayer(Battle.PLAYER_BOTTOM_POS)
         self.currentEntity = self.player # describes entity turn
         self.zoomScale = 1
         self.zoomState = Battle.NONE 
@@ -599,15 +649,14 @@ class Battle(Scene):
         self.battleState = state
 
     def loadEnemy(self, name: str, bottom_pos) -> BattleSceneEntity:
-        enemyImage = loadEnemyImage(name, DirectionNames.LEFT, 0)
         match name:
             case EnemyNames.GROUNDER:
-                return BattleSceneEntity(EnemyNames.GROUNDER, enemyImage, True, bottom_pos)
+                return BattleSceneEntity(name = EnemyNames.GROUNDER, enemy = True, position = bottom_pos)
             case _:
-                return BattleSceneEntity(EnemyNames.GROUNDER, enemyImage, True, bottom_pos)
+                return BattleSceneEntity(name = EnemyNames.GROUNDER, enemy = True, position = bottom_pos)
 
-    def loadPlayer(self, base_sprite, bottom_pos) -> BattleSceneEntity:
-        return BattleSceneEntity("PLAYER", base_sprite, False, bottom_pos)
+    def loadPlayer(self, bottom_pos) -> BattleSceneEntity:
+        return BattleSceneEntity(name=PLAYER, enemy=False, position=bottom_pos)
 
     def playBattleMusic(self):
         pass
@@ -671,8 +720,10 @@ class Battle(Scene):
     def transitionToBattleSurface(self, screen):
         newScreen = pygame.Surface(screen.get_size())
         newScreen.blit(self.backgroundFull, (0,0))
-        newScreen.blit(self.player.baseSprite, (self.player.rect.x, self.player.rect.y))
-        newScreen.blit(self.enemy.baseSprite, (self.enemy.rect.x, self.enemy.rect.y))
+        self.player.render(newScreen)
+        self.enemy.render(newScreen)
+        #newScreen.blit(self.player.baseSprite, (self.player.rect.x, self.player.rect.y))
+        #newScreen.blit(self.enemy.baseSprite, (self.enemy.rect.x, self.enemy.rect.y))
         if self.animationHandler.getCurrentAnimationName() == SceneAnimations.FADE_IN:
             self.animationHandler.update(screen, newScreen)
         else:
