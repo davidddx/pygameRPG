@@ -5,7 +5,8 @@ import os
 import PIL.Image as Image
 from debug.logger import logger
 import gamedata.Save.PlayerCustomization as PLAYER_OUTFIT
-from game.Player import PlayerPart, MinimalPart
+from game.Player import PlayerPart, DirectionNames 
+from game.MinimalPart import MinimalPart
 
 def bottomToTopleftPos(bottom_pos: tuple, base_sprite: pygame.Surface):
     topleftPos = bottom_pos[0] - base_sprite.get_width()/2, bottom_pos[1] - base_sprite.get_height()
@@ -107,9 +108,34 @@ def getPlayerPartImage(direction_path: str, name: str):
         direction_path +=  "/" + str(getattr(PLAYER_OUTFIT, "PLAYER_" + name.upper() + "_ID"))
     return direction_path
 
-def loadWalkAnimByDirection(direction: str):
-    assert (direction == "Front" or direction == "Back" or direction == "Left" or direction == "Right" or direction == "FrontRight" or direction == "FrontLeft" or direction == "BackRight" or direction == "BackLeft")
-    walkAnimDir = os.path.join(os.getcwd(), "images", "test", "PlrSpriteTest", "AnimationTesting", "Parts", direction) 
+def getWalkAnimDir(direction: str):
+    return os.path.join(os.getcwd(), "images", "test", "PlrSpriteTest", "AnimationTesting", "Parts", direction)
+
+def loadIdleAnimByDirection(direction: str) -> pygame.sprite.Group:
+    group = pygame.sprite.Group()
+
+    walkAnimDir = getWalkAnimDir(direction) 
+    for partName in PlayerPart.names:
+        partIdPath = getPlayerPartImage(walkAnimDir, partName)
+        imgLocation = os.path.join(partIdPath, "0.png")
+        logger.debug(f"load idle function in misc. {imgLocation=}")
+        try:
+            img = pygame.image.load(imgLocation)
+            MinimalPart(group=group, name= imgLocation, image = img)
+            logger.debug(f"{imgLocation} is a VALID IMG LOCATION")
+
+
+            pass
+        except Exception as e:
+            MinimalPart(group=group, name=f"({MinimalPart.NONE}) {imgLocation}", image=None) # creates & adds adds part to group
+            logger.debug(f"{imgLocation} is NOT a VALID IMG LOCATION. {e}")
+
+
+    return group 
+
+def loadWalkAnimByDirection(direction: str) -> list:
+    assert (direction == DirectionNames.FRONT or direction == DirectionNames.BACK or direction == DirectionNames.LEFT or direction == DirectionNames.RIGHT or direction == DirectionNames.FRONT_RIGHT or direction == DirectionNames.FRONT_LEFT or direction == DirectionNames.BACK_LEFT or direction == DirectionNames.BACK_RIGHT)
+    walkAnimDir = getWalkAnimDir(direction) 
     groupWalkAnimFrames = []
     
     numWalkFrames = 4
