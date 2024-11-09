@@ -80,6 +80,10 @@ class DirectionIndices:
     LEFT = 6
     FRONT_LEFT = 7
 
+class EnemyStates:
+    IDLE = "IDLE"
+    MOVING = "MOVING"
+
 class Enemy(Tile):
     '''Format:
     pos is enemy npc position
@@ -96,13 +100,17 @@ class Enemy(Tile):
         self.movementDirection = [0, 0]
         self.facingDirection = [0,0]
         self.lastFacingDirection = [self.facingDirection[0], self.facingDirection[1]]
-        self.surfIndex = [0,0]
+        self.surfIndex = [0,0] 
         self.surfaces = surfs
         self.rect = surfs[0][0].get_rect(topleft=pos)
         self.hasCollision = collision
         self.locked = False
         self.timeLastLocked = 0
         self.lockCooldown = 500
+        self.state = EnemyStates.IDLE 
+
+    def setState(self, state: str):
+        self.state = state
 
     def lock(self, milliseconds=500):
         self.locked = True
@@ -183,6 +191,7 @@ class Enemy(Tile):
                 if imagePath not in validImageNames:
                     continue
                 myList[index] = pygame.image.load(os.path.join(newDir, imagePath))
+        logger.debug(f"{surfDict=}")
 
         return surfDict
     def render(self, surf: pygame.Surface, screen: pygame.Surface, camera_offset, player_pos):
@@ -218,13 +227,20 @@ class Enemy(Tile):
         diagonalFactor = 1
         if 0 not in movement_direction: 
             diagonalFactor = 0.6
+            self.setState(EnemyStates.MOVING)
         self.rect.x += movement_direction[0] * self.speed * diagonalFactor 
         self.rect.y += movement_direction[1] * self.speed * diagonalFactor 
 
     def updateSurfIndex(self, facing_direction: list[int]):
         logger.debug(f"{facing_direction=}")
-        if facing_direction == [0, 0]: return None
+        if self.state == EnemyStates.IDLE:
+            return None
+        #if facing_direction == [0, 0]: return None
+        # Direction part.
         match facing_direction:
+            case [0, 0]:
+                # do nothing.
+                pass
             case [0, 1]:
                 self.surfIndex[0] = DirectionIndices.FRONT
             case [0, -1]:
@@ -235,6 +251,13 @@ class Enemy(Tile):
             case [-1,1]: self.surfIndex[0] = DirectionIndices.FRONT_LEFT
             case [-1, 0]: self.surfIndex[0] = DirectionIndices.LEFT 
             case [-1, -1]: self.surfIndex[0] = DirectionIndices.BACK_LEFT
+        numWalkFrames = 4
+        enemyWalkStep = 0.3
+        self.surfIndex[1] += enemyWalkStep 
+        if self.surfIndex[1] >= numWalkFrames:
+            self.surfIndex[1] -= numWalkFrames
+
+        
 
     def checkInRange(self, player_pos, pos, screen_size):
         if abs(player_pos[0] - pos[0]) > screen_size[0]/2: return False
@@ -242,12 +265,13 @@ class Enemy(Tile):
         return True
 
     def update(self, screen, camera, player_pos, player_size):
-        #logger.debug(f"{self.surfIndex[0]=}, {self.surfIndex[1]=}")
+        logger.debug(f"{self.surfIndex[0]=}, {self.surfIndex[1]=}")
         logger.debug(f"{self.locked=}")
         if self.locked: 
+            self.setState(EnemyStates.IDLE)
             self.updateLock(self.timeLastLocked, self.lockCooldown)
         else:
             self.checkDetectionRadius(pos= (self.rect.x, self.rect.y), player_pos=player_pos, player_size = player_size) 
             self.move(self.movementDirection) 
             self.updateSurfIndex(self.facingDirection)
-        self.render(surf=self.surfaces[self.surfIndex[0]][self.surfIndex[1]], screen=screen, camera_offset=camera, player_pos=player_pos)
+        self.render(surf=self.surfaces[int(self.surfIndex[0])][int(self.surfIndex[1])], screen=screen, camera_offset=camera, player_pos=player_pos)
