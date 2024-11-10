@@ -50,6 +50,12 @@ class BattleSceneEntity:
     #enemy: bool to decifer if unit is enemy or not
     #name: unit name
     #base_sprite: base sprite of entity, sprite when entity is not moving
+    ## GROUPS:
+    # each group has a minimal part which holds image and name data
+    # idle group is sprite group list of entity being idle
+    # walk animation is sprite group list of entity walking
+    # move animation is sprite group list of entity doing move
+    # current group points to the current group based on state n other logic that i have and/or will implement
     def __init__(self, name: str, enemy: bool, position: tuple):
         logger.debug(f"Initializing BattleSceneEntity {name=}. ")
         self.state = self.States.NONE
@@ -61,25 +67,24 @@ class BattleSceneEntity:
         self.name = name
         self.moves = self.loadMoves(name, enemy)
         self.currentGroupIdx = 0 # max group index is len(groups) - 1
-        self.currentAnimationIdx = 0    
-        ## GROUPS:
-        # each group has a minimal part which holds image and name data
-        # idle group is entity being idle
-        # walk animation is entity walking
-        # move animation is entity doing move
-        # current group points to the current group based on state n other logic that i have and/or will implement
-        self.idleGroup = BattleSceneEntity.loadIdleSprites(name, enemy)
-        self.walkAnimation = self.loadWalkAnimation()
-        self.moveAnimation = self.loadMoveAnimations(self.moves)
+        # denotes animation frame.
+
+        self.idleGroup = BattleSceneEntity.loadIdleSprites(name = name, enemy = enemy)
+        self.walkAnimation = self.loadWalkAnimation(name = self.name)
+        self.moveAnimation = self.loadMoveAnimations(moves = self.moves)
         self.currentGroups = self.idleGroup # points to the current sprite group 
         ##
         baseSprite = self.getBaseSpriteSurface(self.idleGroup)
         position = Misc.bottomToTopleftPos(position, baseSprite) # Turns position to topleft appropriately
         self.rect = baseSprite.get_rect(topleft=position)
         self.selectedMove = MOVES.NONE 
-        #self.currentSprite = self.baseSprite # points to current sprite 
+        self.selectedTargetPos = (0, 0) # When target selected this gets set
         logger.debug(f"Initialized BattleSceneEntity {name=}.")
         self.setState(self.States.IDLE)
+
+    def setSelectedTargetPos(self, x, y):
+        assert (type(x) == int or type(x) == float) and (type(y) == int or type(y) == float)
+        self.selectedTargetPos = x, y # selected target pos as tuple of format (coordinateX, coordinateY)
 
     @staticmethod
     def loadIdleSprites(name: str, enemy: bool):
@@ -90,7 +95,7 @@ class BattleSceneEntity:
             match name:
                 case EnemyNames.GROUNDER:
 
-                    group = Enemy.loadEnemyImageAsSpriteGroup(name, DirectionNames.LEFT, 0)
+                    group = Enemy.loadEnemyImageAsSpriteGroup(name, DirectionNames.LEFT, frameNumber)
                     sprites.append(group)
                     pass
                 case _:
@@ -99,14 +104,16 @@ class BattleSceneEntity:
         if name == PLAYER:
             # logic of loading player sprites
             myGroup = Misc.loadIdleAnimByDirection(direction= DirectionNames.RIGHT)
-            sprites.append(myGroup)
+            # is a list b/c want to add idle anim later.
             logger.debug(f"{myGroup=}")
+            sprites.append(myGroup)
             return sprites 
         
         raise Exception(f"Error in game/Scenes/Battle.py function BattleSceneEntity.loadSprites: Invalid entity name: {name=}") 
         # invalid name case.
 
     def getBaseSpriteSurface(self, groups: list) -> pygame.Surface:
+        logger.debug(f"{groups=}")
         for group in groups:
             assert type(group) == pygame.sprite.Group
             for part in group:
@@ -143,10 +150,10 @@ class BattleSceneEntity:
         }
         return moveDict
 
-    def loadWalkAnimation(self):
+    def loadWalkAnimation(self, name: str):
         if not self.isEnemy:
             return Misc.loadWalkAnimByDirection(DirectionNames.RIGHT)
-        return None
+        return Enemy.loadEnemyWalkAnimAsSpriteGroupList(name, DirectionNames.RIGHT)
 
     ##will modify later
     def loadMoves(self, entity_name: str, is_enemy: bool) -> dict:
@@ -159,9 +166,53 @@ class BattleSceneEntity:
             case _:
                 return {MOVES.PUNCH[MOVES.NAME] : MOVES.PUNCH} 
 
+    def setSelectedMove(self, move_name: str):
+        selectedMove = None
+        for move in self.moves.values():
+            if move[MOVES.NAME] != move_name:
+                continue
+            selectedMove = move
+            break
+        assert selectedMove is not None
+        self.selectedMove = selectedMove
 
     def animateMove(self, move):
         pass
+
+    def checkMoveState(self, state, move):
+        assert self.state == self.States.DOING_MOVE
+        if state == self.MoveStates.IDLE:
+            self.setMoveState(self.MoveStates.MOVING)
+            self.currentGroups = self.walkAnimation
+            return None 
+        if state == self.MoveStates.MOVING:
+            # might add a goalY later.
+            goalX = self.selectedTargetPos[0] - self.rect.width
+            xOffset = 5
+            yOffset = 0
+            walkAnimStep = 0.3
+            self.movePlayer(xOffset, yOffset)
+            self.currentGroupIdx += walkAnimStep
+            if self.currentGroupIdx >= len(self.currentGroups):
+                # making sure the animation is circular and goes from frame 1-2-...n -> 1-2-...n
+                # works b/c int(x) on float x will truncate decimal
+                self.currentGroupIdx -= len(self.currentGroups)
+            if self.rect.x > goalX:
+                self.rect.x = goalX 
+
+            if self.rect.x == goalX:
+                if (int(self.currentGroupIdx) != 0) and (int(self.currentGroupIdx) != 2):
+                    # making sure the walk anim finishes for smooth transition. 
+                    return None
+                self.setMoveState(self.MoveStates.ATTACKING)
+            return None
+        if state == self.MoveStates.ATTACKING:
+            # ADDING LATER
+            return None
+        if state == self.MoveStates.RETURNING:
+            # ADDING LATER
+            return None
+
 
     def checkState(self, state):
         match state:
@@ -170,26 +221,39 @@ class BattleSceneEntity:
             case self.States.DEFENDING:
                 pass
             case self.States.DOING_MOVE:
-                self.animateMove(self.currentAnimationIdx)
+                self.checkMoveState(self.moveState, self.selectedMove)
                 pass
             case self.States.COMPLETING_TURN:
                 pass
             case self.States.IDLE:
-                self.currentAnimationIdx = 0
+                self.currentGroupIdx = 0
+
                 return None
 
+    def movePlayer(self, x_offset, y_offset):
+        assert type(x_offset) == float or type(x_offset) == int
+        assert type(y_offset) == float or type(y_offset) == int
+        self.rect.x += x_offset
+        self.rect.y += y_offset
+
     def render(self, screen: pygame.Surface):
-        
-        for minimalPart in self.currentGroups[self.currentGroupIdx]:
+        idx = int(self.currentGroupIdx)
+        for minimalPart in self.currentGroups[idx]:
             minimalPart.render(position = (self.rect.x,self.rect.y), screen = screen)
         #screen.blit(self.currentSprite, (self.rect.x, self.rect.y))
 
     def logInfo(self):
         logger.debug(f"LOGGING ENTITY {self.name=} info")
-        logger.debug(f"{self.state=}")
+        logger.debug(f"ENTITY STATE {self.state=}")
+        logger.debug(f"ENTITY MOVE STATE {self.moveState=}")
         logger.debug(f"{self.offense=}")
         logger.debug(f"{self.isEnemy=}")
         logger.debug(f"{self.moves=}")
+        logger.debug(f"{self.selectedMove=}")
+        logger.debug(f"{self.currentGroupIdx=}")
+        logger.debug(f"{self.currentGroups=}")
+        
+        logger.debug(f"{self.selectedTargetPos=}")
 
     def update(self, screen):
         self.logInfo()
@@ -407,9 +471,6 @@ class Battle(Scene):
 
         myButtons = Misc.shiftList(myButtons, -shift_right)
         self.currentButtonIdx = -shift_right
-        #adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[0 - len(player_moves)], backButton.textSurface) 
-        
-        #lastSize = backButton.fontSize
         return myButtons 
 
     def generatePlayerTurnButtons(self, shift_right = 0) -> list[TextButton]:
@@ -505,6 +566,7 @@ class Battle(Scene):
                 if separator != ".": 
                     #Case where buttonname is ATTACK & no dots found
                     self.uiLock = True
+                    self.player.setSelectedTargetPos(self.enemy.rect.x, self.enemy.rect.y)
                     for button in self.currentButtons:
                         if button.name == Battle.PlayerTurnButtonNames.ATTACK:
                             outlineColor = button.outlineColor
@@ -538,6 +600,7 @@ class Battle(Scene):
                         self.uiLock = True
                         self.additionalBackgroundSurfs.clear()
                         self.additionalBackgroundSurfsPos.clear()
+                        self.player.setSelectedMove(move_name = buttonName2)
                         for button in self.currentButtons:
                             button.animateTextToAlpha(alpha = 0, step = -40)
                         
@@ -817,7 +880,9 @@ class Battle(Scene):
         logger.debug(f"{battle_state=}, {self.prevState=}, {self.state=}")
         blittedSurface = pygame.Surface(screen.get_size())
         self.blitBackground(blittedSurface)
-        zoomToPos = (0, 0)
+        #zoomToPos = (0, 0)
+        zoomToPos = (blittedSurface.get_width()/2 - self.player.rect.center[0], blittedSurface.get_height()/2 - self.player.rect.center[1])
+
         match battle_state:
             case self.States.PLAYER_CHOOSING_ACTION:
                 if self.prevState == Battle.States.PREPARING_TURN:
@@ -904,7 +969,7 @@ class Battle(Scene):
 
                 self.updateButtons(battle_state, self.currentButtons, self.currentButtonIdx, blittedSurface)
                 self.updateZoomState(self.zoomState)
-                zoomToPos = (blittedSurface.get_width()/2 - self.player.rect.center[0], blittedSurface.get_height()/2 - self.player.rect.center[1])
+                #zoomToPos = (blittedSurface.get_width()/2 - self.player.rect.center[0], blittedSurface.get_height()/2 - self.player.rect.center[1])
 
                 # for debugging vvv
                 '''
@@ -924,6 +989,7 @@ class Battle(Scene):
         self.player.update(blittedSurface)
         self.enemy.update(blittedSurface)
 
+        zoomToPos = (blittedSurface.get_width()/2 - self.player.rect.center[0], blittedSurface.get_height()/2 - self.player.rect.center[1])
         SETTINGS_FUNCTIONS.zoomToPosition(screen, blittedSurface, (0,0), zoomToPos, self.zoomScale, self.zoomScale-1)
         self.blitCover(screen, self.cover, self.coverPos)
 
