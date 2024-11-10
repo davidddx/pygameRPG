@@ -33,6 +33,28 @@ def loadEnemyImageAsSpriteGroup(name: str, direction: str, frame: int, battle=Fa
     part = MinimalPart(group, name, image) # part is a part of group
     return group 
 
+def loadEnemyWalkAnimAsSpriteGroupList(name:str, direction: str):
+    directionDir = getEnemyDirectionDir(name, direction)
+    assert os.path.isdir(directionDir)
+    frameList = []
+    for fileName in os.listdir(directionDir):
+        if fileName == "__pycache__":
+            continue
+        newDir = os.path.join(directionDir, fileName)
+        if os.path.isdir(newDir):
+            # At this path it should be image with frame name | ex with n frames: (0.png, 1.png, ... , n-2.png, n-1.png)
+            continue
+        frameList.append(fileName)
+    frameList.sort()
+    for index, frame in enumerate(frameList):
+        group = pygame.sprite.Group()
+        path = os.path.join(directionDir, frame)
+        img = pygame.image.load(path)
+        frameList[index] = MinimalPart(group=group, name=f"{name}{index}", image=img)
+    return frameList
+
+        
+
 def loadEnemyImagesAsSpriteGroup(name: str, direction_specific = False, direction=None) -> list[pygame.sprite.Group]:
     spriteGroups = []
     if direction_specific:
