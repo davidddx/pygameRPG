@@ -12,10 +12,7 @@ import gamedata.Save.SavedData as SAVED_DATA
 
 def loop():
     '''
-    SOME MISCILLANEOUS DEBUGGING CODE
-    import game.utils.Misc as Misc
-    from game.Player import DirectionNames
-    logger.debug(f"{Misc.loadWalkAnimByDirection(DirectionNames.RIGHT)=}")
+    I MIGHT PUT SOME MISCILLANEOUS DEBUGGING CODE HERE TO TEST FUNCTIONS
     '''
     logger.info("Initializing Game....")
     ### Initializing Game ###
