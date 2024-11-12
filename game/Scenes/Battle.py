@@ -12,6 +12,7 @@ import game.utils.SettingsFunctions as SETTINGS_FUNCTIONS
 import game.utils.Misc as Misc 
 import gamedata.Save.SavedData as SAVED_DATA
 import gamedata.Moves as MOVES
+import gamedata.MoveAnimationLoader as MOVE_ANIMATION_LOADER
 import numpy
 from collections import deque
 
@@ -71,7 +72,9 @@ class BattleSceneEntity:
 
         self.idleGroup = BattleSceneEntity.loadIdleSprites(name = name, enemy = enemy)
         self.walkAnimation = self.loadWalkAnimation(name = self.name)
-        self.moveAnimation = self.loadMoveAnimations(moves = self.moves)
+
+        self.moveAnimations = self.loadMoveAnimations(moves = self.moves)
+        self.currentMoveAnimation = None 
         self.currentGroups = self.idleGroup # points to the current sprite group 
         ##
         baseSprite = self.getBaseSpriteSurface(self.idleGroup)
@@ -81,6 +84,7 @@ class BattleSceneEntity:
         self.selectedTargetPos = (0, 0) # When target selected this gets set
         logger.debug(f"Initialized BattleSceneEntity {name=}.")
         self.setState(self.States.IDLE)
+        self.timeLastAnimFreeze = 0
 
     def setSelectedTargetPos(self, x, y):
         assert (type(x) == int or type(x) == float) and (type(y) == int or type(y) == float)
@@ -138,8 +142,25 @@ class BattleSceneEntity:
         assert hasattr(BattleSceneEntity.MoveStates, state)
         self.moveState = state
 
-    def loadMoveAnimations(self, moves: dict):
-        pass
+    def loadMoveAnimations(self, moves: dict) -> dict:
+        
+        '''
+        Move Animations have the followin format
+        moveAnimationDict = {
+            plrMoveName0 : list with n0 frames of this move composed of spritegroups of parts 
+            plrMoveName1 : list with n1 frames of this move composed of spritegroups of parts 
+            ...
+            ...
+        }
+    
+        '''
+        logger.debug(f"{moves=}")
+        myDict = {}
+        for moveDict in moves.values():
+            logger.debug(f"{moveDict=}")
+            moveName = moveDict[MOVES.NAME]
+            myDict[moveName] = MOVE_ANIMATION_LOADER.loadMoveAnim(moveName, self.isEnemy)
+        return myDict
 
     ##test function, will modify later
     def loadPlayerMoves(self) -> dict:
@@ -207,6 +228,55 @@ class BattleSceneEntity:
                 self.setMoveState(self.MoveStates.ATTACKING)
             return None
         if state == self.MoveStates.ATTACKING:
+            sGroup = self.moveAnimations[self.selectedMove[MOVES.NAME]]
+            if not self.currentGroups == sGroup:
+                self.currentGroups = sGroup
+                logger.debug(f"{sGroup=}")
+                self.currentGroupIdx = 0
+                return None
+            
+            animData = MOVES.ANIMATION_DATA[move[MOVES.NAME]]
+            timenow = pygame.time.get_ticks()
+            logger.debug(f"{self.timeLastAnimFreeze=}, {timenow=}")
+            atkAnimStep = 0.4
+
+
+            windUpFreezeTime = 300
+            # WIND UP FRAME FIRST REACHED.
+            if int(self.currentGroupIdx) == animData[MOVES.WIND_UP_FRAME_IDX] and self.timeLastAnimFreeze == 0: 
+                self.timeLastAnimFreeze = timenow
+                self.currentGroupIdx = animData[MOVES.WIND_UP_FRAME_IDX]
+                return None
+
+            # WINDING UP TILL COOLDOWN ENDS
+            if self.currentGroupIdx == animData[MOVES.WIND_UP_FRAME_IDX]:
+                if timenow - self.timeLastAnimFreeze >= windUpFreezeTime:
+                    self.currentGroupIdx = animData[MOVES.WIND_UP_FRAME_IDX] + 1 # move on to next idx 
+                    self.timeLastAnimFreeze = 0
+                return None
+
+            # FULL EXTENSION FIRST REACHED.
+            fullExtensionFreezeTime = 300
+            if int(self.currentGroupIdx) == animData[MOVES.FULL_EXTENSION_FRAME_IDX] and self.timeLastAnimFreeze == 0:
+                self.timeLastAnimFreeze = timenow
+                self.currentGroupIdx = animData[MOVES.FULL_EXTENSION_FRAME_IDX]
+                return None
+            if self.currentGroupIdx == animData[MOVES.FULL_EXTENSION_FRAME_IDX]:
+                if timenow - self.timeLastAnimFreeze >= fullExtensionFreezeTime:
+                    self.currentGroupIdx = animData[MOVES.FULL_EXTENSION_FRAME_IDX] + 1
+                    self.timeLastAnimFreeze = 0
+                return None
+                
+            self.currentGroupIdx += atkAnimStep
+
+            # ANIM FINISHED:
+            if int(self.currentGroupIdx) == animData[MOVES.FRAME_SIZE_IDX]:
+                self.setMoveState(self.MoveStates.RETURNING)
+                self.currentGroupIdx = 0
+                return None 
+
+
+
             # ADDING LATER
             return None
         if state == self.MoveStates.RETURNING:
