@@ -28,6 +28,9 @@ class PlayerPart(pygame.sprite.Sprite):
     feet = "Feet"
     arms = "Arms"
     hair = "Hair"
+
+    # names in PlayerPart.names are sorted by render priority (head  rendered first, eyes rendered second, ... ,hair rendered last)
+
     names = [
         head,
         eyes,
@@ -50,7 +53,6 @@ class PlayerPart(pygame.sprite.Sprite):
     def loadWalkAnimSprites(animation_path: str):
         walkAnimList = []
         try:
-
             numWalkFrames = 4
             for i in range(numWalkFrames):
                 walkAnimList.append(pygame.image.load(f"{animation_path}/{i}.png"))
@@ -58,6 +60,7 @@ class PlayerPart(pygame.sprite.Sprite):
             logger.debug(f"Could not load walk animations for {animation_path=}, {e}")
 
         return walkAnimList
+
     @staticmethod
     def translateDirectionID(direction_id: int) -> str:
         match direction_id:
