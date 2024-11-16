@@ -46,6 +46,7 @@ class BattleSceneEntity:
         MOVING = "MOVING"
         ATTACKING = "ATTACKING"
         RETURNING = "RETURNING"
+        DONE = "DONE"
 
     #position param refer to bottom position of sprite
     #enemy: bool to decifer if unit is enemy or not
@@ -72,13 +73,14 @@ class BattleSceneEntity:
 
         self.idleGroup = BattleSceneEntity.loadIdleSprites(name = name, enemy = enemy)
         self.walkAnimation = self.loadWalkAnimation(name = self.name)
-
         self.moveAnimations = self.loadMoveAnimations(moves = self.moves)
+        self.walkBackAnimation = self.loadWalkBackAnimation(name = self.name)
         self.currentMoveAnimation = None 
         self.currentGroups = self.idleGroup # points to the current sprite group 
         ##
         baseSprite = self.getBaseSpriteSurface(self.idleGroup)
         position = Misc.bottomToTopleftPos(position, baseSprite) # Turns position to topleft appropriately
+        self.originalPosition = position
         self.rect = baseSprite.get_rect(topleft=position)
         self.selectedMove = MOVES.NONE 
         self.selectedTargetPos = (0, 0) # When target selected this gets set
@@ -174,6 +176,12 @@ class BattleSceneEntity:
     def loadWalkAnimation(self, name: str):
         if not self.isEnemy:
             return Misc.loadWalkAnimByDirection(DirectionNames.RIGHT)
+        return Enemy.loadEnemyWalkAnimAsSpriteGroupList(name, DirectionNames.LEFT)
+
+    # walk anim when u walkin back from a attack to ur original position
+    def loadWalkBackAnimation(self, name: str):
+        if not self.isEnemy:
+            return Misc.loadWalkAnimByDirection(DirectionNames.LEFT)
         return Enemy.loadEnemyWalkAnimAsSpriteGroupList(name, DirectionNames.RIGHT)
 
     ##will modify later
@@ -200,6 +208,26 @@ class BattleSceneEntity:
     def animateMove(self, move):
         pass
 
+    def checkWindUp(self):
+        if self.moveState != self.MoveStates.ATTACKING:
+            return None
+        move = self.selectedMove
+        animData = MOVES.ANIMATION_DATA[move[MOVES.NAME]]
+        if self.currentGroupIdx == animData[MOVES.WIND_UP_FRAME_IDX]:
+            return True
+        return False
+    
+    def checkPostWindUp(self):
+        if self.moveState != self.MoveStates.ATTACKING:
+            return None
+        move = self.selectedMove
+        animData = MOVES.ANIMATION_DATA[move[MOVES.NAME]]
+        # The + 1 are for edge cases that occur and make bar flicker because i use floats to control anim speed 
+        # sometimes self.currentGroupIdx will be = to targetValue + 0.2 or 0.3 or whatever which messes up this function so i need that strict  bounds because of how i handle all this
+        if self.currentGroupIdx >= animData[MOVES.WIND_UP_FRAME_IDX] + 1 and self.currentGroupIdx <= animData[MOVES.FULL_EXTENSION_FRAME_IDX] + 1:
+            return True
+        return False
+    
     def checkMoveState(self, state, move):
         assert self.state == self.States.DOING_MOVE
         if state == self.MoveStates.IDLE:
@@ -241,18 +269,17 @@ class BattleSceneEntity:
             atkAnimStep = 0.4
 
 
-            windUpFreezeTime = 300
             # WIND UP FRAME FIRST REACHED.
             if int(self.currentGroupIdx) == animData[MOVES.WIND_UP_FRAME_IDX] and self.timeLastAnimFreeze == 0: 
-                self.timeLastAnimFreeze = timenow
                 self.currentGroupIdx = animData[MOVES.WIND_UP_FRAME_IDX]
                 return None
 
             # WINDING UP TILL COOLDOWN ENDS
-            if self.currentGroupIdx == animData[MOVES.WIND_UP_FRAME_IDX]:
-                if timenow - self.timeLastAnimFreeze >= windUpFreezeTime:
-                    self.currentGroupIdx = animData[MOVES.WIND_UP_FRAME_IDX] + 1 # move on to next idx 
-                    self.timeLastAnimFreeze = 0
+            if self.checkWindUp():
+            #if self.currentGroupIdx == animData[MOVES.WIND_UP_FRAME_IDX]:
+#                if timenow - self.timeLastAnimFreeze >= windUpFreezeTime:
+#                    self.currentGroupIdx = animData[MOVES.WIND_UP_FRAME_IDX] + 1 # move on to next idx 
+#                    self.timeLastAnimFreeze = 0
                 return None
 
             # FULL EXTENSION FIRST REACHED.
@@ -273,16 +300,35 @@ class BattleSceneEntity:
             if int(self.currentGroupIdx) == animData[MOVES.FRAME_SIZE_IDX]:
                 self.setMoveState(self.MoveStates.RETURNING)
                 self.currentGroupIdx = 0
+                self.currentGroups = self.walkBackAnimation
                 return None 
 
-
-
-            # ADDING LATER
             return None
         if state == self.MoveStates.RETURNING:
-            # ADDING LATER
+            goalX = self.originalPosition[0]
+            xOffset = -5
+            yOffset = 0
+            walkAnimStep = 0.3
+            self.movePlayer(xOffset, yOffset)
+            self.currentGroupIdx += walkAnimStep
+            if self.currentGroupIdx >= len(self.currentGroups):
+                # making sure the animation is circular and goes from frame 1-2-...n -> 1-2-...n
+                # works b/c int(x) on float x will truncate decimal
+                self.currentGroupIdx -= len(self.currentGroups)
+            if self.rect.x < goalX:
+                self.rect.x = goalX 
+
+            if self.rect.x == goalX:
+                if (int(self.currentGroupIdx) != 0) and (int(self.currentGroupIdx) != 2):
+                    return None
+                self.setMoveState(self.MoveStates.DONE)
+                self.currentGroupIdx = 0
+                self.currentGroups = self.idleGroup
+
             return None
 
+        if state == self.MoveStates.DONE:
+            return None
 
     def checkState(self, state):
         match state:
@@ -446,6 +492,15 @@ class Battle(Scene):
     InterpolatedButtonPositions = loadEllipseInterpolatedButtonPositions(NUM_BUTTONS, BUTTON_MODEL_ELLIPSE, -90, 3, BUTTON_OFFSET)
 
     def __init__(self, last_area_frame: pygame.Surface, screen_size: tuple[int, int], enemy_name: str, player_base_surf: pygame.Surface):
+        # timing rect variables begin
+        self.tryNum = 1 
+        self.outerRect = pygame.Rect(0, 0, player_base_surf.get_width() + 50, player_base_surf.get_height()/4)
+        self.timingRect = pygame.Rect(0, 0, 0, 0)
+        self.timingRectColor = (15, 15, 15)
+        self.timing = False
+        self.timingRectIncreaseRate = 3
+        # timing rect variables end
+        self.cameraPos = [0, 0]
         self.uiLock = False
         self.uiLockTemp = False
         self.uiLockTimeSet = 0
@@ -462,6 +517,7 @@ class Battle(Scene):
         self.lastFrame = pygame.Surface(screen_size) 
         self.opacity = 0
         self.backgroundFull = pygame.Surface((screen_size[0] + 6*TILE_SIZE, screen_size[1]))
+        self.zoomLerpFactor = 0 # Variable used for zoom lerping
         self.background = self.loadBattleSurface(Battle.Backgrounds.GRASS)
         self.additionalBackgroundSurfs = []
         self.additionalBackgroundSurfsPos = []
@@ -538,7 +594,6 @@ class Battle(Scene):
                 currentButton.animateTextToSize(size= currentButton.originalFontSize + 4, step=0.3, shrink= False)
                 currentButton.animateTextWithOutline()
                 logger.debug(f"{currentButton.fontSize=}")
-
         myButtons = Misc.shiftList(myButtons, -shift_right)
         self.currentButtonIdx = -shift_right
         return myButtons 
@@ -564,16 +619,14 @@ class Battle(Scene):
         button5.animateTextWithOutline((102, 255, 0), size="small")
         buttonList.append(button5)
 
-
         buttonList = Misc.shiftList(buttonList, shift_right)
-        
 
         mainPos = Battle.ButtonPositions[0]
         for i in range(len(buttonList)):
             currentButton = buttonList[i]
             adjustedPos = Misc.bottomToTopleftPos(Battle.ButtonPositions[0 - i], buttonList[i].textSurface) 
-            currentButton.setX(adjustedPos[0] )
-            currentButton.setY(adjustedPos[1] )
+            currentButton.setX(adjustedPos[0])
+            currentButton.setY(adjustedPos[1])
             if i != 0:
                 lastSize = currentButton.fontSize
                 sizeDiff = int((mainPos[1] - Battle.ButtonPositions[0 - i, 1])/10 + 3)
@@ -946,12 +999,38 @@ class Battle(Scene):
             self.buttonPressedName = Battle.NONE 
             self.lockUI(200)
 
+    def updateTimingRect(self, timing_rect: pygame.Rect, outer_rect: pygame.Rect):
+        if self.timingRectIncreaseRate == 0:
+            return None
+        keys = pygame.key.get_pressed()
+        if keys[SAVED_DATA.BATTLE_TIMING_BUTTON]:
+            self.timingRectIncreaseRate = 0
+            self.player.currentGroupIdx += 1
+            return None
+        maxTries = 2
+        increaseRate = self.timingRectIncreaseRate
+        if timing_rect.width < 0:
+            if self.tryNum >= maxTries: return None
+            self.tryNum+=1
+            timing_rect.width = 0
+            self.timingRectIncreaseRate = -increaseRate
+
+        if timing_rect.width == outer_rect.width:
+            self.timingRectIncreaseRate = -increaseRate
+        timing_rect.width += self.timingRectIncreaseRate
+        if timing_rect.width >= outer_rect.width:
+            timing_rect.width = outer_rect.width
+
+    def drawTimingRect(self, rect: pygame.Rect, screen: pygame.Surface, color: tuple[int, int, int]):
+        pygame.draw.rect(screen, color, rect) #draws the inner bar
+
     def checkBattleState(self, screen: pygame.Surface, battle_state: str):
         logger.debug(f"{battle_state=}, {self.prevState=}, {self.state=}")
         blittedSurface = pygame.Surface(screen.get_size())
         self.blitBackground(blittedSurface)
         #zoomToPos = (0, 0)
         zoomToPos = (blittedSurface.get_width()/2 - self.player.rect.center[0], blittedSurface.get_height()/2 - self.player.rect.center[1])
+        xOffset = 0
 
         match battle_state:
             case self.States.PLAYER_CHOOSING_ACTION:
@@ -1035,8 +1114,19 @@ class Battle(Scene):
 
                             if not buttonsFading:
                                 # Finished transition to animating move battle state
-                                self.setBattleState(Battle.States.ANIMATING_MOVE)
+                                # now need to center the cam to be between player and  enemy so we're truly done.
+                                
+                                if self.zoomLerpFactor >= 1:
+                                    self.zoomLerpFactor = 1
+                                zoomLerpStep = 0.05
+                                xoffset = self.zoomLerpFactor * ((self.enemy.rect.center[0] - self.player.rect.center[0])/2)
 
+                                zoomToPos = (blittedSurface.get_width()/2 - (self.player.rect.center[0] + xoffset) , blittedSurface.get_height()/2 - self.player.rect.center[1])
+                                if self.zoomLerpFactor != 1:
+                                    self.zoomLerpFactor += zoomLerpStep 
+                                else:
+                                    # battle state finished when zoomLerpFactor is 1 (because camera lerping is finished)
+                                    self.setBattleState(Battle.States.ANIMATING_MOVE)
                 self.updateButtons(battle_state, self.currentButtons, self.currentButtonIdx, blittedSurface)
                 self.updateZoomState(self.zoomState)
                 #zoomToPos = (blittedSurface.get_width()/2 - self.player.rect.center[0], blittedSurface.get_height()/2 - self.player.rect.center[1])
@@ -1052,20 +1142,42 @@ class Battle(Scene):
                 if self.uiLock:
                     self.checkUILock(self.uiLockTimeSet, self.uiLockCooldown)
             case self.States.ANIMATING_MOVE:
-                zoomToPos = (blittedSurface.get_width()/2 - self.player.rect.center[0], blittedSurface.get_height()/2 - self.player.rect.center[1])
                 if self.currentEntity.getState() == BattleSceneEntity.States.IDLE:
                     self.currentEntity.setState(BattleSceneEntity.States.DOING_MOVE)
+            case self.States.ENEMY_CHOOSING_MOVE:
+                pass
 
         self.player.update(blittedSurface)
         self.enemy.update(blittedSurface)
 
-        zoomToPos = (blittedSurface.get_width()/2 - self.player.rect.center[0], blittedSurface.get_height()/2 - self.player.rect.center[1])
+        # this if check is needed so that zoomToPosition function has the updated info after self.player.update and self.enemy.update calls. 
+        if battle_state == self.States.ANIMATING_MOVE:
+            xoffset =((self.enemy.rect.center[0] - self.player.rect.center[0])/2) # camera centered b/t player and enemy after updating positiosns
+            zoomToPos = (blittedSurface.get_width()/2 - (self.player.rect.center[0] + xoffset) , blittedSurface.get_height()/2 - self.player.rect.center[1])
+            if self.currentEntity.checkWindUp() or self.currentEntity.checkPostWindUp():
+                logger.debug(f"{self.currentEntity=} IS WINDING UP")
+                self.outerRect.center = (self.player.rect.center[0], self.player.rect.center[1] - self.player.rect.height/1.5)
+                self.timingRect.topleft = self.outerRect.topleft
+                self.timingRect.height = self.outerRect.height
+                self.updateTimingRect(self.timingRect, self.outerRect)
+                logger.debug(f"{self.timingRect=}, {self.outerRect=}")
+                self.drawTimingRect(self.timingRect, blittedSurface, self.timingRectColor)
+                Misc.drawOutline(self.outerRect, blittedSurface)
+                # drawing the percentage.
+                accuracy = int(100 * self.timingRect.width / self.outerRect.width) # timing accuracy (measured in percents)
+                self.printAccuracy(blittedSurface, accuracy, (self.outerRect.x - 60, self.outerRect.y)) 
+
+
         SETTINGS_FUNCTIONS.zoomToPosition(screen, blittedSurface, (0,0), zoomToPos, self.zoomScale, self.zoomScale-1)
         self.blitCover(screen, self.cover, self.coverPos)
 
-        ## Only setting last frame when the scene is finishing because it is only needed on exiting the battle scene
+        ## set self.lastFrame by getting a copy of the stuff thats blitted on the screen when scene is finishing 
         if self.state == SceneStates.FINISHING:
             self.lastFrame = screen.copy()
+
+    def printAccuracy(self, screen, accuracy, position):
+        fontSurf = Misc.turnStringToFontSurf(string=f"{accuracy}%", font_fp = SAVED_DATA.FONT_PATH, color=(255,255,255)) 
+        screen.blit(fontSurf, position)
 
     def checkUILock(self, ui_time_set, ui_cooldown):
         if not self.uiLockTemp: return None
