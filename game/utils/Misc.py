@@ -29,6 +29,25 @@ def middleToTopleftPos(middle_pos, size):
     topleftPos = middle_pos[0] - size[0]/2, middle_pos[1] - size[1] / 2
     return topleftPos
 
+def drawOutline(rect, screen, radius=3):
+    topline = pygame.Rect(0,0,0,0)
+    topline.width = rect.width + 2*radius
+    topline.height = radius 
+    topline.bottomleft = rect.topleft
+    topline.x -= radius
+    bottomline = topline.copy()
+    bottomline.topleft = rect.bottomleft
+    bottomline.x -= radius
+    rightline = pygame.Rect(0,0,0,0)
+    rightline.width = radius
+    rightline.height = rect.height
+    rightline.topright = rect.topleft
+    leftline = rightline.copy()
+    leftline.topleft = rect.topright
+    box = [topline, bottomline, leftline, rightline]
+    for rect in box:
+        pygame.draw.rect(screen, (255,255,255), rect)
+
 def tileImage(tile_size: int, image_path: str, output_dir: str):
     image = Image.open(image_path)
     imageSize = image.size
@@ -97,6 +116,9 @@ def getPolarCoordinates(angle, vertical_radius_size, horizontal_radius_size):
     numerator = vertical_radius_size * horizontal_radius_size
     logger.debug(f"{vertical_radius_size=}, {horizontal_radius_size=}, {numerator=}, {denominator=}")
     return numerator/denominator
+
+def turnStringToFontSurf(string: str, font_fp: str, base_size=24, anti_aliasing= False, color = (0,0,0)):
+    return pygame.font.Font(font_fp, base_size).render(string, anti_aliasing, color)
 
 def getPlayerPartImage(direction_path: str, name: str):
     direction_path += "/" + name
