@@ -1,5 +1,6 @@
 import pygame
 import os
+import random
 from debug.logger import logger
 from game.Scenes.BaseScene import Scene, SceneTypes, SceneStates, SceneAnimations
 from game.utils.SceneAnimation import SceneAnimation, AnimationStates
@@ -86,7 +87,11 @@ class BattleSceneEntity:
         self.selectedTargetPos = (0, 0) # When target selected this gets set
         logger.debug(f"Initialized BattleSceneEntity {name=}.")
         self.setState(self.States.IDLE)
+        logger.debug(f"WALK ANIM: \n{self.walkAnimation=}")
         self.timeLastAnimFreeze = 0
+
+    def getMoves(self):
+        return self.moves;
 
     def setSelectedTargetPos(self, x, y):
         assert (type(x) == int or type(x) == float) and (type(y) == int or type(y) == float)
@@ -204,9 +209,6 @@ class BattleSceneEntity:
             break
         assert selectedMove is not None
         self.selectedMove = selectedMove
-
-    def animateMove(self, move):
-        pass
 
     def checkWindUp(self):
         if self.moveState != self.MoveStates.ATTACKING:
@@ -353,6 +355,7 @@ class BattleSceneEntity:
         self.rect.y += y_offset
 
     def render(self, screen: pygame.Surface):
+        logger.debug(f"{self.currentGroupIdx=}");
         idx = int(self.currentGroupIdx)
         for minimalPart in self.currentGroups[idx]:
             minimalPart.render(position = (self.rect.x,self.rect.y), screen = screen)
@@ -539,6 +542,7 @@ class Battle(Scene):
         self.timeLastInput = 0
         self.currentButtonMenu = Battle.ButtonMenus.PLAYER_TURN 
         self.canFlee = self.determinePlayerFlee()
+        self.timeAttackFinished = 0;
         logger.debug("Battle Scene Initialized")
 
     def loadButtonIndices(self) -> dict:
@@ -1024,6 +1028,15 @@ class Battle(Scene):
     def drawTimingRect(self, rect: pygame.Rect, screen: pygame.Surface, color: tuple[int, int, int]):
         pygame.draw.rect(screen, color, rect) #draws the inner bar
 
+    # enemies choose move by rng.
+    def chooseEnemyMove(self, enemy: BattleSceneEntity):
+        moveNames = list(enemy.getMoves().keys());
+        numMoves = len(enemy.getMoves().keys());
+        moveIdx = random.randint(1, numMoves); 
+        #logger.debug(f"NUMBER OF MOVES: {numMoves}. \nMOVE IDX CHOSEN: {moveIdx}");
+        self.enemy.setSelectedMove(moveNames[moveIdx - 1]);
+        #logger.debug(f"MOVE CHOSEN: {moveNames[moveIdx - 1]}");
+        
     def checkBattleState(self, screen: pygame.Surface, battle_state: str):
         logger.debug(f"{battle_state=}, {self.prevState=}, {self.state=}")
         blittedSurface = pygame.Surface(screen.get_size())
@@ -1141,10 +1154,32 @@ class Battle(Scene):
 
                 if self.uiLock:
                     self.checkUILock(self.uiLockTimeSet, self.uiLockCooldown)
+            # case player choosing action ends here
+
             case self.States.ANIMATING_MOVE:
+                if self.currentEntity.getState() == BattleSceneEntity.States.DOING_MOVE:
+                    if self.currentEntity.moveState == BattleSceneEntity.MoveStates.DONE:
+                        logger.debug("move is done, enemies turn to attack.");
+                        # now going to set up enemy attacking after this cd is over..
+                        postAttackCooldown = 200 # 200 ms cd after a entity finishes attacking.
+                        timenow = pygame.time.get_ticks();
+                        if self.timeAttackFinished == 0:
+                            self.timeAttackFinished = timenow;
+                        logger.debug(f"{timenow=}, {self.timeAttackFinished=}");
+                        if timenow - self.timeAttackFinished >= postAttackCooldown:
+                            logger.debug("post atk cooldown finished, enemy will now attack.");
+                            self.timeAttackFinished = 0;
+                            self.setBattleState(self.States.ENEMY_CHOOSING_MOVE);
                 if self.currentEntity.getState() == BattleSceneEntity.States.IDLE:
                     self.currentEntity.setState(BattleSceneEntity.States.DOING_MOVE)
+
+            # case entity being anamited ends here.
             case self.States.ENEMY_CHOOSING_MOVE:
+                logger.debug("enemy is choosing a move");
+                self.chooseEnemyMove(self.enemy)
+                self.currentEntity = self.enemy;
+                self.enemy.setSelectedTargetPos(self.player.rect.x, self.player.rect.y);
+                self.enemy.setState(BattleSceneEntity.States.DOING_MOVE);
                 pass
 
         self.player.update(blittedSurface)
@@ -1166,7 +1201,15 @@ class Battle(Scene):
                 # drawing the percentage.
                 accuracy = int(100 * self.timingRect.width / self.outerRect.width) # timing accuracy (measured in percents)
                 self.printAccuracy(blittedSurface, accuracy, (self.outerRect.x - 60, self.outerRect.y)) 
+        
+        # end of battle_state == self.states.animating_move if.
 
+        #this if is for keeping that middle zoom thats at the end of player animating move.
+        if battle_state == self.States.ENEMY_CHOOSING_MOVE:
+            xoffset =((self.enemy.rect.center[0] - self.player.rect.center[0])/2) # camera centered b/t player and enemy when enemy choosing move state is reached 
+            zoomToPos = (blittedSurface.get_width()/2 - (self.player.rect.center[0] + xoffset) , blittedSurface.get_height()/2 - self.player.rect.center[1])
+            #logger.debug(f"{self.enemy.selectedMove=}");
+ 
 
         SETTINGS_FUNCTIONS.zoomToPosition(screen, blittedSurface, (0,0), zoomToPos, self.zoomScale, self.zoomScale-1)
         self.blitCover(screen, self.cover, self.coverPos)
