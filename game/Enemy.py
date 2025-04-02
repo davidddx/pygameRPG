@@ -46,12 +46,14 @@ def loadEnemyWalkAnimAsSpriteGroupList(name:str, direction: str):
             continue
         frameList.append(fileName)
     frameList.sort()
+    groups = []
     for index, frame in enumerate(frameList):
         group = pygame.sprite.Group()
         path = os.path.join(directionDir, frame)
         img = pygame.image.load(path)
         frameList[index] = MinimalPart(group=group, name=f"{name}{index}", image=img)
-    return frameList
+        groups.append(group);
+    return groups 
 
         
 
