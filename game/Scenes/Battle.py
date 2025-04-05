@@ -243,6 +243,7 @@ class BattleSceneEntity:
             goalX = self.selectedTargetPos[0] - self.rect.width
             if self.isEnemy:
                 goalX = self.selectedTargetPos[0];
+                # this is for width position fix stuff.
             xOffset = 5
             yOffset = 0
             walkAnimStep = 0.3
