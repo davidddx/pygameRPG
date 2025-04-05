@@ -71,7 +71,6 @@ class BattleSceneEntity:
         self.moves = self.loadMoves(name, enemy)
         self.currentGroupIdx = 0 # max group index is len(groups) - 1
         # denotes animation frame.
-
         self.idleGroup = BattleSceneEntity.loadIdleSprites(name = name, enemy = enemy)
         self.walkAnimation = self.loadWalkAnimation(name = self.name)
         self.moveAnimations = self.loadMoveAnimations(moves = self.moves)
@@ -235,20 +234,40 @@ class BattleSceneEntity:
         if state == self.MoveStates.IDLE:
             self.setMoveState(self.MoveStates.MOVING)
             self.currentGroups = self.walkAnimation
+            logger.debug(f"{self.walkAnimation=}");
+            logger.debug(f"{self.currentGroups=}");
+
             return None 
         if state == self.MoveStates.MOVING:
             # might add a goalY later.
             goalX = self.selectedTargetPos[0] - self.rect.width
+            if self.isEnemy:
+                goalX = self.selectedTargetPos[0];
             xOffset = 5
             yOffset = 0
             walkAnimStep = 0.3
-            self.movePlayer(xOffset, yOffset)
+            self.moveEntity(xOffset, yOffset)
             self.currentGroupIdx += walkAnimStep
+            # version for player.
+            if not self.isEnemy:
+                if self.currentGroupIdx >= len(self.currentGroups):
+                    # making sure the animation is circular and goes from frame 1-2-...n -> 1-2-...n
+                    # works b/c int(x) on float x will truncate decimal
+                    self.currentGroupIdx -= len(self.currentGroups)
+                if self.rect.x > goalX:
+                    self.rect.x = goalX 
+
+                if self.rect.x == goalX:
+                    if (int(self.currentGroupIdx) != 0) and (int(self.currentGroupIdx) != 2):
+                        # making sure the walk anim finishes for smooth transition. 
+                        return None
+                    self.setMoveState(self.MoveStates.ATTACKING)
+                return None
+            #enemy case starts here.
+
             if self.currentGroupIdx >= len(self.currentGroups):
-                # making sure the animation is circular and goes from frame 1-2-...n -> 1-2-...n
-                # works b/c int(x) on float x will truncate decimal
                 self.currentGroupIdx -= len(self.currentGroups)
-            if self.rect.x > goalX:
+            if self.rect.x < goalX:
                 self.rect.x = goalX 
 
             if self.rect.x == goalX:
@@ -257,6 +276,8 @@ class BattleSceneEntity:
                     return None
                 self.setMoveState(self.MoveStates.ATTACKING)
             return None
+
+            #enemy case ends.
         if state == self.MoveStates.ATTACKING:
             sGroup = self.moveAnimations[self.selectedMove[MOVES.NAME]]
             if not self.currentGroups == sGroup:
@@ -348,6 +369,13 @@ class BattleSceneEntity:
 
                 return None
 
+    def moveEntity(self, x_offset, y_offset):
+        if self.isEnemy:
+            self.rect.x -= x_offset
+            self.rect.y -= y_offset
+            return
+        self.movePlayer(x_offset, y_offset);
+
     def movePlayer(self, x_offset, y_offset):
         assert type(x_offset) == float or type(x_offset) == int
         assert type(y_offset) == float or type(y_offset) == int
@@ -371,12 +399,13 @@ class BattleSceneEntity:
         logger.debug(f"{self.selectedMove=}")
         logger.debug(f"{self.currentGroupIdx=}")
         logger.debug(f"{self.currentGroups=}")
-        
+        logger.debug(f"self.currentPos=({self.rect.x}, {self.rect.y})"); 
         logger.debug(f"{self.selectedTargetPos=}")
 
     def update(self, screen):
         self.logInfo()
         self.checkState(self.state) 
+        #self.logInfo()
         self.render(screen)
 
 class BattleSceneTransitionAnimations:
@@ -1178,9 +1207,13 @@ class Battle(Scene):
                 logger.debug("enemy is choosing a move");
                 self.chooseEnemyMove(self.enemy)
                 self.currentEntity = self.enemy;
-                self.enemy.setSelectedTargetPos(self.player.rect.x, self.player.rect.y);
+                self.enemy.setSelectedTargetPos(self.player.rect.x + self.player.rect.width, self.player.rect.y);
+                logger.debug(f"{self.enemy.selectedTargetPos=}")
+                logger.debug(f"{self.player.rect.x=}")
+                logger.debug(f"{self.player.rect.y=}")
+                logger.debug(f"{self.enemy.rect.x=}")
+                logger.debug(f"{self.enemy.rect.y=}")
                 self.enemy.setState(BattleSceneEntity.States.DOING_MOVE);
-                pass
 
         self.player.update(blittedSurface)
         self.enemy.update(blittedSurface)
@@ -1203,15 +1236,15 @@ class Battle(Scene):
                 self.printAccuracy(blittedSurface, accuracy, (self.outerRect.x - 60, self.outerRect.y)) 
         
         # end of battle_state == self.states.animating_move if.
-
+        directionZoomX = 1;
+        directionZoomY = 1;
         #this if is for keeping that middle zoom thats at the end of player animating move.
         if battle_state == self.States.ENEMY_CHOOSING_MOVE:
             xoffset =((self.enemy.rect.center[0] - self.player.rect.center[0])/2) # camera centered b/t player and enemy when enemy choosing move state is reached 
-            zoomToPos = (blittedSurface.get_width()/2 - (self.player.rect.center[0] + xoffset) , blittedSurface.get_height()/2 - self.player.rect.center[1])
-            #logger.debug(f"{self.enemy.selectedMove=}");
- 
+            zoomToPos = (blittedSurface.get_width()/2 - (self.enemy.rect.center[0] - xoffset) , blittedSurface.get_height()/2 - self.player.rect.center[1]);
+            
 
-        SETTINGS_FUNCTIONS.zoomToPosition(screen, blittedSurface, (0,0), zoomToPos, self.zoomScale, self.zoomScale-1)
+        SETTINGS_FUNCTIONS.zoomToPosition(screen, blittedSurface, (0,0), zoomToPos, self.zoomScale, self.zoomScale-1, directionX=directionZoomX, directionY=directionZoomY)
         self.blitCover(screen, self.cover, self.coverPos)
 
         ## set self.lastFrame by getting a copy of the stuff thats blitted on the screen when scene is finishing 

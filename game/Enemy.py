@@ -35,6 +35,7 @@ def loadEnemyImageAsSpriteGroup(name: str, direction: str, frame: int, battle=Fa
 
 def loadEnemyWalkAnimAsSpriteGroupList(name:str, direction: str):
     directionDir = getEnemyDirectionDir(name, direction)
+    #logger.debug("DIRECTION DIR: " + directionDir);
     assert os.path.isdir(directionDir)
     frameList = []
     for fileName in os.listdir(directionDir):
@@ -46,6 +47,7 @@ def loadEnemyWalkAnimAsSpriteGroupList(name:str, direction: str):
             continue
         frameList.append(fileName)
     frameList.sort()
+    #logger.debug(f"FRAME LIST: {frameList}");
     groups = []
     for index, frame in enumerate(frameList):
         group = pygame.sprite.Group()
